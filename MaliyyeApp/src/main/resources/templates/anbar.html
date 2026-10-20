@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Anbar - Maliyyə Tətbiqi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+/* TÜND GÖY SIDEBAR */
+.sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+.sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+.sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+.sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; }
+.sidebar a.aktiv { border-left: 4px solid #64b5f6; font-weight: bold; }
+
+.esas { margin-left: 220px; flex: 1; padding: 30px; }
+h1 { color: #0f4c81; margin-bottom: 20px; }
+.kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+input, select { flex: 1; min-width: 130px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+input:focus, select:focus { outline: none; border-color: #1976d2; }
+
+/* GÖY DÜYMƏLƏR */
+button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+button:hover { background: #1565c0; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #fafafa; font-size: 13px; color: #666; text-transform: uppercase; }
+
+/* QIRMIZI SİL DÜYMƏSİ */
+.sil-btn { background: #c62828; padding: 6px 12px; font-size: 12px; }
+.sil-btn:hover { background: #8e0000; }
+.grid-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə</h2>
+    <a href="/">🏠 Ana səhifə</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler">👥 Kontragentlər</a>
+    <a href="/hesabat">📊 Hesabat</a>
+    <a href="/anbar"class="aktiv">📦 Anbar</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma">🛒 Satınalma</a>
+    <a href="#">🏭 İstehsal</a>
+    <a href="#">🏗️ Əsas vəsaitlər</a>
+    <a href="#">📜 Qeyri Maddi Aktiv</a>
+    <a href="#">💼 Əmək haqqı</a>
+    <a href="#">👥 Kadrlar</a>
+    <a href="#">📊 Hesabat</a>
+    <!-- Digər linklər -->
+</div>
+
+<div class="esas">
+    <h1>📦 Anbar İdarəetməsi</h1>
+
+    <div class="grid-2">
+        <!-- Sol tərəf: Qruplar -->
+        <div class="kart">
+            <h3>📁 Məhsul Qrupları</h3>
+            <form action="/anbar/qrup-elave-et" method="post">
+                <input type="text" name="qrupAdi" placeholder="Yeni qrup adı" required style="width: 100%;">
+                <button type="submit" style="width: 100%; margin-top: 10px;">Qrup Əlavə et</button>
+            </form>
+
+            <table th:if="${!qruplar.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Qrup Adı</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="q : ${qruplar}">
+                    <td th:text="${q.ad}">Qrup</td>
+                    <td style="text-align: right;">
+                        <form th:action="@{/anbar/qrup-sil/{id}(id=${q.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="sil-btn">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${qruplar.isEmpty()}" style="color: #999; text-align: center; margin-top: 20px;">Qrup yoxdur</div>
+        </div>
+
+        <!-- Sağ tərəf: Məhsullar -->
+        <div class="kart">
+            <h3>📦 Məhsullar</h3>
+            <form action="/anbar/mehsul-elave-et" method="post">
+                <input type="text" name="mehsulAdi" placeholder="Məhsulun adı" required>
+                <select name="qrupId" required>
+                    <option value="">Qrup seçin...</option>
+                    <option th:each="q : ${qruplar}" th:value="${q.id}" th:text="${q.ad}"></option>
+                </select>
+                <input type="number" name="qiymet" step="0.01" min="0" placeholder="Satış qiyməti (₼)" required>
+                <input type="number" name="miqdar" step="0.01" min="0" placeholder="İlkin miqdar" required>
+                <button type="submit">Məhsul Əlavə et</button>
+            </form>
+
+            <table th:if="${!mehsullar.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Ad</th>
+                    <th>Qrup</th>
+                    <th>Qiymət</th>
+                    <th>Miqdar</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${mehsullar}">
+                    <td th:text="${m.ad}">Məhsul</td>
+                    <td th:text="${m.qrup.ad}">Qrup</td>
+                    <td th:text="${m.satisQiymeti} + ' ₼'">0 ₼</td>
+                    <td th:text="${m.miqdar}">0</td>
+                    <td style="text-align: right;">
+                        <form th:action="@{/anbar/mehsul-sil/{id}(id=${m.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="sil-btn">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${mehsullar.isEmpty()}" style="color: #999; text-align: center; margin-top: 20px;">Məhsul yoxdur</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

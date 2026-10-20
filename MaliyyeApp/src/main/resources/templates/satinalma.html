@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Satınalma - Maliyyə Tətbiqi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; }
+        .sidebar a.aktiv { border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        input, select { flex: 1; min-width: 130px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1565c0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; font-size: 13px; color: #666; text-transform: uppercase; }
+        .sil-btn { background: #c62828; padding: 6px 12px; font-size: 12px; }
+        .sil-btn:hover { background: #8e0000; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə</h2>
+    <a href="/">🏠 Ana səhifə</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler">👥 Kontragentlər</a>
+    <a href="/hesabat">📊 Hesabat</a>
+    <a href="/anbar">📦 Anbar</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma"class="aktiv">🛒 Satınalma</a>
+    <a href="#">🏭 İstehsal</a>
+    <a href="#">🏗️ Əsas vəsaitlər</a>
+    <a href="#">📜 Qeyri Maddi Aktiv</a>
+    <a href="#">💼 Əmək haqqı</a>
+    <a href="#">👥 Kadrlar</a>
+    <a href="#">📊 Hesabat</a>
+</div>
+
+<div class="esas">
+    <h1>🛒 Mal Satınalması</h1>
+
+    <div class="kart">
+        <h3>➕ Yeni Satınalma (Mal Qəbulu)</h3>
+        <form action="/satinalma/et" method="post">
+            <!-- 1-ci sətir -->
+            <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 10px;">
+                <select name="kontragentId" required style="flex: 1;">
+                    <option value="">Təchizatçı seçin...</option>
+                    <option th:each="t : ${techizatcilar}" th:value="${t.id}" th:text="${t.ad}"></option>
+                </select>
+
+                <select name="mehsulId" required style="flex: 1;">
+                    <option value="">Məhsul seçin...</option>
+                    <option th:each="m : ${mehsullar}" th:value="${m.id}" th:text="${m.ad} + ' (Qalıq: ' + ${m.miqdar} + ')'"></option>
+                </select>
+            </div>
+
+            <!-- 2-ci sətir -->
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <input type="number" name="miqdar" step="0.01" min="0.01" placeholder="Miqdar" required style="flex: 1;">
+                <input type="number" name="qiymet" step="0.01" min="0" placeholder="Alış qiyməti (₼)" required style="flex: 1;">
+                <button type="submit" style="flex: 0 0 auto;">Satınalmanı Tamamla</button>
+            </div>
+        </form>
+        <p style="font-size: 12px; color: #888; margin-top: 10px;">💡 Satınalma edildikdə Anbardaki malın miqdarı avtomatik artacaq.</p>
+    </div>
+
+    <div class="kart">
+        <h3>📋 Satınalma Tarixçəsi</h3>
+
+        <table th:if="${!satinalmalar.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Tarix</th>
+                <th>Təchizatçı</th>
+                <th>Məhsul</th>
+                <th>Miqdar</th>
+                <th>Alış Qiyməti</th>
+                <th>Ümumi Məbləğ</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${satinalmalar}">
+                <td th:text="${s.tarix}">2026-01-01</td>
+                <td th:text="${s.kontragent.ad}" style="font-weight: bold;">Təchizatçı</td>
+                <td th:text="${s.mehsul.ad}">Məhsul</td>
+                <td th:text="${s.miqdar}">1</td>
+                <td th:text="${s.alisQiymeti} + ' ₼'">0 ₼</td>
+                <td th:text="${s.umumiMebleg} + ' ₼'" style="color: #1976d2; font-weight: bold;">0 ₼</td>
+                <td style="text-align: right;">
+                    <form th:action="@{/satinalma/sil/{id}(id=${s.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="sil-btn">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${satinalmalar.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
+            Hələ heç bir satınalma yoxdur.
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kontragent Hesabatı</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; text-align: center; }
+
+        /* Tarix Filtri */
+        .filter-kart { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .filter-form { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 13px; font-weight: bold; color: #555; }
+        .filter-group input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        .filter-form button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .filter-form button:hover { background: #1565c0; }
+
+        /* Cədvəllər */
+        .kart { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 30px; }
+        .kart h3 { font-size: 16px; color: white; padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; }
+        .bg-blue { background: #1976d2; }
+        .bg-orange { background: #f57c00; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #f9f9f9; font-size: 12px; color: #555; font-weight: bold; text-transform: uppercase; }
+        .text-right { text-align: right; }
+        .text-red { color: #c62828; font-weight: bold; }
+        .text-green { color: #2e7d32; font-weight: bold; }
+        .text-blue { color: #1976d2; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler">👥 Kontragentlər</a>
+    <a href="/hesabat" class="aktiv">📊 Hesabat</a>
+    <a href="/anbar">📦 Anbar</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma">🛒 Satınalma</a>
+</div>
+
+<div class="esas">
+    <h1>AzHill Construction MMC - Debitor və Kreditorlar</h1>
+
+    <!-- Tarix Filtri Forması -->
+    <div class="filter-kart">
+        <form action="/hesabat" method="get" class="filter-form">
+            <div class="filter-group">
+                <label>Başlanğıc tarix:</label>
+                <input type="date" name="baslangic" th:value="${baslangic}" required>
+            </div>
+            <div class="filter-group">
+                <label>Son tarix:</label>
+                <input type="date" name="son" th:value="${son}" required>
+            </div>
+            <button type="submit">Hesabatı Göstər</button>
+        </form>
+    </div>
+
+    <!-- DEBİTORLAR (Müştərilər) -->
+    <div class="kart">
+        <h3 class="bg-blue">Mədaxil (Müştərilər / Debitorlar) - Bizə borclu olanlar</h3>
+        <table th:if="${!debitorlar.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Kontragent (Müştəri)</th>
+                <th class="text-right">Əvvələ qalıq</th>
+                <th class="text-right">Mal Satışı (Dövrdə)</th>
+                <th class="text-right">Ödənilən (Mədaxil)</th>
+                <th class="text-right">Yekun Qalıq Borc</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d : ${debitorlar}">
+                <td th:text="${d.kontragentAd}">Müştəri adı</td>
+                <td class="text-right text-blue" th:text="${d.evveleQaliq} + ' ₼'">0 ₼</td>
+                <td class="text-right text-red" th:text="${d.satisMebleg} + ' ₼'">0 ₼</td>
+                <td class="text-right text-green" th:text="${d.odenis} + ' ₼'">0 ₼</td>
+                <td class="text-right" th:text="${d.qaliq} + ' ₼'"
+                    th:style="${d.qaliq.signum() > 0} ? 'color:#c62828; font-weight:bold;' : 'color:#2e7d32; font-weight:bold;'">0 ₼</td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${debitorlar.isEmpty()}" style="text-align: center; color: #999; padding: 20px;">Müştəri tapılmadı.</div>
+    </div>
+
+    <!-- KREDİTORLAR (Təchizatçılar) -->
+    <div class="kart">
+        <h3 class="bg-orange">Məxaric (Təchizatçılar / Kreditorlar) - Bizim borclu olduğumuz</h3>
+        <table th:if="${!kreditorlar.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Kontragent (Təchizatçı)</th>
+                <th class="text-right">Əvvələ qalıq</th>
+                <th class="text-right">Mal Alışı (Dövrdə)</th>
+                <th class="text-right">Ödənilən (Məxaric)</th>
+                <th class="text-right">Yekun Qalıq Borcumuz</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="k : ${kreditorlar}">
+                <td th:text="${k.kontragentAd}">Təchizatçı adı</td>
+                <td class="text-right text-blue" th:text="${k.evveleQaliq} + ' ₼'">0 ₼</td>
+                <td class="text-right text-red" th:text="${k.alisMebleg} + ' ₼'">0 ₼</td>
+                <td class="text-right text-green" th:text="${k.odenis} + ' ₼'">0 ₼</td>
+                <td class="text-right" th:text="${k.qaliq} + ' ₼'"
+                    th:style="${k.qaliq.signum() > 0} ? 'color:#c62828; font-weight:bold;' : 'color:#2e7d32; font-weight:bold;'">0 ₼</td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${kreditorlar.isEmpty()}" style="text-align: center; color: #999; padding: 20px;">Təchizatçı tapılmadı.</div>
+    </div>
+
+</div>
+</body>
+</html>

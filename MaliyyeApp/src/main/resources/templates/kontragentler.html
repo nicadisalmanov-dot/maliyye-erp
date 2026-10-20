@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kontragentlər - Maliyyə Tətbiqi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; }
+        .sidebar a.aktiv { border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        input, select { flex: 1; min-width: 130px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1565c0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; font-size: 13px; color: #666; text-transform: uppercase; }
+        .sil-btn { background: #c62828; padding: 6px 12px; font-size: 12px; }
+        .sil-btn:hover { background: #8e0000; }
+
+        /* Növ nişanları */
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .badge-musteri { background: #e3f2fd; color: #1565c0; }
+        .badge-techizatci { background: #fff3e0; color: #e65100; }
+        .badge-her-ikisi { background: #f3e5f5; color: #6a1b9a; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə</h2>
+    <a href="/">🏠 Ana səhifə</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler"class="aktiv">👥 Kontragentlər</a>
+    <a href="/hesabat">📊 Hesabat</a>
+    <a href="/anbar">📦 Anbar</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma">🛒 Satınalma</a>
+    <a href="#">🏭 İstehsal</a>
+    <a href="#">🏗️ Əsas vəsaitlər</a>
+    <a href="#">📜 Qeyri Maddi Aktiv</a>
+    <a href="#">💼 Əmək haqqı</a>
+    <a href="#">👥 Kadrlar</a>
+    <a href="#">📊 Hesabat</a>
+</div>
+
+<div class="esas">
+    <h1>👥 Kontragentlər (Müştəri və Təchizatçılar)</h1>
+
+    <div class="kart">
+        <h3>➕ Yeni Kontragent Əlavə Et</h3>
+        <form action="/kontragentler/elave-et" method="post">
+            <input type="text" name="ad" placeholder="Ad / Şirkət adı" required style="flex: 2;">
+            <input type="text" name="telefon" placeholder="Telefon">
+            <input type="email" name="email" placeholder="Email">
+            <input type="text" name="unvan" placeholder="Ünvan" style="flex: 2;">
+            <select name="nov" required>
+                <option value="MUSTERI">Müştəri (Alıcı)</option>
+                <option value="TECHIZATCI">Təchizatçı (Satıcı)</option>
+                <option value="HER_IKISI">Hər ikisi</option>
+            </select>
+            <button type="submit">Əlavə et</button>
+        </form>
+    </div>
+
+    <div class="kart">
+        <h3>📋 Kontragent Siyahısı</h3>
+
+        <table th:if="${!kontragentler.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Ad / Şirkət</th>
+                <th>Telefon</th>
+                <th>Email</th>
+                <th>Ünvan</th>
+                <th>Növü</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="k : ${kontragentler}">
+                <td th:text="${k.ad}" style="font-weight: bold;">Ad</td>
+                <td th:text="${k.telefon}">-</td>
+                <td th:text="${k.email}">-</td>
+                <td th:text="${k.unvan}">-</td>
+                <td>
+                            <span class="badge"
+                                  th:classappend="${k.nov == 'MUSTERI'} ? 'badge-musteri' : (${k.nov == 'TECHIZATCI'} ? 'badge-techizatci' : 'badge-her-ikisi')"
+                                  th:text="${k.nov == 'MUSTERI'} ? 'Müştəri' : (${k.nov == 'TECHIZATCI'} ? 'Təchizatçı' : 'Hər ikisi')">
+                                Növ
+                            </span>
+                </td>
+                <td style="text-align: right;">
+                    <form th:action="@{/kontragentler/sil/{id}(id=${k.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="sil-btn">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${kontragentler.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
+            Hələ heç bir kontragent yoxdur. Yuxarıdaki formdan əlavə edin!
+        </div>
+    </div>
+</div>
+</body>
+</html>
