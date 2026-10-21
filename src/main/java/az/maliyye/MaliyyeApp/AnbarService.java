@@ -33,10 +33,11 @@ public class AnbarService {
         return mehsulRepository.findAll();
     }
 
-    public Mehsul mehsulElaveEt(String ad, Long qrupId, BigDecimal qiymet, Double miqdar) {
+    public Mehsul mehsulElaveEt(String ad, Long qrupId, BigDecimal alisQiymeti, BigDecimal satisQiymeti, Double miqdar) {
         MehsulQrupu qrup = qrupRepository.findById(qrupId).orElseThrow();
-        Mehsul yeni = new Mehsul(ad, qrup, qiymet, miqdar);
+        Mehsul yeni = new Mehsul(ad, qrup, alisQiymeti, satisQiymeti, miqdar);
         return mehsulRepository.save(yeni);
+
     }
 
     public void mehsulSil(Long id) {

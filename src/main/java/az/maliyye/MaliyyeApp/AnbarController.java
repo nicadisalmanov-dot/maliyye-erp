@@ -14,45 +14,60 @@ public class AnbarController {
     @Autowired
     private AnbarService service;
 
+    // 1. Əsas Menyu (Şəkildəki kimi)
     @GetMapping
-    public String anbarSehife(Model model) {
-        model.addAttribute("qruplar", service.butunQruplar());
-        model.addAttribute("mehsullar", service.butunMehsullar());
-        return "anbar";
+    public String anbarMenyu() {
+        return "anbar"; // Yuxarıda yaratdığımız menyu səhifəsi
     }
 
-    // Qrup əlavə et
+    // 2. Mallar və Qruplar (Köhnə funksionallıq)
+    @GetMapping("/mallar")
+    public String mallarSehife(Model model) {
+        model.addAttribute("qruplar", service.butunQruplar());
+        model.addAttribute("mehsullar", service.butunMehsullar());
+        return "mallar"; // Yeni yaratdığımız fayl
+    }
+
+    // Digər bölmələr üçün müvəqqəti boş səhifələr
+    @GetMapping("/{sehife}")
+    public String bosSehife(@PathVariable String sehife, Model model) {
+        model.addAttribute("sehifeAdi", sehife);
+        return "tezlikle"; // Bütün boş səhifələr üçün bir şablon
+    }
+
+    // --- Köhnə POST əməliyyatları (Qruplar və Məhsullar üçün) ---
     @PostMapping("/qrup-elave-et")
     public String qrupElaveEt(@RequestParam String qrupAdi) {
         if(qrupAdi != null && !qrupAdi.isEmpty()) {
             service.qrupElaveEt(qrupAdi);
         }
-        return "redirect:/anbar";
+        return "redirect:/anbar/mallar";
     }
 
-    // Qrup sil
     @PostMapping("/qrup-sil/{id}")
     public String qrupSil(@PathVariable Long id) {
         service.qrupSil(id);
-        return "redirect:/anbar";
+        return "redirect:/anbar/mallar";
     }
 
-    // Məhsul əlavə et
     @PostMapping("/mehsul-elave-et")
     public String mehsulElaveEt(@RequestParam String mehsulAdi,
                                 @RequestParam Long qrupId,
-                                @RequestParam String qiymet,
+                                @RequestParam String alisQiymeti,
+                                @RequestParam String satisQiymeti,
                                 @RequestParam String miqdar) {
-        BigDecimal qiymetDecimal = new BigDecimal(qiymet);
+        BigDecimal alisQiymetiDec = new BigDecimal(alisQiymeti);
+        BigDecimal satisQiymetiDec = new BigDecimal(satisQiymeti);
         Double miqdarDouble = Double.parseDouble(miqdar);
-        service.mehsulElaveEt(mehsulAdi, qrupId, qiymetDecimal, miqdarDouble);
-        return "redirect:/anbar";
+
+        service.mehsulElaveEt(mehsulAdi, qrupId, alisQiymetiDec, satisQiymetiDec, miqdarDouble);
+        return "redirect:/anbar/mallar";
+
     }
 
-    // Məhsul sil
     @PostMapping("/mehsul-sil/{id}")
     public String mehsulSil(@PathVariable Long id) {
         service.mehsulSil(id);
-        return "redirect:/anbar";
+        return "redirect:/anbar/mallar";
     }
 }
