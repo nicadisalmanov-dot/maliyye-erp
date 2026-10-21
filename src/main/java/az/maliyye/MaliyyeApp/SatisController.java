@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 
 @Controller
-@RequestMapping("/satis")
+@RequestMapping("/anbar/satis")
 public class SatisController {
 
     @Autowired

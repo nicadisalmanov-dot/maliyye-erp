@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Anbar Əməliyyatları - ERP</title>
@@ -77,11 +77,21 @@
     <a href="/kontragentler">👥 Kontragentlər</a>
     <a href="/hesabat">📊 Hesabat</a>
     <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
-    <a href="/satis">💼 Satış</a>
     <a href="/satinalma">🛒 Satınalma</a>
 </div>
 
 <div class="esas">
+    <!-- İstifadəçi Paneli (Sağ Yuxarı) -->
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+            <span style="font-weight: bold; color: #0f4c81;">
+                👤 <span sec:authentication="name">İstifadəçi</span>
+            </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                Çıxış
+            </button>
+        </form>
+    </div>
     <h1>📦 Anbar Əməliyyatları</h1>
     <p style="color: #666; margin-bottom: 20px;">Zəhmət olmasa, yerinə yetirmək istədiyiniz əməliyyatı seçin.</p>
 

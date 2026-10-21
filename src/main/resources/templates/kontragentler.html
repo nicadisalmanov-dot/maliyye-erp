@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Kontragentlər - Maliyyə Tətbiqi</title>
@@ -43,17 +43,27 @@
     <a href="/kontragentler"class="aktiv">👥 Kontragentlər</a>
     <a href="/hesabat">📊 Hesabat</a>
     <a href="/anbar">📦 Anbar Əməliyyatları</a>
-    <a href="/satis">💼 Satış</a>
     <a href="/satinalma">🛒 Satınalma</a>
     <a href="#">🏭 İstehsal</a>
     <a href="#">🏗️ Əsas vəsaitlər</a>
     <a href="#">📜 Qeyri Maddi Aktiv</a>
     <a href="#">💼 Əmək haqqı</a>
     <a href="#">👥 Kadrlar</a>
-    <a href="#">📊 Hesabat</a>
+
 </div>
 
 <div class="esas">
+    <!-- İstifadəçi Paneli (Sağ Yuxarı) -->
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+            <span style="font-weight: bold; color: #0f4c81;">
+                👤 <span sec:authentication="name">İstifadəçi</span>
+            </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                Çıxış
+            </button>
+        </form>
+    </div>
     <h1>👥 Kontragentlər (Müştəri və Təchizatçılar)</h1>
 
     <div class="kart">
