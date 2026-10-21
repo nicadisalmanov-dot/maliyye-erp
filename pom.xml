@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<!-- Docker build zamanı kodlaşdırma xətasını həll edir -->
+		<!-- UTF-8 kodlaşdırma ayarları -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -66,6 +66,16 @@
 
 	<build>
 		<plugins>
+			<!-- Maven-in resurs fayllarını emal etməsi üçün xüsusi plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- Spring Boot plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
