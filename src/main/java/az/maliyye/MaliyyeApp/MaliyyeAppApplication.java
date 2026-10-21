@@ -24,16 +24,17 @@ public class MaliyyeAppApplication {
                 // Əgər yoxdursa, yeni yaradırıq
                 admin = new Istifadeci();
                 admin.setUsername("admin");
-                admin.setPassword(encoder.encode("admin123")); // Şifrə: admin123
+                admin.setPassword(encoder.encode("admin123"));
                 admin.setAd("Sistem Administratoru");
-                admin.setRol("ADMIN");
+                admin.setRol("ROLE_ADMIN"); // BURADA ROLE_ əlavə etdik
                 repo.save(admin);
                 System.out.println(">>> YENİ ADMIN YARADILDI! (admin / admin123)");
             } else {
-                // Əgər varsa, şifrəsini yeniləyirik
+                // Əgər varsa, şifrəsini və rolunu yeniləyirik
                 admin.setPassword(encoder.encode("admin123"));
+                admin.setRol("ROLE_ADMIN"); // KÖHNƏ ADMINİN ROLUNU DA YENİLƏYİRİK
                 repo.save(admin);
-                System.out.println(">>> MÖVCUD ADMIN TAPILDI VƏ ŞİFRƏSİ YENİLƏNDİ! (admin / admin123)");
+                System.out.println(">>> MÖVCUD ADMIN TAPILDI, ŞİFRƏSİ VƏ ROLU YENİLƏNDİ! (admin / admin123)");
             }
             System.out.println("=== İSTİFADƏÇİ YOXLAMASI BİTDİ ===");
         };
