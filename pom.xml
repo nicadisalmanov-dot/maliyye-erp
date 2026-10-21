@@ -66,14 +66,11 @@
 
 	<build>
 		<plugins>
-			<!-- Maven-in resurs fayllarını emal etməsi üçün xüsusi plugin -->
+			<!-- Maven-in resurs fayllarını emal etməsi üçün daha tolerant versiya -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.3.1</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
+				<version>3.1.0</version>
 			</plugin>
 			<!-- Spring Boot plugin -->
 			<plugin>
