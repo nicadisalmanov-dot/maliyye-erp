@@ -5,7 +5,7 @@ WORKDIR /app
 # Bütün layihə fayllarını kopyalayırıq
 COPY . .
 
-# Maven-i işə salaraq JAR faylını yaradırıq (testləri keçirik)
+# Maven-i işə salaraq JAR faylını yaradırıq
 RUN mvn clean package -DskipTests
 
 # Mərhələ 2: Tətbiqi işə salmaq
