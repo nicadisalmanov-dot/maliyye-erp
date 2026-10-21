@@ -1,20 +1,19 @@
-# Java 21 mühiti
-FROM eclipse-temurin:21-jdk-alpine AS build
+# Mərhələ 1: Layihəni yığmaq (build)
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Maven wrapper-i kopyalayırıq
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline
+# Bütün layihə fayllarını kopyalayırıq
+COPY . .
 
-# Layihə kodunu kopyalayıb yığırıq (testləri keçirik)
-COPY src ./src
-RUN ./mvnw clean package -DskipTests
+# Maven-i işə salaraq JAR faylını yaradırıq (testləri keçirik)
+RUN mvn clean package -DskipTests
 
-# Tətbiqi işə salırıq
+# Mərhələ 2: Tətbiqi işə salmaq
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
+
+# Yığılmış JAR faylını birinci mərhələdən götürürük
 COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
