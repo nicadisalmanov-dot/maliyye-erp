@@ -32,18 +32,22 @@
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
 
-    <a href="/">🏠 Dashboard</a>
+    <!-- Dashboard -->
+    <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
 
-    <!-- Kassa aktivdir -->
-    <a href="/kassa"  sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
-
+    <!-- Modul icazələri -->
+    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
     <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
     <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
     <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
-    <a href="/anbar" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
-    <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
-    <a href="/satinalma" class="aktiv"sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
 
+    <!-- Anbar (aktiv) -->
+    <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+
+    <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+
+    <!-- Yalnız Admin -->
     <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
     <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>

@@ -34,6 +34,7 @@ public class IstifadeciController {
                           @RequestParam String password,
                           @RequestParam String ad,
                           @RequestParam String rol,
+                          @RequestParam(required = false) Boolean dashboard,
                           @RequestParam(required = false) Boolean kassa,
                           @RequestParam(required = false) Boolean bank,
                           @RequestParam(required = false) Boolean kontragent,
@@ -52,6 +53,7 @@ public class IstifadeciController {
         yeni.setAd(ad);
         yeni.setRol("ROLE_" + rol);
 
+        yeni.setIcazeDashboard(dashboard != null);
         yeni.setIcazeKassa(kassa != null);
         yeni.setIcazeBank(bank != null);
         yeni.setIcazeKontragent(kontragent != null);
@@ -84,6 +86,7 @@ public class IstifadeciController {
     public String redakteEt(@PathVariable Long id,
                             @RequestParam String ad,
                             @RequestParam String rol,
+                            @RequestParam(required = false) Boolean dashboard,
                             @RequestParam(required = false) Boolean kassa,
                             @RequestParam(required = false) Boolean bank,
                             @RequestParam(required = false) Boolean kontragent,
@@ -100,6 +103,7 @@ public class IstifadeciController {
         istifadeci.setAd(ad);
         istifadeci.setRol("ROLE_" + rol);
 
+        istifadeci.setIcazeDashboard(dashboard != null);
         istifadeci.setIcazeKassa(kassa != null);
         istifadeci.setIcazeBank(bank != null);
         istifadeci.setIcazeKontragent(kontragent != null);
