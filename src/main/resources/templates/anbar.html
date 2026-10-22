@@ -24,19 +24,23 @@
 <!-- Sol Menyu -->
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
-    <a href="/">🏠 Dashboard</a>
 
-    <!-- Yalnız icazəsi olanlar görəcək -->
-    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
-    <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
-    <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
-    <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
-    <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
-    <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
-    <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+    <!-- Dashboard YALNIZ icazəsi olanlar üçün görünür -->
+    <a href="/" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasDashboard(authentication.name)}">🏠 Dashboard</a>
 
-    <!-- Yalnız Admin görə bilər -->
-    <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a href="/kassa" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasKassa(authentication.name)}">💵 Kassa</a>
+    <a href="/bank" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasBank(authentication.name)}">🏦 Bank</a>
+    <a href="/kontragentler" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasKontragent(authentication.name)}">👥 Kontragentlər</a>
+    <a href="/hesabat" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasHesabat(authentication.name)}">📊 Hesabat</a>
+
+    <!-- Anbar linki -->
+    <a href="/anbar" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasAnbar(authentication.name)}"class="aktiv">📦 Anbar Əməliyyatları</a>
+
+    <a href="/satis" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasSatis(authentication.name)}">💼 Satış</a>
+    <a href="/satinalma" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasSatinalma(authentication.name)}">🛒 Satınalma</a>
+
+    <!-- İstifadəçi idarəetməsi yalnız Admin üçün -->
+    <a href="/istifadeciler" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">👥 İstifadəçilər</a>
 </div>
 
 <div class="esas">

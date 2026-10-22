@@ -1,6 +1,7 @@
 package az.maliyye.MaliyyeApp;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "istifadeciler")
@@ -20,9 +21,9 @@ public class Istifadeci {
     private String ad;
 
     @Column(nullable = false)
-    private String rol; // "ADMIN" və ya "USER"
+    private String rol; // "ROLE_ADMIN" və ya "ROLE_USER"
 
-    // --- İCAZƏLƏR (Permissions) ---
+    // --- KÖHNƏ İCAZƏLƏR (Menyu görünüşü üçün) ---
     private boolean icazeKassa = false;
     private boolean icazeBank = false;
     private boolean icazeKontragent = false;
@@ -30,6 +31,23 @@ public class Istifadeci {
     private boolean icazeSatis = false;
     private boolean icazeSatinalma = false;
     private boolean icazeHesabat = false;
+
+    // --- YENİ: LAYİHƏ VƏ ANBAR İCAZƏLƏRİ (Data-Level Security) ---
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_projects",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    private List<Layihe> allowedProjects;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_warehouses",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "warehouse_id")
+    )
+    private List<Anbar> allowedWarehouses;
 
     public Istifadeci() {}
 
@@ -69,4 +87,10 @@ public class Istifadeci {
 
     public boolean isIcazeHesabat() { return icazeHesabat; }
     public void setIcazeHesabat(boolean icazeHesabat) { this.icazeHesabat = icazeHesabat; }
+
+    public List<Layihe> getAllowedProjects() { return allowedProjects; }
+    public void setAllowedProjects(List<Layihe> allowedProjects) { this.allowedProjects = allowedProjects; }
+
+    public List<Anbar> getAllowedWarehouses() { return allowedWarehouses; }
+    public void setAllowedWarehouses(List<Anbar> allowedWarehouses) { this.allowedWarehouses = allowedWarehouses; }
 }

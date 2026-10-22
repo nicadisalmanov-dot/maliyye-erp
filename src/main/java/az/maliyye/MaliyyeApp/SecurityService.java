@@ -13,6 +13,16 @@ public class SecurityService {
         return repo.findByUsername(username);
     }
 
+    // Dashboard (Ana səhifə) icazəsi
+    public boolean hasDashboard(String username) {
+        Istifadeci u = getIstifadeci(username);
+        if (u == null) return false;
+        // Əgər Admin-dirsə və ya hər hansı bir bölməyə icazəsi varsa, Dashboard-u görə bilər
+        return u.getRol().equals("ROLE_ADMIN") ||
+                u.isIcazeKassa() || u.isIcazeBank() || u.isIcazeKontragent() ||
+                u.isIcazeAnbar() || u.isIcazeSatis() || u.isIcazeSatinalma() || u.isIcazeHesabat();
+    }
+
     public boolean hasKassa(String username) {
         Istifadeci u = getIstifadeci(username);
         return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeKassa());

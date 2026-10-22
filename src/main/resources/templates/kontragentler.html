@@ -37,15 +37,23 @@
 
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
-    <a href="/">🏠 Dashboard</a>
-    <a href="/kassa">💵 Kassa</a>
-    <a href="/bank">🏦 Bank</a>
-    <a href="/kontragentler"class="aktiv">👥 Kontragentlər</a>
-    <a href="/hesabat">📊 Hesabat</a>
-    <a href="/anbar" >📦 Anbar Əməliyyatları</a>
-    <a href="/satis">💼 Satış</a>
-    <a href="/satinalma">🛒 Satınalma</a>
-    <a href="/istifadeciler">👥 İstifadəçilər</a>
+
+    <!-- Dashboard YALNIZ icazəsi olanlar üçün görünür -->
+    <a href="/" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasDashboard(authentication.name)}">🏠 Dashboard</a>
+
+    <a href="/kassa" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasKassa(authentication.name)}">💵 Kassa</a>
+    <a href="/bank" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasBank(authentication.name)}">🏦 Bank</a>
+    <a href="/kontragentler" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasKontragent(authentication.name)}"class="aktiv">👥 Kontragentlər</a>
+    <a href="/hesabat" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasHesabat(authentication.name)}">📊 Hesabat</a>
+
+    <!-- Anbar linki -->
+    <a href="/anbar" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasAnbar(authentication.name)}">📦 Anbar Əməliyyatları</a>
+
+    <a href="/satis" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasSatis(authentication.name)}">💼 Satış</a>
+    <a href="/satinalma" th:if="${#authorization.expression('hasRole(''ADMIN'')') or @securityService.hasSatinalma(authentication.name)}">🛒 Satınalma</a>
+
+    <!-- İstifadəçi idarəetməsi yalnız Admin üçün -->
+    <a href="/istifadeciler" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">👥 İstifadəçilər</a>
 </div>
 
 </div>

@@ -37,6 +37,7 @@
         .icaze-qutusu { display: flex; flex-wrap: wrap; gap: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; width: 100%; }
         .icaze-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
         .icaze-item input { width: 18px; height: 18px; cursor: pointer; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; background: #e3f2fd; color: #1565c0; margin-right: 5px; display: inline-block; margin-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -45,26 +46,29 @@
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
     <a href="/">🏠 Dashboard</a>
-    <a href="/kassa">💵 Kassa</a>
-    <a href="/bank">🏦 Bank</a>
-    <a href="/kontragentler">👥 Kontragentlər</a>
-    <a href="/hesabat">📊 Hesabat</a>
-    <a href="/anbar" >📦 Anbar Əməliyyatları</a>
-    <a href="/satis">💼 Satış</a>
-    <a href="/satinalma">🛒 Satınalma</a>
-    <a href="/istifadeciler"class="aktiv">👥 İstifadəçilər</a>
+
+    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+    <a href="/anbar" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+
+    <a href="/istifadeciler" class="aktiv" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
 </div>
 
 <!-- Əsas Hissə -->
 <div class="esas">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>👥 İstifadəçi İdarəetməsi</h1>
-        <span style="font-weight: bold; color: #0f4c81;">👤 <span sec:authentication="name">Admin</span></span>
     </div>
 
     <div class="kart">
         <h3>➕ Yeni İstifadəçi Əlavə Et</h3>
         <form action="/istifadeciler/elave-et" method="post" style="display: flex; flex-direction: column; align-items: stretch;">
+
+            <!-- Əsas Məlumatlar -->
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                 <input type="text" name="username" placeholder="İstifadəçi adı" required>
                 <input type="password" name="password" placeholder="Şifrə" required>
@@ -75,8 +79,8 @@
                 </select>
             </div>
 
-            <!-- İcazələr -->
-            <div class="icaze-qutusu">
+            <!-- Modul İcazələri -->
+            <div class="icaze-qutusu" style="margin-bottom: 10px;">
                 <label class="icaze-item"><input type="checkbox" name="kassa"> Kassa</label>
                 <label class="icaze-item"><input type="checkbox" name="bank"> Bank</label>
                 <label class="icaze-item"><input type="checkbox" name="kontragent"> Kontragentlər</label>
@@ -86,10 +90,29 @@
                 <label class="icaze-item"><input type="checkbox" name="hesabat"> Hesabat</label>
             </div>
 
-            <button type="submit" style="margin-top: 15px; width: 200px;">İstifadəçini Yarat</button>
+            <!-- YENİ: Layihə və Anbar İcazələri -->
+            <div class="icaze-qutusu" style="background: #e3f2fd; margin-bottom: 10px; flex-direction: column;">
+                <div style="width: 100%;">
+                    <strong>Layihələr (Data Scope):</strong><br>
+                    <label th:each="l : ${layiheler}" style="margin-right: 15px; font-weight: normal;">
+                        <input type="checkbox" name="layiheler" th:value="${l.id}"> <span th:text="${l.ad}"></span>
+                    </label>
+                    <span th:if="${#lists.isEmpty(layiheler)}" style="color:#999;">Hələ layihə yoxdur</span>
+                </div>
+                <div style="width: 100%; margin-top: 10px;">
+                    <strong>Anbarlar:</strong><br>
+                    <label th:each="a : ${anbarlar}" style="margin-right: 15px; font-weight: normal;">
+                        <input type="checkbox" name="anbarlar" th:value="${a.id}"> <span th:text="${a.ad}"></span>
+                    </label>
+                    <span th:if="${#lists.isEmpty(anbarlar)}" style="color:#999;">Hələ anbar yoxdur</span>
+                </div>
+            </div>
+
+            <button type="submit" style="margin-top: 10px; width: 200px;">İstifadəçini Yarat</button>
         </form>
     </div>
 
+    <!-- İstifadəçi Siyahısı -->
     <div class="kart">
         <h3>📋 İstifadəçi Siyahısı</h3>
         <table>
@@ -98,7 +121,7 @@
                 <th>Ad</th>
                 <th>İstifadəçi adı</th>
                 <th>Rol</th>
-                <th>İcazələr</th>
+                <th>İcazələr və Məlumat Sərhədləri</th>
                 <th></th>
             </tr>
             </thead>
@@ -108,13 +131,30 @@
                 <td th:text="${i.username}">Username</td>
                 <td th:text="${i.rol}">Rol</td>
                 <td style="font-size: 12px; color: #555;">
-                    <span th:if="${i.icazeKassa}">Kassa, </span>
-                    <span th:if="${i.icazeBank}">Bank, </span>
-                    <span th:if="${i.icazeKontragent}">Kontragent, </span>
-                    <span th:if="${i.icazeAnbar}">Anbar, </span>
-                    <span th:if="${i.icazeSatis}">Satış, </span>
-                    <span th:if="${i.icazeSatinalma}">Satınalma, </span>
-                    <span th:if="${i.icazeHesabat}">Hesabat</span>
+                    <!-- Modul icazələri -->
+                    <span class="badge" th:if="${i.icazeKassa}">Kassa</span>
+                    <span class="badge" th:if="${i.icazeBank}">Bank</span>
+                    <span class="badge" th:if="${i.icazeKontragent}">Kontragent</span>
+                    <span class="badge" th:if="${i.icazeAnbar}">Anbar</span>
+                    <span class="badge" th:if="${i.icazeSatis}">Satış</span>
+                    <span class="badge" th:if="${i.icazeSatinalma}">Satınalma</span>
+                    <span class="badge" th:if="${i.icazeHesabat}">Hesabat</span>
+
+                    <div style="margin-top: 5px;"></div>
+
+                    <!-- Layihə və Anbar məhdudiyyətləri -->
+                    <div th:if="${i.allowedProjects != null and !i.allowedProjects.isEmpty()}" style="margin-top: 5px;">
+                        <strong style="color: #0f4c81;">Layihələr:</strong>
+                        <span th:each="p, iter : ${i.allowedProjects}">
+                                    <span th:text="${p.ad}"></span><span th:if="${!iter.last}">, </span>
+                                </span>
+                    </div>
+                    <div th:if="${i.allowedWarehouses != null and !i.allowedWarehouses.isEmpty()}" style="margin-top: 3px;">
+                        <strong style="color: #0f4c81;">Anbarlar:</strong>
+                        <span th:each="w, iter : ${i.allowedWarehouses}">
+                                    <span th:text="${w.ad}"></span><span th:if="${!iter.last}">, </span>
+                                </span>
+                    </div>
                 </td>
                 <td style="text-align: right;">
                     <form th:action="@{/istifadeciler/sil/{id}(id=${i.id})}" method="post" style="display:inline;">

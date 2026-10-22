@@ -31,7 +31,7 @@ public class SecurityConfig {
                 throw new UsernameNotFoundException("İstifadəçi tapılmadı: " + username);
             }
 
-            // Bazada "ROLE_ADMIN" yazılıb. Onu birbaşa Authority kimi qəbul edirik.
+            // Bazada "ROLE_ADMIN" və ya "ROLE_USER" yazılıb. Onu birbaşa Authority kimi qəbul edirik.
             return new User(
                     istifadeci.getUsername(),
                     istifadeci.getPassword(),
@@ -43,15 +43,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // BURADA CSRF QORUMASINI SÖNDÜRÜRÜK (Formların işləməsi üçün)
+                // CSRF qorumasını söndürürük (Formların işləməsi üçün)
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/login").permitAll()
 
-                        // Yalnız ROLE_ADMIN rolu olanlar bura girə bilər
+                        // İstifadəçi idarəetməsi yalnız ADMIN üçündür
                         .requestMatchers("/istifadeciler/**").hasAuthority("ROLE_ADMIN")
 
+                        // Ana səhifəyə (Dashboard) giriş üçün ən azı bir rol lazımdır
+                        .requestMatchers("/").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+
+                        // Digər bütün səhifələr üçün giriş tələb olunur
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
