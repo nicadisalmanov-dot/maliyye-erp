@@ -11,7 +11,7 @@ public class Mehsul {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, unique = true, length = 150)
     private String ad;
 
     @ManyToOne

@@ -23,7 +23,6 @@ public class AlisQaimesiController {
     @Autowired private KontragentRepository kontragentRepo;
     @Autowired private MehsulRepository mehsulRepo;
 
-    // 1. Əsas səhifə (Aktiv qaimələr - istifadəçiyə görə filtrli)
     @GetMapping
     public String alisSehife(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -37,7 +36,6 @@ public class AlisQaimesiController {
         return "alis-qaimesi";
     }
 
-    // 2. Yeni qaimə yaratmaq
     @PostMapping("/elave-et")
     public String alisEt(@RequestParam String tarix,
                          @RequestParam Long anbarId,
@@ -63,7 +61,6 @@ public class AlisQaimesiController {
         return "redirect:/anbar/alish";
     }
 
-    // 3. Redaktə səhifəsini göstər
     @GetMapping("/redakte/{id}")
     public String redakteSehife(@PathVariable Long id, Model model) {
         AlisQaimesi qaime = alisQaimesiRepo.findById(id).orElseThrow();
@@ -75,7 +72,6 @@ public class AlisQaimesiController {
         return "alis-qaimesi-redakte";
     }
 
-    // 4. Redaktəni yadda saxla
     @PostMapping("/redakte/{id}")
     public String redakteEt(@PathVariable Long id,
                             @RequestParam String tarix,
@@ -102,7 +98,6 @@ public class AlisQaimesiController {
         return "redirect:/anbar/alish";
     }
 
-    // 5. Arxiv səhifəsi
     @GetMapping("/arxiv")
     public String arxivSehife(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -111,7 +106,6 @@ public class AlisQaimesiController {
         return "alis-qaimesi-arxiv";
     }
 
-    // 6. Silmə (Arxivə köçürmə)
     @PostMapping("/sil/{id}")
     public String qaimeSil(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

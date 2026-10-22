@@ -28,7 +28,6 @@ public class AlisQaimesi {
     @JoinColumn(name = "kontragent_id", nullable = false)
     private Kontragent kontragent;
 
-    // YENİ: Qaiməni yaradan istifadəçi
     @ManyToOne
     @JoinColumn(name = "yaradan_istifadeci_id")
     private Istifadeci yaradanIstifadeci;
@@ -59,38 +58,26 @@ public class AlisQaimesi {
     // Getterlər və Setterlər
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public String getSenedNomresi() { return senedNomresi; }
     public void setSenedNomresi(String senedNomresi) { this.senedNomresi = senedNomresi; }
-
     public LocalDate getTarix() { return tarix; }
     public void setTarix(LocalDate tarix) { this.tarix = tarix; }
-
     public Anbar getAnbar() { return anbar; }
     public void setAnbar(Anbar anbar) { this.anbar = anbar; }
-
     public Kontragent getKontragent() { return kontragent; }
     public void setKontragent(Kontragent kontragent) { this.kontragent = kontragent; }
-
-    // YENİ: Getter və Setter
     public Istifadeci getYaradanIstifadeci() { return yaradanIstifadeci; }
     public void setYaradanIstifadeci(Istifadeci yaradanIstifadeci) { this.yaradanIstifadeci = yaradanIstifadeci; }
-
     public BigDecimal getUmumiMebleg() { return umumiMebleg; }
     public void setUmumiMebleg(BigDecimal umumiMebleg) { this.umumiMebleg = umumiMebleg; }
-
     public List<AlisQaimesiSetri> getSetirler() { return setirler; }
     public void setSetirler(List<AlisQaimesiSetri> setirler) { this.setirler = setirler; }
-
     public LocalDateTime getYaradilmaTarixi() { return yaradilmaTarixi; }
     public void setYaradilmaTarixi(LocalDateTime yaradilmaTarixi) { this.yaradilmaTarixi = yaradilmaTarixi; }
-
     public LocalDateTime getDuzelisTarixi() { return duzelisTarixi; }
     public void setDuzelisTarixi(LocalDateTime duzelisTarixi) { this.duzelisTarixi = duzelisTarixi; }
-
     public Boolean getSilinib() { return silinib; }
     public void setSilinib(Boolean silinib) { this.silinib = silinib; }
-
     public LocalDateTime getSilinmeTarixi() { return silinmeTarixi; }
     public void setSilinmeTarixi(LocalDateTime silinmeTarixi) { this.silinmeTarixi = silinmeTarixi; }
 }
