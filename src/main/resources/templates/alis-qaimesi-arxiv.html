@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Arxiv - Alış Qaimələri</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 25px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; background: #ffebee; color: #c62828; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+        .geri-btn:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
+</div>
+<div class="esas">
+    <a href="/anbar/alish" class="geri-btn">← Geri Qayıt</a>
+    <h1>🗑️ Arxiv (Silinmiş Alış Qaimələri)</h1>
+    <div class="kart">
+        <table>
+            <thead>
+            <tr>
+                <th>Sənəd №</th>
+                <th>Yaradan</th>
+                <th>Tarix</th>
+                <th>Anbar</th>
+                <th>Kontragent</th>
+                <th>Məbləğ</th>
+                <th>Silinmə Tarixi</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="q : ${qaimeler}">
+                <td th:text="${q.senedNomresi}" style="font-weight:bold;">AL-001</td>
+                <td>
+                    <span th:if="${q.yaradanIstifadeci != null}" th:text="${q.yaradanIstifadeci.ad}" style="font-weight:bold; color:#0f4c81;">-</span>
+                    <span th:if="${q.yaradanIstifadeci == null}" style="color:#999;">Sistem</span>
+                </td>
+                <td th:text="${q.tarix}">2026-01-01</td>
+                <td th:text="${q.anbar.ad}">Anbar</td>
+                <td th:text="${q.kontragent.ad}">Kontragent</td>
+                <td th:text="${q.umumiMebleg} + ' ₼'" style="font-weight:bold; color:#c62828;">0 ₼</td>
+                <td th:text="${#temporals.format(q.silinmeTarixi, 'dd.MM.yyyy HH:mm')}">-</td>
+                <td><span class="badge">Silinib</span></td>
+            </tr>
+            <tr th:if="${qaimeler.isEmpty()}"><td colspan="8" style="text-align:center; color:#999;">Arxivdə heç bir qaimə yoxdur.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
