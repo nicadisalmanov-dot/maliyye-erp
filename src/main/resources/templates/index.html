@@ -32,7 +32,6 @@
         .stat-card { padding: 20px; border-radius: 8px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .stat-card h3 { font-size: 13px; font-weight: normal; margin-bottom: 10px; opacity: 0.9; }
         .stat-card p { font-size: 24px; font-weight: bold; }
-        .stat-card small { font-size: 11px; opacity: 0.8; display: block; margin-top: 5px; }
 
         .bg-blue { background: #1976d2; }
         .bg-green { background: #2e7d32; }
@@ -181,19 +180,17 @@
     </div>
 </div>
 
-<script th:inline="javascript">
+<script>
     document.addEventListener('DOMContentLoaded', function() {
-        const gelirData = /*[[${ayligGelir}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
-        const xercData = /*[[${ayligXerc}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
-
+        // Chart.js qrafikləri (statik məlumatla)
         const ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
             type: 'bar',
             data: {
                 labels: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'],
                 datasets: [
-                    { label: 'Gəlir', data: gelirData, backgroundColor: '#1976d2', borderRadius: 4 },
-                    { label: 'Xərc', data: xercData, backgroundColor: '#f57c00', borderRadius: 4 }
+                    { label: 'Gəlir', data: [0,0,0,0,0,0,0,0,0,0,0,0], backgroundColor: '#1976d2', borderRadius: 4 },
+                    { label: 'Xərc', data: [0,0,0,0,0,0,0,0,0,0,0,0], backgroundColor: '#f57c00', borderRadius: 4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
