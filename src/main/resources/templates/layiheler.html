@@ -83,6 +83,8 @@
         <tr th:each="l : ${layiheler}">
           <td th:text="${l.ad}" style="font-weight: bold;">Layihə</td>
           <td style="text-align: right;">
+            <!-- Redaktə linki -->
+            <a th:href="@{/layiheler/layihe-redakte/{id}(id=${l.id})}" style="background: #f57c00; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; font-size: 12px; margin-right: 5px;">Redaktə</a>
             <form th:action="@{/layiheler/layihe-sil/{id}(id=${l.id})}" method="post" style="display:inline;">
               <button type="submit" class="sil-btn">Sil</button>
             </form>
@@ -108,6 +110,7 @@
         <tr th:each="k : ${kassaHesablari}">
           <td th:text="${k.ad}" style="font-weight: bold;">Kassa</td>
           <td style="text-align: right;">
+            <a th:href="@{/layiheler/kassa-hesabi-redakte/{id}(id=${k.id})}" style="background: #f57c00; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; font-size: 12px; margin-right: 5px;">Redaktə</a>
             <form th:action="@{/layiheler/kassa-hesabi-sil/{id}(id=${k.id})}" method="post" style="display:inline;">
               <button type="submit" class="sil-btn">Sil</button>
             </form>
@@ -135,6 +138,7 @@
         <tr th:each="b : ${bankHesablari}">
           <td th:text="${b.ad}" style="font-weight: bold;">Bank</td>
           <td style="text-align: right;">
+            <a th:href="@{/layiheler/bank-hesabi-redakte/{id}(id=${b.id})}" style="background: #f57c00; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; font-size: 12px; margin-right: 5px;">Redaktə</a>
             <form th:action="@{/layiheler/bank-hesabi-sil/{id}(id=${b.id})}" method="post" style="display:inline;">
               <button type="submit" class="sil-btn">Sil</button>
             </form>
@@ -170,6 +174,7 @@
             <span class="badge" th:each="l : ${a.layiheler}" th:text="${l.ad}">L-01</span>
           </td>
           <td style="text-align: right;">
+            <a th:href="@{/layiheler/anbar-redakte/{id}(id=${a.id})}" style="background: #f57c00; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; font-size: 12px; margin-right: 5px;">Redaktə</a>
             <form th:action="@{/layiheler/anbar-sil/{id}(id=${a.id})}" method="post" style="display:inline;">
               <button type="submit" class="sil-btn">Sil</button>
             </form>

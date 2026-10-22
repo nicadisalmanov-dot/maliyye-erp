@@ -21,9 +21,9 @@ public class Istifadeci {
     private String ad;
 
     @Column(nullable = false)
-    private String rol; // "ROLE_ADMIN" və ya "ROLE_USER"
+    private String rol;
 
-    // --- KÖHNƏ İCAZƏLƏR (Menyu görünüşü üçün) ---
+    // --- Modul İcazələri ---
     private boolean icazeKassa = false;
     private boolean icazeBank = false;
     private boolean icazeKontragent = false;
@@ -32,7 +32,7 @@ public class Istifadeci {
     private boolean icazeSatinalma = false;
     private boolean icazeHesabat = false;
 
-    // --- YENİ: LAYİHƏ VƏ ANBAR İCAZƏLƏRİ (Data-Level Security) ---
+    // --- Layihə və Anbar İcazələri ---
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_projects",
@@ -48,6 +48,23 @@ public class Istifadeci {
             inverseJoinColumns = @JoinColumn(name = "warehouse_id")
     )
     private List<Anbar> allowedWarehouses;
+
+    // --- Kassa və Bank Hesab İcazələri ---
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_kassa_hesablari",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "kassa_hesabi_id")
+    )
+    private List<KassaHesabi> allowedKassaHesablari;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_bank_hesablari",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "bank_hesabi_id")
+    )
+    private List<BankHesabi> allowedBankHesablari;
 
     public Istifadeci() {}
 
@@ -93,4 +110,10 @@ public class Istifadeci {
 
     public List<Anbar> getAllowedWarehouses() { return allowedWarehouses; }
     public void setAllowedWarehouses(List<Anbar> allowedWarehouses) { this.allowedWarehouses = allowedWarehouses; }
+
+    public List<KassaHesabi> getAllowedKassaHesablari() { return allowedKassaHesablari; }
+    public void setAllowedKassaHesablari(List<KassaHesabi> allowedKassaHesablari) { this.allowedKassaHesablari = allowedKassaHesablari; }
+
+    public List<BankHesabi> getAllowedBankHesablari() { return allowedBankHesablari; }
+    public void setAllowedBankHesablari(List<BankHesabi> allowedBankHesablari) { this.allowedBankHesablari = allowedBankHesablari; }
 }

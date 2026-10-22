@@ -59,7 +59,6 @@
         <input type="text" th:value="${istifadeci.username}" disabled style="background:#eee;">
         <input type="text" name="ad" th:value="${istifadeci.ad}" placeholder="Ad, Soyad" required>
         <select name="rol">
-          <!-- Rolun başındaki ROLE_ hissəsini çıxarıb göstəririk -->
           <option value="USER" th:selected="${istifadeci.rol == 'ROLE_USER'}">İstifadəçi (USER)</option>
           <option value="ADMIN" th:selected="${istifadeci.rol == 'ROLE_ADMIN'}">Admin (ADMIN)</option>
         </select>
@@ -76,7 +75,7 @@
         <label class="icaze-item"><input type="checkbox" name="hesabat" th:checked="${istifadeci.icazeHesabat}"> Hesabat</label>
       </div>
 
-      <!-- Layihə və Anbar İcazələri -->
+      <!-- Layihə, Anbar, Kassa və Bank İcazələri -->
       <div class="icaze-qutusu" style="background: #e3f2fd; margin-bottom: 10px; flex-direction: column;">
         <div style="width: 100%;">
           <strong>Layihələr (Data Scope):</strong><br>
@@ -86,12 +85,31 @@
             <span th:text="${l.ad}"></span>
           </label>
         </div>
+
         <div style="width: 100%; margin-top: 10px;">
           <strong>Anbarlar:</strong><br>
           <label th:each="a : ${anbarlar}" style="margin-right: 15px; font-weight: normal;">
             <input type="checkbox" name="anbarlar" th:value="${a.id}"
                    th:checked="${istifadeci.allowedWarehouses != null and istifadeci.allowedWarehouses.contains(a)}">
             <span th:text="${a.ad}"></span>
+          </label>
+        </div>
+
+        <div style="width: 100%; margin-top: 10px;">
+          <strong>Kassa Hesabları:</strong><br>
+          <label th:each="k : ${kassaHesablari}" style="margin-right: 15px; font-weight: normal;">
+            <input type="checkbox" name="kassaHesablari" th:value="${k.id}"
+                   th:checked="${istifadeci.allowedKassaHesablari != null and istifadeci.allowedKassaHesablari.contains(k)}">
+            <span th:text="${k.ad}"></span>
+          </label>
+        </div>
+
+        <div style="width: 100%; margin-top: 10px;">
+          <strong>Bank Hesabları:</strong><br>
+          <label th:each="b : ${bankHesablari}" style="margin-right: 15px; font-weight: normal;">
+            <input type="checkbox" name="bankHesablari" th:value="${b.id}"
+                   th:checked="${istifadeci.allowedBankHesablari != null and istifadeci.allowedBankHesablari.contains(b)}">
+            <span th:text="${b.ad}"></span>
           </label>
         </div>
       </div>

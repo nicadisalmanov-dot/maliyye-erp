@@ -12,24 +12,20 @@ import java.util.List;
 @RequestMapping("/istifadeciler")
 public class IstifadeciController {
 
-    @Autowired
-    private IstifadeciRepository repo;
-
-    @Autowired
-    private LayiheRepository layiheRepo;
-
-    @Autowired
-    private AnbarRepository anbarRepo;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Autowired private IstifadeciRepository repo;
+    @Autowired private LayiheRepository layiheRepo;
+    @Autowired private AnbarRepository anbarRepo;
+    @Autowired private KassaHesabiRepository kassaHesabiRepo;
+    @Autowired private BankHesabiRepository bankHesabiRepo;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String istifadeciSehife(Model model) {
         model.addAttribute("istifadeciler", repo.findAll());
-        // Layihə və Anbarları HTML-ə göndəririk
         model.addAttribute("layiheler", layiheRepo.findAll());
         model.addAttribute("anbarlar", anbarRepo.findAll());
+        model.addAttribute("kassaHesablari", kassaHesabiRepo.findAll());
+        model.addAttribute("bankHesablari", bankHesabiRepo.findAll());
         return "istifadeciler";
     }
 
@@ -46,7 +42,9 @@ public class IstifadeciController {
                           @RequestParam(required = false) Boolean satinalma,
                           @RequestParam(required = false) Boolean hesabat,
                           @RequestParam(required = false) List<Long> layiheler,
-                          @RequestParam(required = false) List<Long> anbarlar) {
+                          @RequestParam(required = false) List<Long> anbarlar,
+                          @RequestParam(required = false) List<Long> kassaHesablari,
+                          @RequestParam(required = false) List<Long> bankHesablari) {
 
         Istifadeci yeni = new Istifadeci();
         yeni.setUsername(username);
@@ -62,28 +60,26 @@ public class IstifadeciController {
         yeni.setIcazeSatinalma(satinalma != null);
         yeni.setIcazeHesabat(hesabat != null);
 
-        // Seçilmiş Layihələri və Anbarları əlavə edirik
-        if (layiheler != null) {
-            yeni.setAllowedProjects(layiheRepo.findAllById(layiheler));
-        }
-        if (anbarlar != null) {
-            yeni.setAllowedWarehouses(anbarRepo.findAllById(anbarlar));
-        }
+        if (layiheler != null) yeni.setAllowedProjects(layiheRepo.findAllById(layiheler));
+        if (anbarlar != null) yeni.setAllowedWarehouses(anbarRepo.findAllById(anbarlar));
+        if (kassaHesablari != null) yeni.setAllowedKassaHesablari(kassaHesabiRepo.findAllById(kassaHesablari));
+        if (bankHesablari != null) yeni.setAllowedBankHesablari(bankHesabiRepo.findAllById(bankHesablari));
 
         repo.save(yeni);
         return "redirect:/istifadeciler";
     }
-    // Redaktə səhifəsini göstər
+
     @GetMapping("/redakte/{id}")
     public String redakteSehife(@PathVariable Long id, Model model) {
         Istifadeci istifadeci = repo.findById(id).orElseThrow();
         model.addAttribute("istifadeci", istifadeci);
         model.addAttribute("layiheler", layiheRepo.findAll());
         model.addAttribute("anbarlar", anbarRepo.findAll());
+        model.addAttribute("kassaHesablari", kassaHesabiRepo.findAll());
+        model.addAttribute("bankHesablari", bankHesabiRepo.findAll());
         return "istifadeci-redakte";
     }
 
-    // Redaktəni yadda saxla
     @PostMapping("/redakte/{id}")
     public String redakteEt(@PathVariable Long id,
                             @RequestParam String ad,
@@ -96,7 +92,9 @@ public class IstifadeciController {
                             @RequestParam(required = false) Boolean satinalma,
                             @RequestParam(required = false) Boolean hesabat,
                             @RequestParam(required = false) List<Long> layiheler,
-                            @RequestParam(required = false) List<Long> anbarlar) {
+                            @RequestParam(required = false) List<Long> anbarlar,
+                            @RequestParam(required = false) List<Long> kassaHesablari,
+                            @RequestParam(required = false) List<Long> bankHesablari) {
 
         Istifadeci istifadeci = repo.findById(id).orElseThrow();
         istifadeci.setAd(ad);
@@ -110,21 +108,15 @@ public class IstifadeciController {
         istifadeci.setIcazeSatinalma(satinalma != null);
         istifadeci.setIcazeHesabat(hesabat != null);
 
-        if (layiheler != null) {
-            istifadeci.setAllowedProjects(layiheRepo.findAllById(layiheler));
-        } else {
-            istifadeci.setAllowedProjects(null);
-        }
-
-        if (anbarlar != null) {
-            istifadeci.setAllowedWarehouses(anbarRepo.findAllById(anbarlar));
-        } else {
-            istifadeci.setAllowedWarehouses(null);
-        }
+        istifadeci.setAllowedProjects(layiheler != null ? layiheRepo.findAllById(layiheler) : null);
+        istifadeci.setAllowedWarehouses(anbarlar != null ? anbarRepo.findAllById(anbarlar) : null);
+        istifadeci.setAllowedKassaHesablari(kassaHesablari != null ? kassaHesabiRepo.findAllById(kassaHesablari) : null);
+        istifadeci.setAllowedBankHesablari(bankHesablari != null ? bankHesabiRepo.findAllById(bankHesablari) : null);
 
         repo.save(istifadeci);
         return "redirect:/istifadeciler";
     }
+
     @PostMapping("/sil/{id}")
     public String sil(@PathVariable Long id) {
         repo.deleteById(id);

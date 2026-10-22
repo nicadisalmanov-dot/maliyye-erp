@@ -28,6 +28,11 @@ public class AnbarService {
         qrupRepository.deleteById(id);
     }
 
+    // YENİ: Müəyyən bir qrupda olan məhsulların sayı (silmə qoruması üçün)
+    public long qrupdaMehsulSayi(Long qrupId) {
+        return mehsulRepository.countByQrup_Id(qrupId);
+    }
+
     // --- Məhsullar ---
     public List<Mehsul> butunMehsullar() {
         return mehsulRepository.findAll();
@@ -37,7 +42,6 @@ public class AnbarService {
         MehsulQrupu qrup = qrupRepository.findById(qrupId).orElseThrow();
         Mehsul yeni = new Mehsul(ad, qrup, alisQiymeti, satisQiymeti, miqdar);
         return mehsulRepository.save(yeni);
-
     }
 
     public void mehsulSil(Long id) {

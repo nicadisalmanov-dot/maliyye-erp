@@ -24,6 +24,7 @@ public class Anbar {
     private List<Layihe> layiheler;
 
     public Anbar() {}
+
     public Anbar(String ad) {
         this.ad = ad;
     }

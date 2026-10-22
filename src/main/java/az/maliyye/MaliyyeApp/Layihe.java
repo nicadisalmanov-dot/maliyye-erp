@@ -15,7 +15,6 @@ public class Layihe {
     private String ad;
 
     // Anbarlarla əks əlaqə (Many-to-Many)
-    // Bu, Spring-ə deyir ki, "əgər Layihə silinirsə, onun Anbarlarla olan əlaqəsini də bil"
     @ManyToMany(mappedBy = "layiheler")
     private List<Anbar> anbarlar;
 
@@ -25,7 +24,6 @@ public class Layihe {
         this.ad = ad;
     }
 
-    // Getterlər və Setterlər
     public Long getId() {
         return id;
     }

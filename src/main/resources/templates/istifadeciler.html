@@ -101,14 +101,26 @@
                     <label th:each="l : ${layiheler}" style="margin-right: 15px; font-weight: normal;">
                         <input type="checkbox" name="layiheler" th:value="${l.id}"> <span th:text="${l.ad}"></span>
                     </label>
-                    <span th:if="${#lists.isEmpty(layiheler)}" style="color:#999;">Hələ layihə yoxdur</span>
                 </div>
                 <div style="width: 100%; margin-top: 10px;">
                     <strong>Anbarlar:</strong><br>
                     <label th:each="a : ${anbarlar}" style="margin-right: 15px; font-weight: normal;">
                         <input type="checkbox" name="anbarlar" th:value="${a.id}"> <span th:text="${a.ad}"></span>
                     </label>
-                    <span th:if="${#lists.isEmpty(anbarlar)}" style="color:#999;">Hələ anbar yoxdur</span>
+                </div>
+                <!-- YENİ: Kassa Hesabları -->
+                <div style="width: 100%; margin-top: 10px;">
+                    <strong>Kassa Hesabları:</strong><br>
+                    <label th:each="k : ${kassaHesablari}" style="margin-right: 15px; font-weight: normal;">
+                        <input type="checkbox" name="kassaHesablari" th:value="${k.id}"> <span th:text="${k.ad}"></span>
+                    </label>
+                </div>
+                <!-- YENİ: Bank Hesabları -->
+                <div style="width: 100%; margin-top: 10px;">
+                    <strong>Bank Hesabları:</strong><br>
+                    <label th:each="b : ${bankHesablari}" style="margin-right: 15px; font-weight: normal;">
+                        <input type="checkbox" name="bankHesablari" th:value="${b.id}"> <span th:text="${b.ad}"></span>
+                    </label>
                 </div>
             </div>
 
@@ -146,17 +158,35 @@
 
                     <div style="margin-top: 5px;"></div>
 
-                    <!-- Layihə və Anbar məhdudiyyətləri -->
+                    <!-- Layihələr -->
                     <div th:if="${i.allowedProjects != null and !i.allowedProjects.isEmpty()}" style="margin-top: 5px;">
                         <strong style="color: #0f4c81;">Layihələr:</strong>
                         <span th:each="p, iter : ${i.allowedProjects}">
                                     <span th:text="${p.ad}"></span><span th:if="${!iter.last}">, </span>
                                 </span>
                     </div>
+
+                    <!-- Anbarlar -->
                     <div th:if="${i.allowedWarehouses != null and !i.allowedWarehouses.isEmpty()}" style="margin-top: 3px;">
                         <strong style="color: #0f4c81;">Anbarlar:</strong>
                         <span th:each="w, iter : ${i.allowedWarehouses}">
                                     <span th:text="${w.ad}"></span><span th:if="${!iter.last}">, </span>
+                                </span>
+                    </div>
+
+                    <!-- YENİ: Kassa Hesabları -->
+                    <div th:if="${i.allowedKassaHesablari != null and !i.allowedKassaHesablari.isEmpty()}" style="margin-top: 3px;">
+                        <strong style="color: #0f4c81;">Kassa Hesabları:</strong>
+                        <span th:each="k, iter : ${i.allowedKassaHesablari}">
+                                    <span th:text="${k.ad}"></span><span th:if="${!iter.last}">, </span>
+                                </span>
+                    </div>
+
+                    <!-- YENİ: Bank Hesabları -->
+                    <div th:if="${i.allowedBankHesablari != null and !i.allowedBankHesablari.isEmpty()}" style="margin-top: 3px;">
+                        <strong style="color: #0f4c81;">Bank Hesabları:</strong>
+                        <span th:each="b, iter : ${i.allowedBankHesablari}">
+                                    <span th:text="${b.ad}"></span><span th:if="${!iter.last}">, </span>
                                 </span>
                     </div>
                 </td>

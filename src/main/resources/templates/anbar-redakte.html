@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Anbar Redaktə</title></head>
+<body style="font-family: Arial; padding: 50px; text-align: center;">
+<h2>Anbarı Redaktə Et</h2>
+<form th:action="@{/layiheler/anbar-redakte/{id}(id=${anbar.id})}" method="post">
+  <input type="text" name="ad" th:value="${anbar.ad}" required style="padding: 10px; width: 300px; margin-bottom: 10px;"><br>
+
+  <strong>Hansı layihələrə xidmət edir?</strong><br>
+  <label th:each="l : ${layiheler}" style="margin-right: 15px;">
+    <input type="checkbox" name="layiheler" th:value="${l.id}"
+           th:checked="${anbar.layiheler != null and anbar.layiheler.contains(l)}"> <span th:text="${l.ad}"></span>
+  </label><br><br>
+
+  <button type="submit" style="padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer;">Yadda Saxla</button>
+  <a href="/layiheler" style="margin-left: 10px; text-decoration: none; color: #666;">Ləğv et</a>
+</form>
+</body>
+</html>
