@@ -15,29 +15,50 @@
 
         /* Əsas Hissə */
         .esas { margin-left: 220px; flex: 1; padding: 30px; }
-        h1 { color: #0f4c81; margin-bottom: 20px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; font-size: 24px; }
 
-        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        h3 { margin-bottom: 20px; color: #333; border-bottom: 2px solid #f0f2f5; padding-bottom: 15px; font-size: 18px; }
 
-        form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
-        input, select { flex: 1; min-width: 130px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
-        input:focus, select:focus { outline: none; border-color: #1976d2; }
-        button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #1565c0; }
+        /* Form Dizaynı */
+        .form-satir { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: 0.2s; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; box-shadow: 0 0 0 3px rgba(25,118,210,0.1); }
 
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
-        th { background: #fafafa; font-size: 13px; color: #666; text-transform: uppercase; }
+        /* İcazə Qutuları (Grid) */
+        .icaze-blok { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .icaze-blok h4 { color: #0f4c81; margin-bottom: 15px; font-size: 15px; }
 
-        .sil-btn { background: #c62828; padding: 6px 12px; font-size: 12px; }
-        .sil-btn:hover { background: #8e0000; }
-
-        /* İcazə qutuları */
-        .icaze-qutusu { display: flex; flex-wrap: wrap; gap: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; width: 100%; }
-        .icaze-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .icaze-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+        .icaze-item { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; padding: 5px; border-radius: 5px; }
+        .icaze-item:hover { background: #e3f2fd; }
         .icaze-item input { width: 18px; height: 18px; cursor: pointer; }
-        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; background: #e3f2fd; color: #1565c0; margin-right: 5px; display: inline-block; margin-bottom: 3px; }
+
+        /* Xüsusi Data Scope Qutusu */
+        .data-scope { background: #e3f2fd; border: 1px solid #bbdefb; }
+        .data-scope h4 { color: #1565c0; }
+
+        button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #1565c0; transform: translateY(-2px); }
+
+        /* Cədvəl Dizaynı */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: top; }
+        th { background: #f8f9fa; font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover { background: #fafafa; }
+
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; background: #e3f2fd; color: #1565c0; display: inline-block; margin-right: 5px; margin-bottom: 5px; }
+        .badge-yesil { background: #e8f5e9; color: #2e7d32; }
+        .badge-qirmizi { background: #ffebee; color: #c62828; }
+
+        .btn-kiçik { padding: 6px 12px; font-size: 12px; border-radius: 6px; text-decoration: none; color: white; display: inline-block; }
+        .btn-redakte { background: #f57c00; margin-right: 5px; }
+        .btn-redakte:hover { background: #e65100; }
+        .btn-sil { background: #c62828; border: none; cursor: pointer; }
+        .btn-sil:hover { background: #8e0000; }
+
+        .melumat-bloku { margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+        .melumat-bloku strong { color: #0f4c81; display: inline-block; min-width: 80px; }
     </style>
 </head>
 <body>
@@ -45,12 +66,8 @@
 <!-- Sol Menyu -->
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
-
     <a href="/">🏠 Dashboard</a>
-
-    <!-- Kassa aktivdir -->
-    <a href="/kassa"  sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
-
+    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
     <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
     <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
     <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
@@ -58,22 +75,20 @@
     <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
     <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
 
-    <a href="/istifadeciler" class="aktiv"sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a href="/istifadeciler" class="aktiv" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
     <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <!-- Əsas Hissə -->
 <div class="esas">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>👥 İstifadəçi İdarəetməsi</h1>
-    </div>
+    <h1>👥 İstifadəçi İdarəetməsi</h1>
 
     <div class="kart">
         <h3>➕ Yeni İstifadəçi Əlavə Et</h3>
-        <form action="/istifadeciler/elave-et" method="post" style="display: flex; flex-direction: column; align-items: stretch;">
+        <form action="/istifadeciler/elave-et" method="post">
 
             <!-- Əsas Məlumatlar -->
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div class="form-satir">
                 <input type="text" name="username" placeholder="İstifadəçi adı" required>
                 <input type="password" name="password" placeholder="Şifrə" required>
                 <input type="text" name="ad" placeholder="Ad, Soyad" required>
@@ -84,47 +99,61 @@
             </div>
 
             <!-- Modul İcazələri -->
-            <div class="icaze-qutusu" style="margin-bottom: 10px;">
-                <label class="icaze-item"><input type="checkbox" name="kassa"> Kassa</label>
-                <label class="icaze-item"><input type="checkbox" name="bank"> Bank</label>
-                <label class="icaze-item"><input type="checkbox" name="kontragent"> Kontragentlər</label>
-                <label class="icaze-item"><input type="checkbox" name="anbar"> Anbar</label>
-                <label class="icaze-item"><input type="checkbox" name="satis"> Satış</label>
-                <label class="icaze-item"><input type="checkbox" name="satinalma"> Satınalma</label>
-                <label class="icaze-item"><input type="checkbox" name="hesabat"> Hesabat</label>
-            </div>
-
-            <!-- YENİ: Layihə və Anbar İcazələri -->
-            <div class="icaze-qutusu" style="background: #e3f2fd; margin-bottom: 10px; flex-direction: column;">
-                <div style="width: 100%;">
-                    <strong>Layihələr (Data Scope):</strong><br>
-                    <label th:each="l : ${layiheler}" style="margin-right: 15px; font-weight: normal;">
-                        <input type="checkbox" name="layiheler" th:value="${l.id}"> <span th:text="${l.ad}"></span>
-                    </label>
-                </div>
-                <div style="width: 100%; margin-top: 10px;">
-                    <strong>Anbarlar:</strong><br>
-                    <label th:each="a : ${anbarlar}" style="margin-right: 15px; font-weight: normal;">
-                        <input type="checkbox" name="anbarlar" th:value="${a.id}"> <span th:text="${a.ad}"></span>
-                    </label>
-                </div>
-                <!-- YENİ: Kassa Hesabları -->
-                <div style="width: 100%; margin-top: 10px;">
-                    <strong>Kassa Hesabları:</strong><br>
-                    <label th:each="k : ${kassaHesablari}" style="margin-right: 15px; font-weight: normal;">
-                        <input type="checkbox" name="kassaHesablari" th:value="${k.id}"> <span th:text="${k.ad}"></span>
-                    </label>
-                </div>
-                <!-- YENİ: Bank Hesabları -->
-                <div style="width: 100%; margin-top: 10px;">
-                    <strong>Bank Hesabları:</strong><br>
-                    <label th:each="b : ${bankHesablari}" style="margin-right: 15px; font-weight: normal;">
-                        <input type="checkbox" name="bankHesablari" th:value="${b.id}"> <span th:text="${b.ad}"></span>
-                    </label>
+            <div class="icaze-blok">
+                <h4>Modul İcazələri (Hansı bölmələrə girə bilər?)</h4>
+                <div class="icaze-grid">
+                    <label class="icaze-item"><input type="checkbox" name="kassa"> Kassa</label>
+                    <label class="icaze-item"><input type="checkbox" name="bank"> Bank</label>
+                    <label class="icaze-item"><input type="checkbox" name="kontragent"> Kontragentlər</label>
+                    <label class="icaze-item"><input type="checkbox" name="anbar"> Anbar</label>
+                    <label class="icaze-item"><input type="checkbox" name="satis"> Satış</label>
+                    <label class="icaze-item"><input type="checkbox" name="satinalma"> Satınalma</label>
+                    <label class="icaze-item"><input type="checkbox" name="hesabat"> Hesabat</label>
                 </div>
             </div>
 
-            <button type="submit" style="margin-top: 10px; width: 200px;">İstifadəçini Yarat</button>
+            <!-- Data Scope İcazələri -->
+            <div class="icaze-blok data-scope">
+                <h4>🔒 Məlumat Sərhədləri (Data Scope)</h4>
+
+                <div style="margin-bottom: 15px;">
+                    <strong style="display:block; margin-bottom:8px; color:#1565c0;">Layihələr:</strong>
+                    <div class="icaze-grid">
+                        <label th:each="l : ${layiheler}" class="icaze-item">
+                            <input type="checkbox" name="layiheler" th:value="${l.id}"> <span th:text="${l.ad}"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong style="display:block; margin-bottom:8px; color:#1565c0;">Anbarlar:</strong>
+                    <div class="icaze-grid">
+                        <label th:each="a : ${anbarlar}" class="icaze-item">
+                            <input type="checkbox" name="anbarlar" th:value="${a.id}"> <span th:text="${a.ad}"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong style="display:block; margin-bottom:8px; color:#1565c0;">Kassa Hesabları:</strong>
+                    <div class="icaze-grid">
+                        <label th:each="k : ${kassaHesablari}" class="icaze-item">
+                            <input type="checkbox" name="kassaHesablari" th:value="${k.id}"> <span th:text="${k.ad}"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <strong style="display:block; margin-bottom:8px; color:#1565c0;">Bank Hesabları:</strong>
+                    <div class="icaze-grid">
+                        <label th:each="b : ${bankHesablari}" class="icaze-item">
+                            <input type="checkbox" name="bankHesablari" th:value="${b.id}"> <span th:text="${b.ad}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" style="width: 250px;">İstifadəçini Yarat</button>
         </form>
     </div>
 
@@ -134,68 +163,64 @@
         <table>
             <thead>
             <tr>
-                <th>Ad</th>
-                <th>İstifadəçi adı</th>
+                <th>Ad / İstifadəçi adı</th>
                 <th>Rol</th>
                 <th>İcazələr və Məlumat Sərhədləri</th>
-                <th></th>
+                <th style="text-align: right;">Əməliyyatlar</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="i : ${istifadeciler}">
-                <td th:text="${i.ad}" style="font-weight: bold;">Ad</td>
-                <td th:text="${i.username}">Username</td>
-                <td th:text="${i.rol}">Rol</td>
-                <td style="font-size: 12px; color: #555;">
+                <td>
+                    <div style="font-weight: bold; color: #0f4c81;" th:text="${i.ad}">Ad</div>
+                    <div style="color: #666; font-size: 12px;" th:text="${i.username}">Username</div>
+                </td>
+                <td>
+                    <span class="badge" th:if="${i.rol == 'ROLE_ADMIN'}" style="background:#f3e5f5; color:#6a1b9a;">ADMIN</span>
+                    <span class="badge" th:if="${i.rol == 'ROLE_USER'}">USER</span>
+                </td>
+                <td>
                     <!-- Modul icazələri -->
-                    <span class="badge" th:if="${i.icazeKassa}">Kassa</span>
-                    <span class="badge" th:if="${i.icazeBank}">Bank</span>
-                    <span class="badge" th:if="${i.icazeKontragent}">Kontragent</span>
-                    <span class="badge" th:if="${i.icazeAnbar}">Anbar</span>
-                    <span class="badge" th:if="${i.icazeSatis}">Satış</span>
-                    <span class="badge" th:if="${i.icazeSatinalma}">Satınalma</span>
-                    <span class="badge" th:if="${i.icazeHesabat}">Hesabat</span>
+                    <div style="margin-bottom: 10px;">
+                        <span class="badge badge-yesil" th:if="${i.icazeKassa}">Kassa</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeBank}">Bank</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeKontragent}">Kontragent</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeAnbar}">Anbar</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeSatis}">Satış</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeSatinalma}">Satınalma</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeHesabat}">Hesabat</span>
+                    </div>
 
-                    <div style="margin-top: 5px;"></div>
-
-                    <!-- Layihələr -->
-                    <div th:if="${i.allowedProjects != null and !i.allowedProjects.isEmpty()}" style="margin-top: 5px;">
-                        <strong style="color: #0f4c81;">Layihələr:</strong>
+                    <!-- Data Scope -->
+                    <div class="melumat-bloku" th:if="${i.allowedProjects != null and !i.allowedProjects.isEmpty()}">
+                        <strong>Layihələr:</strong>
                         <span th:each="p, iter : ${i.allowedProjects}">
                                     <span th:text="${p.ad}"></span><span th:if="${!iter.last}">, </span>
                                 </span>
                     </div>
-
-                    <!-- Anbarlar -->
-                    <div th:if="${i.allowedWarehouses != null and !i.allowedWarehouses.isEmpty()}" style="margin-top: 3px;">
-                        <strong style="color: #0f4c81;">Anbarlar:</strong>
+                    <div class="melumat-bloku" th:if="${i.allowedWarehouses != null and !i.allowedWarehouses.isEmpty()}">
+                        <strong>Anbarlar:</strong>
                         <span th:each="w, iter : ${i.allowedWarehouses}">
                                     <span th:text="${w.ad}"></span><span th:if="${!iter.last}">, </span>
                                 </span>
                     </div>
-
-                    <!-- YENİ: Kassa Hesabları -->
-                    <div th:if="${i.allowedKassaHesablari != null and !i.allowedKassaHesablari.isEmpty()}" style="margin-top: 3px;">
-                        <strong style="color: #0f4c81;">Kassa Hesabları:</strong>
+                    <div class="melumat-bloku" th:if="${i.allowedKassaHesablari != null and !i.allowedKassaHesablari.isEmpty()}">
+                        <strong>Kassalar:</strong>
                         <span th:each="k, iter : ${i.allowedKassaHesablari}">
                                     <span th:text="${k.ad}"></span><span th:if="${!iter.last}">, </span>
                                 </span>
                     </div>
-
-                    <!-- YENİ: Bank Hesabları -->
-                    <div th:if="${i.allowedBankHesablari != null and !i.allowedBankHesablari.isEmpty()}" style="margin-top: 3px;">
-                        <strong style="color: #0f4c81;">Bank Hesabları:</strong>
+                    <div class="melumat-bloku" th:if="${i.allowedBankHesablari != null and !i.allowedBankHesablari.isEmpty()}">
+                        <strong>Banklar:</strong>
                         <span th:each="b, iter : ${i.allowedBankHesablari}">
                                     <span th:text="${b.ad}"></span><span th:if="${!iter.last}">, </span>
                                 </span>
                     </div>
                 </td>
-                <td style="text-align: right;">
-                    <!-- Redaktə et düyməsi (Hələlik görünüş üçün) -->
-                    <a th:href="@{/istifadeciler/redakte/{id}(id=${i.id})}" style="background: #f57c00; color: white; padding: 6px 12px; text-decoration: none; border-radius: 5px; font-size: 12px; font-weight: bold; margin-right: 5px;">Redaktə</a>
-
+                <td style="text-align: right; white-space: nowrap;">
+                    <a th:href="@{/istifadeciler/redakte/{id}(id=${i.id})}" class="btn-kiçik btn-redakte">Redaktə</a>
                     <form th:action="@{/istifadeciler/sil/{id}(id=${i.id})}" method="post" style="display:inline;">
-                        <button type="submit" class="sil-btn">Sil</button>
+                        <button type="submit" class="btn-kiçik btn-sil">Sil</button>
                     </form>
                 </td>
             </tr>
