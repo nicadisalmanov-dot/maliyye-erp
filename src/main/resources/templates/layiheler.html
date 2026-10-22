@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Layihələr və Anbarlar - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+    /* Sol Menyu */
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    /* Əsas Hissə */
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; }
+
+    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px; }
+
+    form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
+    input, select { flex: 1; min-width: 120px; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #1976d2; }
+    button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #1565c0; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #fafafa; font-size: 12px; color: #666; text-transform: uppercase; }
+
+    .sil-btn { background: #c62828; padding: 5px 10px; font-size: 12px; }
+    .sil-btn:hover { background: #8e0000; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; background: #e3f2fd; color: #1565c0; font-weight: bold; margin-right: 3px; display: inline-block; }
+
+    /* Xəta və Uğur mesajları */
+    .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; font-weight: bold; }
+    .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<!-- Sol Menyu -->
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/">🏠 Dashboard</a>
+  <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a href="/anbar" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+
+  <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a href="/layiheler" class="aktiv" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<!-- Əsas Hissə -->
+<div class="esas">
+  <h1>🏗️ Tənzimləmələr (Layihə, Anbar, Kassa, Bank)</h1>
+
+  <!-- Xəta və Uğur Mesajları -->
+  <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+  <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+
+  <div class="grid-2">
+    <!-- 1. Layihələr -->
+    <div class="kart">
+      <h3>📁 Layihələr</h3>
+      <form action="/layiheler/layihe-elave-et" method="post">
+        <input type="text" name="ad" placeholder="Layihə adı (məs: L-01 Port Baku)" required style="width: 100%;">
+        <button type="submit" style="width: 100%; margin-top: 10px;">Əlavə et</button>
+      </form>
+      <table th:if="${!layiheler.isEmpty()}">
+        <thead>
+        <tr><th>Layihə Adı</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${layiheler}">
+          <td th:text="${l.ad}" style="font-weight: bold;">Layihə</td>
+          <td style="text-align: right;">
+            <form th:action="@{/layiheler/layihe-sil/{id}(id=${l.id})}" method="post" style="display:inline;">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div th:if="${layiheler.isEmpty()}" style="color: #999; text-align: center; margin-top: 10px;">Yoxdur</div>
+    </div>
+
+    <!-- 2. Kassa Hesabları -->
+    <div class="kart">
+      <h3>💵 Kassa Hesabları</h3>
+      <form action="/layiheler/kassa-hesabi-elave-et" method="post">
+        <input type="text" name="ad" placeholder="Kassa adı (məs: Əsas Kassa)" required style="width: 100%;">
+        <button type="submit" style="width: 100%; margin-top: 10px;">Əlavə et</button>
+      </form>
+      <table th:if="${!kassaHesablari.isEmpty()}">
+        <thead>
+        <tr><th>Kassa Adı</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="k : ${kassaHesablari}">
+          <td th:text="${k.ad}" style="font-weight: bold;">Kassa</td>
+          <td style="text-align: right;">
+            <form th:action="@{/layiheler/kassa-hesabi-sil/{id}(id=${k.id})}" method="post" style="display:inline;">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div th:if="${kassaHesablari.isEmpty()}" style="color: #999; text-align: center; margin-top: 10px;">Yoxdur</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- 3. Bank Hesabları -->
+    <div class="kart">
+      <h3>🏦 Bank Hesabları</h3>
+      <form action="/layiheler/bank-hesabi-elave-et" method="post">
+        <input type="text" name="ad" placeholder="Bank hesabı (məs: Kapital Bank AZ12...)" required style="width: 100%;">
+        <button type="submit" style="width: 100%; margin-top: 10px;">Əlavə et</button>
+      </form>
+      <table th:if="${!bankHesablari.isEmpty()}">
+        <thead>
+        <tr><th>Bank Hesabı</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${bankHesablari}">
+          <td th:text="${b.ad}" style="font-weight: bold;">Bank</td>
+          <td style="text-align: right;">
+            <form th:action="@{/layiheler/bank-hesabi-sil/{id}(id=${b.id})}" method="post" style="display:inline;">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div th:if="${bankHesablari.isEmpty()}" style="color: #999; text-align: center; margin-top: 10px;">Yoxdur</div>
+    </div>
+
+    <!-- 4. Anbarlar -->
+    <div class="kart">
+      <h3>📦 Anbarlar</h3>
+      <form action="/layiheler/anbar-elave-et" method="post">
+        <input type="text" name="ad" placeholder="Anbar adı (məs: Mərkəzi Anbar)" required style="width: 100%;">
+        <div style="width: 100%; margin-top: 10px;">
+          <strong style="font-size: 12px; color: #666;">Hansı layihələrə xidmət edir? (Çoxlu seçim)</strong><br>
+          <label th:each="l : ${layiheler}" style="margin-right: 15px; font-size: 13px; font-weight: normal;">
+            <input type="checkbox" name="layiheler" th:value="${l.id}"> <span th:text="${l.ad}"></span>
+          </label>
+        </div>
+        <button type="submit" style="width: 100%; margin-top: 10px;">Anbar Əlavə et</button>
+      </form>
+
+      <table th:if="${!anbarlar.isEmpty()}">
+        <thead>
+        <tr><th>Anbar Adı</th><th>Layihələr</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${anbarlar}">
+          <td th:text="${a.ad}" style="font-weight: bold;">Anbar</td>
+          <td>
+            <span class="badge" th:each="l : ${a.layiheler}" th:text="${l.ad}">L-01</span>
+          </td>
+          <td style="text-align: right;">
+            <form th:action="@{/layiheler/anbar-sil/{id}(id=${a.id})}" method="post" style="display:inline;">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div th:if="${anbarlar.isEmpty()}" style="color: #999; text-align: center; margin-top: 10px;">Yoxdur</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

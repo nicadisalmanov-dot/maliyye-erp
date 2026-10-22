@@ -45,9 +45,12 @@
 <!-- Sol Menyu -->
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
+
     <a href="/">🏠 Dashboard</a>
 
-    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <!-- Kassa aktivdir -->
+    <a href="/kassa"  sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+
     <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
     <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
     <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
@@ -55,7 +58,8 @@
     <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
     <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
 
-    <a href="/istifadeciler" class="aktiv" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a href="/istifadeciler" class="aktiv"sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <!-- Əsas Hissə -->
@@ -157,6 +161,9 @@
                     </div>
                 </td>
                 <td style="text-align: right;">
+                    <!-- Redaktə et düyməsi (Hələlik görünüş üçün) -->
+                    <a th:href="@{/istifadeciler/redakte/{id}(id=${i.id})}" style="background: #f57c00; color: white; padding: 6px 12px; text-decoration: none; border-radius: 5px; font-size: 12px; font-weight: bold; margin-right: 5px;">Redaktə</a>
+
                     <form th:action="@{/istifadeciler/sil/{id}(id=${i.id})}" method="post" style="display:inline;">
                         <button type="submit" class="sil-btn">Sil</button>
                     </form>

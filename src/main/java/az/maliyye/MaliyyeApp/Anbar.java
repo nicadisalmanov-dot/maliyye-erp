@@ -1,6 +1,7 @@
 package az.maliyye.MaliyyeApp;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "anbarlar")
@@ -11,22 +12,26 @@ public class Anbar {
     private Long id;
 
     @Column(nullable = false)
-    private String ad; // Məsələn: Əsas Anbar, Mərkəzi Anbar
+    private String ad;
 
-    @ManyToOne
-    @JoinColumn(name = "layihe_id", nullable = false)
-    private Layihe layihe; // Hansı layihəyə aiddir
+    // Bir anbar bir neçə layihəyə xidmət edə bilər
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "anbar_layiheler",
+            joinColumns = @JoinColumn(name = "anbar_id"),
+            inverseJoinColumns = @JoinColumn(name = "layihe_id")
+    )
+    private List<Layihe> layiheler;
 
     public Anbar() {}
-    public Anbar(String ad, Layihe layihe) {
+    public Anbar(String ad) {
         this.ad = ad;
-        this.layihe = layihe;
     }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getAd() { return ad; }
     public void setAd(String ad) { this.ad = ad; }
-    public Layihe getLayihe() { return layihe; }
-    public void setLayihe(Layihe layihe) { this.layihe = layihe; }
+    public List<Layihe> getLayiheler() { return layiheler; }
+    public void setLayiheler(List<Layihe> layiheler) { this.layiheler = layiheler; }
 }
