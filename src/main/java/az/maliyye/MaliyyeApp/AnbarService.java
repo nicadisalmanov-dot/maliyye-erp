@@ -6,19 +6,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class AnbarService {
 
-    @Autowired
-    private MehsulQrupuRepository qrupRepository;
-
-    @Autowired
-    private MehsulRepository mehsulRepository;
-
-    @Autowired
-    private IstifadeciRepository istifadeciRepo; // YENİ
+    @Autowired private MehsulQrupuRepository qrupRepository;
+    @Autowired private MehsulRepository mehsulRepository;
+    @Autowired private IstifadeciRepository istifadeciRepo;
 
     // --- Qruplar ---
     public List<MehsulQrupu> butunQruplar() {
@@ -46,7 +42,6 @@ public class AnbarService {
         MehsulQrupu qrup = qrupRepository.findById(qrupId).orElseThrow();
         Mehsul yeni = new Mehsul(ad, qrup, alisQiymeti, satisQiymeti, miqdar);
 
-        // YENİ: Cari istifadəçini təyin edirik
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             Istifadeci cariIstifadeci = istifadeciRepo.findByUsername(auth.getName());
@@ -54,6 +49,18 @@ public class AnbarService {
         }
 
         return mehsulRepository.save(yeni);
+    }
+
+    // YENİ: Məhsulu redaktə et
+    public Mehsul mehsulRedakteEt(Long id, String ad, Long qrupId, BigDecimal alisQiymeti, BigDecimal satisQiymeti, Double miqdar) {
+        Mehsul m = mehsulRepository.findById(id).orElseThrow();
+        m.setAd(ad);
+        m.setQrup(qrupRepository.findById(qrupId).orElseThrow());
+        m.setAlisQiymeti(alisQiymeti);
+        m.setSatisQiymeti(satisQiymeti);
+        m.setMiqdar(miqdar);
+        m.setDuzelisTarixi(LocalDateTime.now());
+        return mehsulRepository.save(m);
     }
 
     public void mehsulSil(Long id) {

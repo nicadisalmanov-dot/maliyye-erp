@@ -12,6 +12,14 @@
         .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
 
         .esas { margin-left: 220px; flex: 1; padding: 30px; }
+
+        /* Yuxarı Sağ Panel */
+        .top-panel { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .top-panel span { font-weight: bold; color: #0f4c81; font-size: 14px; }
+        .top-panel form { margin: 0; }
+        .top-panel button { background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .top-panel button:hover { background: #8e0000; }
+
         h1 { color: #0f4c81; margin-bottom: 20px; font-size: 24px; }
         p.aciklama { color: #666; margin-bottom: 25px; font-size: 15px; }
 
@@ -28,7 +36,7 @@
 
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
-    <a href="/">🏠 Dashboard</a>
+    <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
     <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
     <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
     <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
@@ -41,6 +49,13 @@
 </div>
 
 <div class="esas">
+    <div class="top-panel">
+        <span>👤 <span sec:authentication="name">İstifadəçi</span></span>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Çıxış</button>
+        </form>
+    </div>
+
     <h1>📦 Anbar Əməliyyatları</h1>
     <p class="aciklama">Zəhmət olmasa, yerinə yetirmək istədiyiniz əməliyyatı seçin.</p>
 

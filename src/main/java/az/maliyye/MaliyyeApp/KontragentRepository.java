@@ -7,6 +7,7 @@ import java.util.List;
 
 @Repository
 public interface KontragentRepository extends JpaRepository<Kontragent, Long> {
-    // Növə görə filterləmək üçün (Müştərilər və ya Təchizatçılar)
-    List<Kontragent> findByNov(String nov);
+
+    // YENİ: Müştəri və ya Hər ikisi olanları gətirir
+    List<Kontragent> findByNovIn(List<String> novler);
 }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Satış Qaiməsini Redaktə Et</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; }
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; max-width: 800px; }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    label { font-size: 13px; font-weight: bold; color: #555; }
+    input, select { padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; }
+    input:focus, select:focus { outline: none; border-color: #1976d2; }
+    button { padding: 12px 24px; background: #f57c00; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #e65100; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+    .geri-btn:hover { background: #5a6268; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/">🏠 Dashboard</a>
+  <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
+</div>
+
+<div class="esas">
+  <a href="/anbar/satis" class="geri-btn">← Geri Qayıt</a>
+  <h1>✏️ Satış Qaiməsini Redaktə Et ({{ qaime.senedNomresi }})</h1>
+
+  <div class="kart">
+    <form th:action="@{/anbar/satis/redakte/{id}(id=${qaime.id})}" method="post">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div>
+          <label>Tarix</label>
+          <input type="date" name="tarix" th:value="${qaime.tarix}" required>
+        </div>
+        <div>
+          <label>Anbar</label>
+          <select name="anbarId" required>
+            <option th:each="a : ${anbarlar}" th:value="${a.id}" th:text="${a.ad}" th:selected="${a.id == qaime.anbar.id}"></option>
+          </select>
+        </div>
+        <div>
+          <label>Kontragent</label>
+          <select name="kontragentId" required>
+            <option th:each="k : ${kontragentler}" th:value="${k.id}" th:text="${k.ad}" th:selected="${k.id == qaime.kontragent.id}"></option>
+          </select>
+        </div>
+      </div>
+
+      <h3 style="margin: 20px 0 10px 0;">Qaimənin Sətirləri</h3>
+      <table style="width:100%; border-collapse: collapse; font-size: 12px;" id="setirlerCədvəli">
+        <thead>
+        <tr style="background:#f8f9fa;">
+          <th>Növ</th><th>Mal / Xidmət</th><th>Layihə</th><th>Miqdar</th><th>Qiymət</th><th>Qeyd</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${qaime.setirler}" class="setir">
+          <td>
+            <select name="novler">
+              <option value="MAL" th:selected="${s.nov == 'MAL'}">Mal</option>
+              <option value="XIDMET" th:selected="${s.nov == 'XIDMET'}">Xidmət</option>
+            </select>
+          </td>
+          <td>
+            <!-- Mal seçimi -->
+            <select name="mehsulIdler" th:if="${s.nov == 'MAL'}">
+              <option th:each="m : ${mehsullar}" th:value="${m.id}" th:text="${m.ad}" th:selected="${s.mehsul != null and s.mehsul.id == m.id}"></option>
+            </select>
+            <!-- Xidmət seçimi -->
+            <select name="xidmetIdler" th:if="${s.nov == 'XIDMET'}">
+              <option th:each="x : ${xidmetler}" th:value="${x.id}" th:text="${x.ad}" th:selected="${s.xidmet != null and s.xidmet.id == x.id}"></option>
+            </select>
+          </td>
+          <td>
+            <select name="layiheIdler">
+              <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}" th:selected="${s.layihe != null and s.layihe.id == l.id}"></option>
+            </select>
+          </td>
+          <td><input type="number" name="miqdarlar" th:value="${s.miqdar}" step="0.001"></td>
+          <td><input type="number" name="qiymetler" th:value="${s.vahidQiymeti}" step="0.01"></td>
+          <td><input type="text" name="qeydler" th:value="${s.elaveQeyd}"></td>
+          <input type="hidden" name="hesablar" value="">
+        </tr>
+        </tbody>
+      </table>
+
+      <button type="submit">Dəyişiklikləri Yadda Saxla</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

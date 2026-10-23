@@ -6,54 +6,92 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+    /* Sol Menyu */
     .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
     .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
     .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
     .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
 
+    /* Əsas Hissə */
     .esas { margin-left: 220px; flex: 1; padding: 25px; }
-    h1 { color: #0f4c81; margin-bottom: 20px; }
-    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
-    h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px; }
 
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 100%; }
+    /* Yuxarı Sağ Panel */
+    .top-panel { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+    .top-panel span { font-weight: bold; color: #0f4c81; font-size: 14px; }
+    .top-panel form { margin: 0; }
+    .top-panel button { background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; transition: background 0.2s; }
+    .top-panel button:hover { background: #8e0000; }
+
+    h1 { color: #0f4c81; margin-bottom: 20px; font-size: 24px; }
+    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px; }
+
+    /* Qaimə Formu (4 sütunlu) */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 100%; transition: border-color 0.2s; }
     input:focus, select:focus { outline: none; border-color: #1976d2; }
 
+    /* Sətirlər Cədvəli */
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 12px; }
-    th { background: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; }
-    .cədvəl-input { padding: 6px; font-size: 12px; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+    .cədvəl-input { padding: 8px; font-size: 13px; }
 
-    button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+    /* Düymələr */
+    button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
     button:hover { background: #1565c0; }
     .btn-yesil { background: #2e7d32; }
     .btn-yesil:hover { background: #1b5e20; }
-    .btn-sil { background: #c62828; padding: 6px 10px; font-size: 11px; }
+    .btn-sil { background: #c62828; padding: 6px 12px; font-size: 11px; border-radius: 4px; }
+    .btn-sil:hover { background: #8e0000; }
+    .btn-redakte { background: #f57c00; padding: 6px 12px; font-size: 11px; border-radius: 4px; text-decoration: none; color: white; display: inline-block; margin-right: 4px; }
+    .btn-redakte:hover { background: #e65100; }
 
-    .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; }
-    .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; }
+    /* Mesajlar */
+    .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; font-size: 14px; }
+    .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; font-size: 14px; }
 
-    .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; background: #e3f2fd; color: #1565c0; }
+    /* Mövcud Qaimələr Cədvəli (Dizaynlaşdırılmış) */
+    .qaimeler-cedveli th { background: #0f4c81; color: white; padding: 12px 10px; border: none; }
+    .qaimeler-cedveli tr:hover { background: #f1f8ff; }
+    .qaimeler-cedveli td { padding: 12px 10px; vertical-align: middle; }
+
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+    .badge-aktiv { background: #e8f5e9; color: #2e7d32; }
+    .badge-silinib { background: #ffebee; color: #c62828; }
+
+    .yaradan-ad { color: #0f4c81; font-weight: bold; font-size: 12px; }
+    .sened-no { font-weight: bold; color: #333; font-size: 14px; }
+    .tarix-sutun { font-size: 12px; color: #555; }
+    .duzelis-tarixi { font-size: 11px; color: #f57c00; }
+    .duzelis-yox { font-size: 11px; color: #999; }
   </style>
 </head>
 <body>
 
 <div class="sidebar">
   <h2>💰 Maliyyə ERP</h2>
-  <a href="/">🏠 Dashboard</a>
-  <a href="/kassa">💵 Kassa</a>
-  <a href="/bank">🏦 Bank</a>
-  <a href="/kontragentler">👥 Kontragentlər</a>
-  <a href="/hesabat">📊 Hesabat</a>
-  <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
-  <a href="/satis">💼 Satış</a>
-  <a href="/satinalma">🛒 Satınalma</a>
+  <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+  <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
   <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
   <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <div class="esas">
+  <div class="top-panel">
+    <span>👤 <span sec:authentication="name">İstifadəçi</span></span>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit">Çıxış</button>
+    </form>
+  </div>
+
   <h1>📥 Mal və Xidmət Alışı</h1>
 
   <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
@@ -64,22 +102,26 @@
       <h3>Qaimə Məlumatları</h3>
       <div class="form-grid">
         <div>
-          <label style="font-size:12px; color:#666;">Tarix</label>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Tarix</label>
           <input type="date" name="tarix" id="tarixSahəsi" required>
         </div>
         <div>
-          <label style="font-size:12px; color:#666;">Anbar</label>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Anbar</label>
           <select name="anbarId" required>
             <option value="">Anbar seçin...</option>
             <option th:each="a : ${anbarlar}" th:value="${a.id}" th:text="${a.ad}"></option>
           </select>
         </div>
         <div>
-          <label style="font-size:12px; color:#666;">Kontragent</label>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Kontragent</label>
           <select name="kontragentId" required>
             <option value="">Kontragent seçin...</option>
             <option th:each="k : ${kontragentler}" th:value="${k.id}" th:text="${k.ad}"></option>
           </select>
+        </div>
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Hesab № 2 (Ümumi)</label>
+          <input type="text" name="umumiHesab2" placeholder="531-00" style="width: 100%;">
         </div>
       </div>
     </div>
@@ -89,16 +131,15 @@
       <table id="setirlerCədvəli">
         <thead>
         <tr>
-          <th style="width: 80px;">Növ</th>
-          <th style="width: 150px;">Mal / Xidmət</th>
-          <th style="width: 130px;">Layihə</th>
-          <th style="width: 80px;">Vahid</th>
+          <th style="width: 100px;">Növ</th>
+          <th style="width: 200px;">Mal / Xidmət</th>
+          <th style="width: 150px;">Layihə</th>
+          <th style="width: 70px;">Vahid</th>
           <th style="width: 80px;">Miqdar</th>
-          <th style="width: 100px;">Qiymət</th>
+          <th style="width: 90px;">Qiymət</th>
           <th style="width: 100px;">Məbləğ</th>
-          <th style="width: 100px;">Hesab №</th>
-          <th style="width: 100px;">Hesab № 2</th>
-          <th>Qeyd</th>
+          <th style="width: 90px;">Hesab №</th>
+          <th style="width: 100px;">Qeyd</th>
           <th style="width: 50px;"></th>
         </tr>
         </thead>
@@ -109,7 +150,7 @@
               <option value="MAL">Mal</option>
               <option value="XIDMET">Xidmət</option>
               <option value="ESAS_VESAIT">Əsas Vəsait</option>
-              <option value="QEYRI_MADDI">Qeyri Maddi Aktiv</option>
+              <option value="QEYRI_MADDI">Qeyri Maddi</option>
             </select>
           </td>
           <td>
@@ -142,9 +183,6 @@
             <input type="text" name="hesablar" class="cədvəl-input" placeholder="701-00">
           </td>
           <td>
-            <input type="text" name="hesablar2" class="cədvəl-input" placeholder="531-00">
-          </td>
-          <td>
             <input type="text" name="qeydler" class="cədvəl-input" placeholder="Qeyd...">
           </td>
           <td>
@@ -163,52 +201,60 @@
 
   <!-- Mövcud Qaimələr -->
   <div class="kart">
-    <h3 style="display: flex; justify-content: space-between; align-items: center;">
-      Mövcud Alış Qaimələri
+    <h3 style="display: flex; justify-content: space-between; align-items: center; border-bottom:none; margin-bottom:0;">
+      <span>📋 Mövcud Alış Qaimələri</span>
       <a href="/anbar/alish/arxiv" style="font-size: 13px; color: #c62828; text-decoration: none; font-weight: bold; background: #ffebee; padding: 6px 12px; border-radius: 6px;">🗑️ Arxivə bax</a>
     </h3>
-    <table>
-      <thead>
-      <tr>
-        <th>Sənəd №</th>
-        <th>Yaradan</th>
-        <th>Tarix</th>
-        <th>Anbar</th>
-        <th>Kontragent</th>
-        <th>Məbləğ</th>
-        <th>Düzəliş tarixi</th>
-        <th>Status</th>
-        <th style="text-align:right;">Əməliyyatlar</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="q : ${qaimeler}">
-        <td th:text="${q.senedNomresi}" style="font-weight:bold;">AL-001</td>
-        <td>
-          <span th:if="${q.yaradanIstifadeci != null}" th:text="${q.yaradanIstifadeci.ad}" style="font-weight:bold; color:#0f4c81;">-</span>
-          <span th:if="${q.yaradanIstifadeci == null}" style="color:#999;">Sistem</span>
-        </td>
-        <td th:text="${q.tarix}">2026-01-01</td>
-        <td th:text="${q.anbar.ad}">Anbar</td>
-        <td th:text="${q.kontragent.ad}">Kontragent</td>
-        <td th:text="${q.umumiMebleg} + ' ₼'" style="font-weight:bold; color:#2e7d32;">0 ₼</td>
-        <td>
-          <span th:if="${q.duzelisTarixi != null}" th:text="${#temporals.format(q.duzelisTarixi, 'dd.MM.yyyy HH:mm')}" style="color:#f57c00; font-size:11px;">-</span>
-          <span th:if="${q.duzelisTarixi == null}" style="color:#999;">Düzəliş edilməyib</span>
-        </td>
-        <td>
-          <span class="badge" th:if="${!q.silinib}" style="background:#e8f5e9; color:#2e7d32;">Aktiv</span>
-          <span class="badge" th:if="${q.silinib}" style="background:#ffebee; color:#c62828;">Silinib</span>
-        </td>
-        <td style="text-align: right;">
-          <a th:href="@{/anbar/alish/redakte/{id}(id=${q.id})}" style="background: #f57c00; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; font-size: 11px; margin-right: 5px;">Redaktə</a>
-          <form th:action="@{/anbar/alish/sil/{id}(id=${q.id})}" method="post" style="display:inline;">
-            <button type="submit" class="btn-sil">Sil</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+
+    <div style="overflow-x: auto; margin-top: 15px;">
+      <table class="qaimeler-cedveli">
+        <thead>
+        <tr>
+          <th>Sənəd №</th>
+          <th>Yaradan</th>
+          <th>Tarix</th>
+          <th>Anbar</th>
+          <th>Kontragent</th>
+          <th>Məbləğ</th>
+          <th>Düzəliş tarixi</th>
+          <th>Status</th>
+          <th style="text-align:center;">Əməliyyatlar</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="q : ${qaimeler}">
+          <td>
+            <span class="sened-no" th:text="${q.senedNomresi}">AL-001</span>
+          </td>
+          <td>
+            <span class="yaradan-ad" th:text="${q.yaradanIstifadeci != null ? q.yaradanIstifadeci.ad : 'Sistem'}">-</span>
+          </td>
+          <td>
+            <span class="tarix-sutun" th:text="${q.tarix}">2026-01-01</span>
+          </td>
+          <td th:text="${q.anbar.ad}">Anbar</td>
+          <td th:text="${q.kontragent.ad}">Kontragent</td>
+          <td>
+            <span style="font-weight:bold; color:#2e7d32; font-size:14px;" th:text="${q.umumiMebleg} + ' ₼'">0 ₼</span>
+          </td>
+          <td>
+            <span th:if="${q.duzelisTarixi != null}" class="duzelis-tarixi" th:text="${#temporals.format(q.duzelisTarixi, 'dd.MM.yyyy HH:mm')}">-</span>
+            <span th:if="${q.duzelisTarixi == null}" class="duzelis-yox">Düzəliş edilməyib</span>
+          </td>
+          <td>
+                                <span class="badge" th:classappend="${q.silinib} ? 'badge-silinib' : 'badge-aktiv'"
+                                      th:text="${q.silinib} ? 'Silinib' : 'Aktiv'">Aktiv</span>
+          </td>
+          <td style="text-align: center; white-space: nowrap;">
+            <a th:href="@{/anbar/alish/redakte/{id}(id=${q.id})}" class="btn-redakte">Redaktə</a>
+            <form th:action="@{/anbar/alish/sil/{id}(id=${q.id})}" method="post" style="display:inline;">
+              <button type="submit" class="btn-sil">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

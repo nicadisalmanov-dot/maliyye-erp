@@ -201,13 +201,22 @@ public class AlisQaimesiService {
         qaime.setSilinib(true);
         qaime.setSilinmeTarixi(LocalDateTime.now());
 
-        // Silən istifadəçini təyin edirik
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             Istifadeci silenIstifadeci = istifadeciRepo.findByUsername(auth.getName());
             qaime.setSilenIstifadeci(silenIstifadeci);
         }
 
+        alisQaimesiRepo.save(qaime);
+    }
+
+    // YENİ: Silinmiş qaiməni geri qaytarır (Bərpa)
+    @Transactional
+    public void qaimeBerpaEt(Long id) {
+        AlisQaimesi qaime = alisQaimesiRepo.findById(id).orElseThrow();
+        qaime.setSilinib(false);
+        qaime.setSilinmeTarixi(null);
+        qaime.setSilenIstifadeci(null);
         alisQaimesiRepo.save(qaime);
     }
 }

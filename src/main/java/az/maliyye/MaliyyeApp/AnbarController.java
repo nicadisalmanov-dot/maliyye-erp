@@ -12,8 +12,7 @@ import java.math.BigDecimal;
 @RequestMapping("/anbar")
 public class AnbarController {
 
-    @Autowired
-    private AnbarService service;
+    @Autowired private AnbarService service;
 
     @GetMapping
     public String anbarMenyu() {
@@ -43,11 +42,10 @@ public class AnbarController {
         return "tezlikle";
     }
 
+    // --- QRUP ---
     @PostMapping("/qrup-elave-et")
     public String qrupElaveEt(@RequestParam String qrupAdi) {
-        if(qrupAdi != null && !qrupAdi.isEmpty()) {
-            service.qrupElaveEt(qrupAdi);
-        }
+        if(qrupAdi != null && !qrupAdi.isEmpty()) service.qrupElaveEt(qrupAdi);
         return "redirect:/anbar/mallar";
     }
 
@@ -67,6 +65,7 @@ public class AnbarController {
         return "redirect:/anbar/mallar";
     }
 
+    // --- MƏHSUL ---
     @PostMapping("/mehsul-elave-et")
     public String mehsulElaveEt(@RequestParam String mehsulAdi,
                                 @RequestParam Long qrupId,
@@ -81,10 +80,35 @@ public class AnbarController {
         return "redirect:/anbar/mallar";
     }
 
+    // YENİ: Redaktə səhifəsini göstər
+    @GetMapping("/mehsul-redakte/{id}")
+    public String mehsulRedakteSehife(@PathVariable Long id, Model model) {
+        Mehsul mehsul = service.butunMehsullar().stream()
+                .filter(m -> m.getId().equals(id)).findFirst().orElseThrow();
+        model.addAttribute("mehsul", mehsul);
+        model.addAttribute("qruplar", service.butunQruplar());
+        return "mehsul-redakte";
+    }
+
+    // YENİ: Redaktəni yadda saxla
+    @PostMapping("/mehsul-redakte/{id}")
+    public String mehsulRedakteEt(@PathVariable Long id,
+                                  @RequestParam String mehsulAdi,
+                                  @RequestParam Long qrupId,
+                                  @RequestParam String alisQiymeti,
+                                  @RequestParam String satisQiymeti,
+                                  @RequestParam String miqdar) {
+        BigDecimal alisQiymetiDec = new BigDecimal(alisQiymeti);
+        BigDecimal satisQiymetiDec = new BigDecimal(satisQiymeti);
+        Double miqdarDouble = Double.parseDouble(miqdar);
+
+        service.mehsulRedakteEt(id, mehsulAdi, qrupId, alisQiymetiDec, satisQiymetiDec, miqdarDouble);
+        return "redirect:/anbar/mallar";
+    }
+
     @PostMapping("/mehsul-sil/{id}")
     public String mehsulSil(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // GƏLƏCƏKDƏ: Satış və ya Alışda istifadə olunubsa silinməsin
             service.mehsulSil(id);
             redirectAttributes.addFlashAttribute("ugur", "Məhsul uğurla silindi.");
         } catch (Exception e) {

@@ -22,4 +22,5 @@ public interface AlisQaimesiRepository extends JpaRepository<AlisQaimesi, Long> 
 
     // İstifadəçiyə görə arxivlənmiş qaimələr
     List<AlisQaimesi> findBySilinibTrueAndYaradanIstifadeci_UsernameOrderByIdDesc(String username);
+    long countByKontragent_Id(Long id);
 }
