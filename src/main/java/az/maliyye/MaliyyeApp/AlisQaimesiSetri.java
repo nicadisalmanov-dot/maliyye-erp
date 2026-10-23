@@ -15,17 +15,21 @@ public class AlisQaimesiSetri {
     @JoinColumn(name = "alis_qaimesi_id", nullable = false)
     private AlisQaimesi alisQaimesi;
 
-    // YENİ: Hər sətir üçün Layihə
     @ManyToOne
     @JoinColumn(name = "layihe_id")
     private Layihe layihe;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     private String nov;
 
     @ManyToOne
     @JoinColumn(name = "mehsul_id")
     private Mehsul mehsul;
+
+    // YENİ: Xidmət kataloqundan seçim üçün
+    @ManyToOne
+    @JoinColumn(name = "xidmet_id")
+    private Xidmet xidmet;
 
     @Column(length = 200)
     private String xidmetAdi;
@@ -61,6 +65,8 @@ public class AlisQaimesiSetri {
     public void setNov(String nov) { this.nov = nov; }
     public Mehsul getMehsul() { return mehsul; }
     public void setMehsul(Mehsul mehsul) { this.mehsul = mehsul; }
+    public Xidmet getXidmet() { return xidmet; }
+    public void setXidmet(Xidmet xidmet) { this.xidmet = xidmet; }
     public String getXidmetAdi() { return xidmetAdi; }
     public void setXidmetAdi(String xidmetAdi) { this.xidmetAdi = xidmetAdi; }
     public BigDecimal getMiqdar() { return miqdar; }

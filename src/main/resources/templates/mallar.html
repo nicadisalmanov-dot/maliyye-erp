@@ -32,8 +32,8 @@
     button:hover { background: #1565c0; }
 
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-    th { background: #fafafa; font-size: 13px; color: #666; text-transform: uppercase; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #fafafa; font-size: 12px; color: #666; text-transform: uppercase; }
 
     .sil-btn { background: #c62828; padding: 6px 12px; font-size: 12px; }
     .sil-btn:hover { background: #8e0000; }
@@ -46,40 +46,20 @@
 <!-- Sol Menyu -->
 <div class="sidebar">
   <h2>💰 Maliyyə ERP</h2>
-
-  <!-- Dashboard -->
-  <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
-
-  <!-- Modul icazələri -->
+  <a href="/">🏠 Dashboard</a>
   <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
   <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
   <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
   <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
-
-  <!-- Anbar (aktiv) -->
   <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
-
   <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
   <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
-
-  <!-- Yalnız Admin -->
   <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
   <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <!-- Əsas Hissə -->
 <div class="esas">
-  <!-- İstifadəçi Paneli (Sağ Yuxarı) -->
-  <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
-            <span style="font-weight: bold; color: #0f4c81;">
-                👤 <span sec:authentication="name">İstifadəçi</span>
-            </span>
-    <form th:action="@{/logout}" method="post" style="margin: 0;">
-      <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
-        Çıxış
-      </button>
-    </form>
-  </div>
   <div class="header-bar">
     <h1>📦 Mallar və Qruplar</h1>
     <a href="/anbar" class="geri-btn">← Anbar Menyusuna Qayıt</a>
@@ -138,6 +118,8 @@
           <th>İlkin qiymət</th>
           <th>Satış qiyməti</th>
           <th>Miqdar</th>
+          <th>Yaradan</th>
+          <th>Tarix</th>
           <th></th>
         </tr>
         </thead>
@@ -148,6 +130,11 @@
           <td th:text="${m.alisQiymeti} + ' ₼'">0 ₼</td>
           <td th:text="${m.satisQiymeti} + ' ₼'">0 ₼</td>
           <td th:text="${m.miqdar}">0</td>
+          <td th:text="${m.yaradanIstifadeci != null ? m.yaradanIstifadeci.ad : '-'}" style="font-size: 12px; color:#666;">-</td>
+          <td>
+            <span th:if="${m.duzelisTarixi != null}" th:text="${#temporals.format(m.duzelisTarixi, 'dd.MM.yyyy HH:mm')}" style="color:#f57c00; font-size:11px;">-</span>
+            <span th:if="${m.duzelisTarixi == null}" th:text="${#temporals.format(m.yaradilmaTarixi, 'dd.MM.yyyy HH:mm')}" style="font-size:11px; color:#666;">-</span>
+          </td>
           <td style="text-align: right;">
             <form th:action="@{/anbar/mehsul-sil/{id}(id=${m.id})}" method="post" style="display:inline;">
               <button type="submit" class="sil-btn">Sil</button>

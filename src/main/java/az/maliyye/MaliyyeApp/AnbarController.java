@@ -15,9 +15,6 @@ public class AnbarController {
     @Autowired
     private AnbarService service;
 
-    // ==========================================
-    // ANBAR MENYUSU VƏ SƏHİFƏLƏR
-    // ==========================================
     @GetMapping
     public String anbarMenyu() {
         return "anbar";
@@ -30,15 +27,22 @@ public class AnbarController {
         return "mallar";
     }
 
+    @GetMapping("/esas-vesaitler")
+    public String esasVesaitlerSehife() {
+        return "esas-vesaitler";
+    }
+
+    @GetMapping("/qeyri-maddi")
+    public String qeyriMaddiSehife() {
+        return "qeyri-maddi";
+    }
+
     @GetMapping("/{sehife}")
     public String bosSehife(@PathVariable String sehife, Model model) {
         model.addAttribute("sehifeAdi", sehife);
         return "tezlikle";
     }
 
-    // ==========================================
-    // QRUPLAR (MƏHSUL QRUPU)
-    // ==========================================
     @PostMapping("/qrup-elave-et")
     public String qrupElaveEt(@RequestParam String qrupAdi) {
         if(qrupAdi != null && !qrupAdi.isEmpty()) {
@@ -50,7 +54,6 @@ public class AnbarController {
     @PostMapping("/qrup-sil/{id}")
     public String qrupSil(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // YOXLAMA 1: Bu qrupda mal varmı?
             long mehsulSayi = service.qrupdaMehsulSayi(id);
             if (mehsulSayi > 0) {
                 redirectAttributes.addFlashAttribute("xeta", "XƏTA: Bu qrupda " + mehsulSayi + " məhsul var! Əvvəlcə məhsulları silin və ya başqa qrupa keçirin.");
@@ -64,9 +67,6 @@ public class AnbarController {
         return "redirect:/anbar/mallar";
     }
 
-    // ==========================================
-    // MƏHSULLAR (MALLAR)
-    // ==========================================
     @PostMapping("/mehsul-elave-et")
     public String mehsulElaveEt(@RequestParam String mehsulAdi,
                                 @RequestParam Long qrupId,
@@ -84,19 +84,7 @@ public class AnbarController {
     @PostMapping("/mehsul-sil/{id}")
     public String mehsulSil(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // YOXLAMA 1: Bu mal hər hansı bir satışda istifadə olunubmu?
-            // long satisSayi = satisRepo.countByMehsul_Id(id);
-            // if (satisSayi > 0) { ... "Bu mal satışda istifadə olunub" ... }
-
-            // YOXLAMA 2: Bu mal hər hansı bir alışda istifadə olunubmu?
-            // long alisSayi = satinalmaRepo.countByMehsul_Id(id);
-            // if (alisSayi > 0) { ... "Bu mal alışda istifadə olunub" ... }
-
-            // YOXLAMA 3: Bu malın anbarda hərəkəti varmı?
-            // long hereketSayi = anbarHereketiRepo.countByMehsul_Id(id);
-            // if (hereketSayi > 0) { ... "Bu malın anbar hərəkəti var" ... }
-
-            // Əgər heç bir əlaqə yoxdursa, sil
+            // GƏLƏCƏKDƏ: Satış və ya Alışda istifadə olunubsa silinməsin
             service.mehsulSil(id);
             redirectAttributes.addFlashAttribute("ugur", "Məhsul uğurla silindi.");
         } catch (Exception e) {

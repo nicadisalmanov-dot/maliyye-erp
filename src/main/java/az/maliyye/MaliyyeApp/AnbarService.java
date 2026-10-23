@@ -1,6 +1,8 @@
 package az.maliyye.MaliyyeApp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,6 +17,9 @@ public class AnbarService {
     @Autowired
     private MehsulRepository mehsulRepository;
 
+    @Autowired
+    private IstifadeciRepository istifadeciRepo; // YENİ
+
     // --- Qruplar ---
     public List<MehsulQrupu> butunQruplar() {
         return qrupRepository.findAll();
@@ -28,7 +33,6 @@ public class AnbarService {
         qrupRepository.deleteById(id);
     }
 
-    // YENİ: Müəyyən bir qrupda olan məhsulların sayı (silmə qoruması üçün)
     public long qrupdaMehsulSayi(Long qrupId) {
         return mehsulRepository.countByQrup_Id(qrupId);
     }
@@ -41,6 +45,14 @@ public class AnbarService {
     public Mehsul mehsulElaveEt(String ad, Long qrupId, BigDecimal alisQiymeti, BigDecimal satisQiymeti, Double miqdar) {
         MehsulQrupu qrup = qrupRepository.findById(qrupId).orElseThrow();
         Mehsul yeni = new Mehsul(ad, qrup, alisQiymeti, satisQiymeti, miqdar);
+
+        // YENİ: Cari istifadəçini təyin edirik
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            Istifadeci cariIstifadeci = istifadeciRepo.findByUsername(auth.getName());
+            yeni.setYaradanIstifadeci(cariIstifadeci);
+        }
+
         return mehsulRepository.save(yeni);
     }
 

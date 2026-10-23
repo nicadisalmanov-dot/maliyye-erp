@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Xidmət Redaktə - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; }
+
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; max-width: 600px; }
+    h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+    form { display: flex; flex-direction: column; gap: 15px; }
+    label { font-size: 13px; font-weight: bold; color: #555; }
+    input, select { padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #1976d2; }
+
+    button { padding: 12px 24px; background: #f57c00; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #e65100; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+    .geri-btn:hover { background: #5a6268; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/">🏠 Dashboard</a>
+  <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+  <a href="/anbar/xidmetler" class="geri-btn">← Geri Qayıt</a>
+  <h1>✏️ Xidməti Redaktə Et</h1>
+
+  <div class="kart">
+    <form th:action="@{/anbar/xidmetler/xidmet-redakte/{id}(id=${xidmet.id})}" method="post">
+
+      <div>
+        <label>Xidmətin adı</label>
+        <input type="text" name="ad" th:value="${xidmet.ad}" required style="width: 100%;">
+      </div>
+
+      <div>
+        <label>Qrup</label>
+        <select name="qrupId" required style="width: 100%;">
+          <option th:each="q : ${qruplar}" th:value="${q.id}" th:text="${q.ad}" th:selected="${q.id == xidmet.qrup.id}"></option>
+        </select>
+      </div>
+
+      <div>
+        <label>Növ</label>
+        <select name="nov" style="width: 100%;">
+          <option value="Maddi" th:selected="${xidmet.nov == 'Maddi'}">Maddi</option>
+          <option value="Qeyri-Maddi" th:selected="${xidmet.nov == 'Qeyri-Maddi'}">Qeyri-Maddi</option>
+          <option value="Daxili" th:selected="${xidmet.nov == 'Daxili'}">Daxili</option>
+          <option value="Xarici" th:selected="${xidmet.nov == 'Xarici'}">Xarici</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Vahid</label>
+        <select name="vahid" style="width: 100%;">
+          <option value="saat" th:selected="${xidmet.vahid == 'saat'}">saat</option>
+          <option value="gün" th:selected="${xidmet.vahid == 'gün'}">gün</option>
+          <option value="ədəd" th:selected="${xidmet.vahid == 'ədəd'}">ədəd</option>
+          <option value="layihə" th:selected="${xidmet.vahid == 'layihə'}">layihə</option>
+          <option value="ay" th:selected="${xidmet.vahid == 'ay'}">ay</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Qiymət (₼) - Boş buraxa bilərsiniz</label>
+        <input type="number" name="qiymet" step="0.01" th:value="${xidmet.qiymet}" style="width: 100%;">
+      </div>
+
+      <button type="submit">Yadda Saxla</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

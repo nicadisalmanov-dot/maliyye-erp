@@ -20,21 +20,17 @@ public class AlisQaimesiService {
     @Autowired private AnbarRepository anbarRepo;
     @Autowired private LayiheRepository layiheRepo;
     @Autowired private KontragentRepository kontragentRepo;
-    @Autowired private IstifadeciRepository istifadeciRepo; // İstifadəçi üçün
+    @Autowired private IstifadeciRepository istifadeciRepo;
 
-    // İstifadəçinin roluna və adına görə filtrli qaimələr
     public List<AlisQaimesi> qaimeleriGetir(String username) {
         Istifadeci u = istifadeciRepo.findByUsername(username);
         if (u != null && u.getRol().equals("ROLE_ADMIN")) {
-            // Admin hamısını görür
             return alisQaimesiRepo.findBySilinibFalseOrderByIdDesc();
         } else {
-            // Adi istifadəçi yalnız özününküləri görür
             return alisQaimesiRepo.findBySilinibFalseAndYaradanIstifadeci_UsernameOrderByIdDesc(username);
         }
     }
 
-    // Arxiv üçün də eyni məntiq
     public List<AlisQaimesi> arxivQaimeleriGetir(String username) {
         Istifadeci u = istifadeciRepo.findByUsername(username);
         if (u != null && u.getRol().equals("ROLE_ADMIN")) {
@@ -44,7 +40,6 @@ public class AlisQaimesiService {
         }
     }
 
-    // Yeni qaimə yaratmaq
     @Transactional
     public void alisEt(LocalDate tarix, Long anbarId, Long kontragentId,
                        List<Long> mehsulIdler, List<String> xidmetAdlari, List<Long> layiheIdler,
@@ -56,14 +51,12 @@ public class AlisQaimesiService {
         qaime.setAnbar(anbarRepo.findById(anbarId).orElseThrow());
         qaime.setKontragent(kontragentRepo.findById(kontragentId).orElseThrow());
 
-        // Cari istifadəçini təyin edirik
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             Istifadeci cariIstifadeci = istifadeciRepo.findByUsername(auth.getName());
             qaime.setYaradanIstifadeci(cariIstifadeci);
         }
 
-        // Sənəd nömrəsi
         AlisQaimesi sonQaime = alisQaimesiRepo.findTopByOrderByIdDesc();
         int yeniNomre = 1;
         if (sonQaime != null && sonQaime.getSenedNomresi() != null) {
@@ -94,21 +87,35 @@ public class AlisQaimesiService {
             setir.setMebleg(mebleg);
             umumiMebleg = umumiMebleg.add(mebleg);
 
-            if ("MAL".equals(novler.get(i)) && mehsulIdler != null && mehsulIdler.size() > i && mehsulIdler.get(i) != null) {
-                Mehsul mehsul = mehsulRepo.findById(mehsulIdler.get(i)).orElseThrow();
-                setir.setMehsul(mehsul);
+            if (("MAL".equals(novler.get(i)) || "ESAS_VESAIT".equals(novler.get(i)) || "QEYRI_MADDI".equals(novler.get(i)))
+                    && mehsulIdler != null && mehsulIdler.size() > i && mehsulIdler.get(i) != null) {
 
-                Double kohneMiqdar = mehsul.getMiqdar();
-                BigDecimal kohneQaliqDeyeri = mehsul.getQaliqDeyeri() != null ? mehsul.getQaliqDeyeri() : BigDecimal.ZERO;
+                Mehsul secilmisMehsul = mehsulRepo.findById(mehsulIdler.get(i)).orElseThrow();
+                Mehsul movcudMehsul = mehsulRepo.findByAd(secilmisMehsul.getAd());
 
-                Double yeniMiqdar = kohneMiqdar + miqdarlar.get(i).doubleValue();
-                BigDecimal yeniQaliqDeyeri = kohneQaliqDeyeri.add(mebleg);
-                BigDecimal yeniOrtaDeyer = yeniQaliqDeyeri.divide(BigDecimal.valueOf(yeniMiqdar), 2, RoundingMode.HALF_UP);
-
-                mehsul.setMiqdar(yeniMiqdar);
-                mehsul.setQaliqDeyeri(yeniQaliqDeyeri);
-                mehsul.setOrtaDeyer(yeniOrtaDeyer);
-                mehsulRepo.save(mehsul);
+                if (movcudMehsul != null) {
+                    setir.setMehsul(movcudMehsul);
+                    Double kohneMiqdar = movcudMehsul.getMiqdar();
+                    BigDecimal kohneQaliqDeyeri = movcudMehsul.getQaliqDeyeri() != null ? movcudMehsul.getQaliqDeyeri() : BigDecimal.ZERO;
+                    Double yeniMiqdar = kohneMiqdar + miqdarlar.get(i).doubleValue();
+                    BigDecimal yeniQaliqDeyeri = kohneQaliqDeyeri.add(mebleg);
+                    BigDecimal yeniOrtaDeyer = yeniQaliqDeyeri.divide(BigDecimal.valueOf(yeniMiqdar), 2, RoundingMode.HALF_UP);
+                    movcudMehsul.setMiqdar(yeniMiqdar);
+                    movcudMehsul.setQaliqDeyeri(yeniQaliqDeyeri);
+                    movcudMehsul.setOrtaDeyer(yeniOrtaDeyer);
+                    mehsulRepo.save(movcudMehsul);
+                } else {
+                    setir.setMehsul(secilmisMehsul);
+                    Double kohneMiqdar = secilmisMehsul.getMiqdar();
+                    BigDecimal kohneQaliqDeyeri = secilmisMehsul.getQaliqDeyeri() != null ? secilmisMehsul.getQaliqDeyeri() : BigDecimal.ZERO;
+                    Double yeniMiqdar = kohneMiqdar + miqdarlar.get(i).doubleValue();
+                    BigDecimal yeniQaliqDeyeri = kohneQaliqDeyeri.add(mebleg);
+                    BigDecimal yeniOrtaDeyer = yeniQaliqDeyeri.divide(BigDecimal.valueOf(yeniMiqdar), 2, RoundingMode.HALF_UP);
+                    secilmisMehsul.setMiqdar(yeniMiqdar);
+                    secilmisMehsul.setQaliqDeyeri(yeniQaliqDeyeri);
+                    secilmisMehsul.setOrtaDeyer(yeniOrtaDeyer);
+                    mehsulRepo.save(secilmisMehsul);
+                }
             } else if ("XIDMET".equals(novler.get(i))) {
                 setir.setXidmetAdi(xidmetAdlari != null && xidmetAdlari.size() > i ? xidmetAdlari.get(i) : null);
             }
@@ -121,7 +128,6 @@ public class AlisQaimesiService {
         alisQaimesiRepo.save(qaime);
     }
 
-    // Qaiməni redaktə et
     @Transactional
     public void qaimeRedakteEt(Long id, LocalDate tarix, Long anbarId, Long kontragentId,
                                List<Long> mehsulIdler, List<String> xidmetAdlari, List<Long> layiheIdler,
@@ -135,7 +141,6 @@ public class AlisQaimesiService {
         qaime.setKontragent(kontragentRepo.findById(kontragentId).orElseThrow());
         qaime.setDuzelisTarixi(LocalDateTime.now());
 
-        // Köhnə sətirləri təmizləyirik
         qaime.getSetirler().clear();
 
         BigDecimal umumiMebleg = BigDecimal.ZERO;
@@ -159,21 +164,26 @@ public class AlisQaimesiService {
             setir.setMebleg(mebleg);
             umumiMebleg = umumiMebleg.add(mebleg);
 
-            if ("MAL".equals(novler.get(i)) && mehsulIdler != null && mehsulIdler.size() > i && mehsulIdler.get(i) != null) {
-                Mehsul mehsul = mehsulRepo.findById(mehsulIdler.get(i)).orElseThrow();
-                setir.setMehsul(mehsul);
+            if (("MAL".equals(novler.get(i)) || "ESAS_VESAIT".equals(novler.get(i)) || "QEYRI_MADDI".equals(novler.get(i)))
+                    && mehsulIdler != null && mehsulIdler.size() > i && mehsulIdler.get(i) != null) {
 
-                Double kohneMiqdar = mehsul.getMiqdar();
-                BigDecimal kohneQaliqDeyeri = mehsul.getQaliqDeyeri() != null ? mehsul.getQaliqDeyeri() : BigDecimal.ZERO;
+                Mehsul secilmisMehsul = mehsulRepo.findById(mehsulIdler.get(i)).orElseThrow();
+                Mehsul movcudMehsul = mehsulRepo.findByAd(secilmisMehsul.getAd());
 
-                Double yeniMiqdar = kohneMiqdar + miqdarlar.get(i).doubleValue();
-                BigDecimal yeniQaliqDeyeri = kohneQaliqDeyeri.add(mebleg);
-                BigDecimal yeniOrtaDeyer = yeniQaliqDeyeri.divide(BigDecimal.valueOf(yeniMiqdar), 2, RoundingMode.HALF_UP);
-
-                mehsul.setMiqdar(yeniMiqdar);
-                mehsul.setQaliqDeyeri(yeniQaliqDeyeri);
-                mehsul.setOrtaDeyer(yeniOrtaDeyer);
-                mehsulRepo.save(mehsul);
+                if (movcudMehsul != null) {
+                    setir.setMehsul(movcudMehsul);
+                    Double kohneMiqdar = movcudMehsul.getMiqdar();
+                    BigDecimal kohneQaliqDeyeri = movcudMehsul.getQaliqDeyeri() != null ? movcudMehsul.getQaliqDeyeri() : BigDecimal.ZERO;
+                    Double yeniMiqdar = kohneMiqdar + miqdarlar.get(i).doubleValue();
+                    BigDecimal yeniQaliqDeyeri = kohneQaliqDeyeri.add(mebleg);
+                    BigDecimal yeniOrtaDeyer = yeniQaliqDeyeri.divide(BigDecimal.valueOf(yeniMiqdar), 2, RoundingMode.HALF_UP);
+                    movcudMehsul.setMiqdar(yeniMiqdar);
+                    movcudMehsul.setQaliqDeyeri(yeniQaliqDeyeri);
+                    movcudMehsul.setOrtaDeyer(yeniOrtaDeyer);
+                    mehsulRepo.save(movcudMehsul);
+                } else {
+                    setir.setMehsul(secilmisMehsul);
+                }
             } else if ("XIDMET".equals(novler.get(i))) {
                 setir.setXidmetAdi(xidmetAdlari != null && xidmetAdlari.size() > i ? xidmetAdlari.get(i) : null);
             }
@@ -185,12 +195,19 @@ public class AlisQaimesiService {
         alisQaimesiRepo.save(qaime);
     }
 
-    // Soft Delete (Arxivə köçürmə)
     @Transactional
     public void qaimeSil(Long id) {
         AlisQaimesi qaime = alisQaimesiRepo.findById(id).orElseThrow();
         qaime.setSilinib(true);
         qaime.setSilinmeTarixi(LocalDateTime.now());
+
+        // Silən istifadəçini təyin edirik
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            Istifadeci silenIstifadeci = istifadeciRepo.findByUsername(auth.getName());
+            qaime.setSilenIstifadeci(silenIstifadeci);
+        }
+
         alisQaimesiRepo.save(qaime);
     }
 }

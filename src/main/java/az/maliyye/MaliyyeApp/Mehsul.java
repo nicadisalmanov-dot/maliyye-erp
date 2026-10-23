@@ -2,6 +2,7 @@ package az.maliyye.MaliyyeApp;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mehsullar")
@@ -18,31 +19,36 @@ public class Mehsul {
     @JoinColumn(name = "qrup_id", nullable = false)
     private MehsulQrupu qrup;
 
-    // Maya dəyəri (İlkin alış qiyməti)
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal alisQiymeti;
 
-    // Satış qiyməti
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal satisQiymeti;
 
-    // Anbarda olan miqdar
     @Column(nullable = false)
     private Double miqdar = 0.0;
 
-    // ==========================================
-    // YENİ ƏLAVƏ EDİLƏN: ORTA DƏYƏR METODU ÜÇÜN
-    // ==========================================
-
-    // Malın cari orta dəyəri (hər alışda yenilənir)
+    // Orta Dəyər Metodu üçün
     @Column(precision = 15, scale = 2)
     private BigDecimal ortaDeyer = BigDecimal.ZERO;
 
-    // Anbardaki malın ümumi dəyəri (miqdar * orta dəyər)
     @Column(precision = 15, scale = 2)
     private BigDecimal qaliqDeyeri = BigDecimal.ZERO;
 
-    public Mehsul() {}
+    // --- YENİ: Audit (İzləmə) Sahələri ---
+    @Column(name = "yaradilma_tarixi")
+    private LocalDateTime yaradilmaTarixi;
+
+    @Column(name = "duzelis_tarixi")
+    private LocalDateTime duzelisTarixi;
+
+    @ManyToOne
+    @JoinColumn(name = "yaradan_istifadeci_id")
+    private Istifadeci yaradanIstifadeci;
+
+    public Mehsul() {
+        this.yaradilmaTarixi = LocalDateTime.now();
+    }
 
     public Mehsul(String ad, MehsulQrupu qrup, BigDecimal alisQiymeti, BigDecimal satisQiymeti, Double miqdar) {
         this.ad = ad;
@@ -50,7 +56,7 @@ public class Mehsul {
         this.alisQiymeti = alisQiymeti;
         this.satisQiymeti = satisQiymeti;
         this.miqdar = miqdar;
-        // İlk yaradılanda orta dəyər = alış qiyməti
+        this.yaradilmaTarixi = LocalDateTime.now(); // YENİ
         this.ortaDeyer = alisQiymeti;
         this.qaliqDeyeri = alisQiymeti.multiply(BigDecimal.valueOf(miqdar));
     }
@@ -64,6 +70,9 @@ public class Mehsul {
     public Double getMiqdar() { return miqdar; }
     public BigDecimal getOrtaDeyer() { return ortaDeyer; }
     public BigDecimal getQaliqDeyeri() { return qaliqDeyeri; }
+    public LocalDateTime getYaradilmaTarixi() { return yaradilmaTarixi; }
+    public LocalDateTime getDuzelisTarixi() { return duzelisTarixi; }
+    public Istifadeci getYaradanIstifadeci() { return yaradanIstifadeci; }
 
     // Setterlər
     public void setId(Long id) { this.id = id; }
@@ -74,4 +83,7 @@ public class Mehsul {
     public void setMiqdar(Double miqdar) { this.miqdar = miqdar; }
     public void setOrtaDeyer(BigDecimal ortaDeyer) { this.ortaDeyer = ortaDeyer; }
     public void setQaliqDeyeri(BigDecimal qaliqDeyeri) { this.qaliqDeyeri = qaliqDeyeri; }
+    public void setYaradilmaTarixi(LocalDateTime yaradilmaTarixi) { this.yaradilmaTarixi = yaradilmaTarixi; }
+    public void setDuzelisTarixi(LocalDateTime duzelisTarixi) { this.duzelisTarixi = duzelisTarixi; }
+    public void setYaradanIstifadeci(Istifadeci yaradanIstifadeci) { this.yaradanIstifadeci = yaradanIstifadeci; }
 }
