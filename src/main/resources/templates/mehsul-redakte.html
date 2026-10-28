@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Məhsulu Redaktə Et - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .kart { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 450px; }
+        h2 { color: #0f4c81; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        .btn-qrup { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 1; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1b5e20; }
+        .geri-btn { background: #6c757d; text-align: center; text-decoration: none; display: block; padding: 12px; color: white; border-radius: 8px; font-weight: bold; font-size: 14px; }
+        .geri-btn:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+
+<div class="kart">
+    <h2>✏️ Məhsulu Redaktə Et</h2>
+
+    <form th:action="@{/anbar/mehsul-redakte/{id}(id=${mehsul.id})}" method="post">
+        <div class="form-group">
+            <label>Məhsulun Adı</label>
+            <input type="text" name="mehsulAdi" th:value="${mehsul.ad}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Mal Qrupu</label>
+            <select name="qrupId" required>
+                <option value="">Mal qrupu seçin...</option>
+                <option th:each="q : ${qruplar}" th:value="${q.id}" th:text="${q.ad}"
+                        th:selected="${mehsul.qrup != null and q.id == mehsul.qrup.id}"></option>
+            </select>
+        </div>
+
+        <!-- YENİ: Mal Tipi Redaktə Seçimi -->
+        <div class="form-group">
+            <label>Mal Tipi</label>
+            <select name="malTipiId">
+                <option value="">Mal tipi seçin...</option>
+                <option th:each="t : ${malTipleri}" th:value="${t.id}" th:text="${t.ad}"
+                        th:selected="${mehsul.malTipi != null and t.id == mehsul.malTipi.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Ölçü Vahidi</label>
+            <select name="vahid" required>
+                <option value="">Ölçü vahidi seçin...</option>
+                <option th:each="ov : ${olcuVahidleri}" th:value="${ov.qisaAd}" th:text="${ov.ad + ' (' + ov.qisaAd + ')'}"
+                        th:selected="${mehsul.vahid == ov.qisaAd}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>İlkin Qiymət (₼)</label>
+            <input type="number" name="alisQiymeti" step="0.01" min="0" th:value="${mehsul.alisQiymeti}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Satış Qiyməti (₼)</label>
+            <input type="number" name="satisQiymeti" step="0.01" min="0" th:value="${mehsul.satisQiymeti}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Anbar</label>
+            <select name="anbarId">
+                <option value="">Anbar seçin...</option>
+                <option th:each="a : ${anbarlar}" th:value="${a.id}" th:text="${a.ad}"
+                        th:selected="${mehsul.anbar != null and a.id == mehsul.anbar.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Miqdar (Qalıq)</label>
+            <input type="number" name="miqdar" step="any" th:value="${cariMiqdar}" required>
+        </div>
+
+        <div class="btn-qrup">
+            <a href="/anbar/mallar" class="geri-btn">İmtina</a>
+            <button type="submit">Yadda saxla</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

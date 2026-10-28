@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tənzimləmələr - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    h1 { color: #0f4c81; font-size: 24px; margin-bottom: 20px; }
+
+    .grid-konteyner { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .kart h2 { font-size: 16px; color: #0f4c81; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+
+    .form-inline { display: flex; gap: 10px; margin-bottom: 15px; }
+    input { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+    button { padding: 8px 15px; background: #0f4c81; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #1976d2; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; }
+    .sil-btn { background: #d32f2f; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+    .sil-btn:hover { background: #b71c1c; }
+
+    .mesaj { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; }
+    .ugur { background: #d4edda; color: #155724; }
+    .xeta { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/">🏠 Dashboard</a>
+  <a href="/kassa">💵 Kassa</a>
+  <a href="/bank">🏦 Bank</a>
+  <a href="/kontragentler">👥 Kontragentlər</a>
+  <a href="/hesabat">📊 Hesabat</a>
+  <a href="/anbar">📦 Anbar Əməliyyatları</a>
+  <a href="/tenzimlemeler" class="aktiv">⚙️ Tənzimləmələr</a>
+</div>
+
+<div class="esas">
+  <h1>⚙️ Sistem Tənzimləmələri</h1>
+
+  <div th:if="${ugur}" class="mesaj ugur" th:text="${ugur}"></div>
+  <div th:if="${xeta}" class="mesaj xeta" th:text="${xeta}"></div>
+
+  <div class="grid-konteyner">
+
+    <!-- 1. Ölçü Vahidləri -->
+    <div class="kart">
+      <h2>📏 Ölçü Vahidləri</h2>
+      <form action="/tenzimlemeler/olcu-vahidi-elave-et" method="post" class="form-inline">
+        <input type="text" name="ad" placeholder="Adı (məs: Kiloqram)" required>
+        <input type="text" name="qisaAd" placeholder="Qısaltma (kq)" required style="max-width: 80px;">
+        <button type="submit">Əlavə et</button>
+      </form>
+      <table>
+        <thead>
+        <tr>
+          <th>Adı</th>
+          <th>Qısaltma</th>
+          <th>Əməliyyat</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ov : ${olcuVahidleri}">
+          <td th:text="${ov.ad}">Kiloqram</td>
+          <td th:text="${ov.qisaAd}">kq</td>
+          <td>
+            <form th:action="@{/tenzimlemeler/olcu-vahidi-sil/{id}(id=${ov.id})}" method="post">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. Mal Tipləri -->
+    <div class="kart">
+      <h2>🏷️ Mal Tipləri</h2>
+      <form action="/tenzimlemeler/mal-tipi-elave-et" method="post" class="form-inline">
+        <input type="text" name="ad" placeholder="Mal tipi adı" required>
+        <button type="submit">Əlavə et</button>
+      </form>
+      <table>
+        <thead>
+        <tr>
+          <th>Tip Adı</th>
+          <th>Əməliyyat</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="mt : ${malTipleri}">
+          <td th:text="${mt.ad}">Hazır Məhsul</td>
+          <td>
+            <form th:action="@{/tenzimlemeler/mal-tipi-sil/{id}(id=${mt.id})}" method="post">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. Mal Qrupları -->
+    <div class="kart">
+      <h2>📂 Mal Qrupları</h2>
+      <form action="/tenzimlemeler/mal-qrupu-elave-et" method="post" class="form-inline">
+        <input type="text" name="ad" placeholder="Qrup adı" required>
+        <button type="submit">Əlavə et</button>
+      </form>
+      <table>
+        <thead>
+        <tr>
+          <th>Qrup Adı</th>
+          <th>Əməliyyat</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="mq : ${malQruplari}">
+          <td th:text="${mq.ad}">Ərzaq</td>
+          <td>
+            <form th:action="@{/tenzimlemeler/mal-qrupu-sil/{id}(id=${mq.id})}" method="post">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

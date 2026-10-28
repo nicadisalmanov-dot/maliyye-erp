@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Ölçü Vahidləri - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h1 { color: #0f4c81; font-size: 24px; }
+        .geri-btn { padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: bold; }
+        .geri-btn:hover { background: #5a6268; }
+
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-width: 650px; }
+
+        .form-inline { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus { outline: none; border-color: #1976d2; }
+        button { padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1b5e20; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #f8f9fa; color: #555; text-transform: uppercase; font-size: 12px; }
+
+        .action-btns { display: flex; gap: 5px; justify-content: flex-end; }
+        .redakte-btn { background: #d97706; color: white; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .redakte-btn:hover { background: #b45309; }
+        .sil-btn { background: #d32f2f; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .sil-btn:hover { background: #b71c1c; }
+
+        .mesaj { padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; font-weight: bold; }
+        .ugur { background: #d4edda; color: #155724; }
+        .xeta { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+
+    <!-- Dashboard -->
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+
+    <!-- Modul icazələri -->
+    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+
+    <!-- Anbar (aktiv) -->
+    <a th:href="@{/anbar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+
+    <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+
+    <!-- Yalnız Admin -->
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <div class="header-bar">
+        <h1>📏 Ölçü Vahidləri</h1>
+        <a th:href="@{/anbar}" class="geri-btn">← Anbar Menyusuna Qayıt</a>
+    </div>
+
+    <div th:if="${ugur}" class="mesaj ugur" th:text="${ugur}"></div>
+    <div th:if="${xeta}" class="mesaj xeta" th:text="${xeta}"></div>
+
+    <div class="kart">
+        <form th:action="@{/anbar/olcu-vahidi-elave-et}" method="post" class="form-inline">
+            <input type="text" name="ad" placeholder="Ölçü vahidi adı (məs: Kiloqram)" required style="flex: 2;">
+            <input type="text" name="qisaAd" placeholder="Qısaltma (kq)" required style="flex: 1;">
+            <button type="submit">Əlavə et</button>
+        </form>
+
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>Adı</th>
+                <th>Qısaltma</th>
+                <th style="text-align: right;">Əməliyyat</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ov, iter : ${olcuVahidleri}">
+                <td th:text="${iter.count}">1</td>
+                <td th:text="${ov.ad}" style="font-weight: bold; color: #0f4c81;">Kiloqram</td>
+                <td th:text="${ov.qisaAd}">kq</td>
+                <td style="text-align: right;">
+                    <div class="action-btns">
+                        <a th:href="@{/anbar/olcu-vahidi-redakte/{id}(id=${ov.id})}" class="redakte-btn">Redaktə</a>
+                        <form th:action="@{/anbar/olcu-vahidi-sil/{id}(id=${ov.id})}" method="post" style="display: inline;">
+                            <button type="submit" class="sil-btn">Sil</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${olcuVahidleri.isEmpty()}" style="color: #999; text-align: center; margin-top: 15px;">Hələ heç bir ölçü vahidi əlavə olunmayıb.</div>
+    </div>
+</div>
+
+</body>
+</html>

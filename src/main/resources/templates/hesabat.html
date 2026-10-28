@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Kontragent Hesabatı</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; text-align: center; }
+
+        .filter-kart { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .filter-form { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 13px; font-weight: bold; color: #555; }
+        .filter-group input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        .filter-form button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .filter-form button:hover { background: #1565c0; }
+
+        .kart { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 30px; }
+        .kart h3 { font-size: 16px; color: white; padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; }
+        .bg-blue { background: #1976d2; }
+        .bg-orange { background: #f57c00; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #f9f9f9; font-size: 12px; color: #555; font-weight: bold; text-transform: uppercase; }
+        .text-right { text-align: right; }
+        .text-red { color: #c62828; font-weight: bold; }
+        .text-green { color: #2e7d32; font-weight: bold; }
+        .text-blue { color: #1976d2; font-weight: bold; }
+
+        /* YENİ: Yekun Məbləğ sətri üçün stil */
+        tfoot tr { background: #f1f5f9; border-top: 2px solid #1976d2; }
+        tfoot td { font-weight: bold; font-size: 14px; color: #0f4c81; padding: 15px 10px; }
+        .yekun-label { text-align: right; text-transform: uppercase; letter-spacing: 0.5px; }
+        .yekun-deyer { text-align: right; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/hesabat}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+    <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+            <span style="font-weight: bold; color: #0f4c81;">
+                👤 <span sec:authentication="name">İstifadəçi</span>
+            </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Çıxış</button>
+        </form>
+    </div>
+    <h1>AzHill Construction MMC - Debitor və Kreditorlar</h1>
+
+    <div class="filter-kart">
+        <form action="/hesabat" method="get" class="filter-form">
+            <div class="filter-group">
+                <label>Başlanğıc tarix:</label>
+                <input type="date" name="baslangic" th:value="${baslangic}" required>
+            </div>
+            <div class="filter-group">
+                <label>Son tarix:</label>
+                <input type="date" name="son" th:value="${son}" required>
+            </div>
+            <button type="submit">Hesabatı Göstər</button>
+        </form>
+    </div>
+
+    <!-- DEBİTORLAR -->
+    <div class="kart">
+        <h3 class="bg-blue">Mədaxil (Müştərilər / Debitorlar) - Bizə borclu olanlar</h3>
+        <table th:if="${!debitorlar.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Kontragent (Müştəri)</th>
+                <th class="text-right">Əvvələ qalıq</th>
+                <th class="text-right">Mal Satışı (Dövrdə)</th>
+                <th class="text-right">Ödənilən (Mədaxil)</th>
+                <th class="text-right">Yekun Qalıq Borc</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d : ${debitorlar}">
+                <td th:text="${d.kontragentAd}">Müştəri adı</td>
+                <td class="text-right text-blue" th:text="${d.evveleQaliq} + ' ₼'">0 ₼</td>
+                <td class="text-right text-red" th:text="${d.satisMebleg} + ' ₼'">0 ₼</td>
+                <td class="text-right text-green" th:text="${d.odenis} + ' ₼'">0 ₼</td>
+                <td class="text-right" th:text="${d.qaliq} + ' ₼'"
+                    th:style="${d.qaliq.signum() > 0} ? 'color:#c62828; font-weight:bold;' : 'color:#2e7d32; font-weight:bold;'">0 ₼</td>
+            </tr>
+            </tbody>
+            <!-- YENİ: Yekun Məbləğ -->
+            <tfoot>
+            <tr>
+                <td colspan="4" class="yekun-label">Ümumi Yekun Borc (Müştərilər):</td>
+                <td class="yekun-deyer text-red" th:text="${#aggregates.sum(debitorlar.![qaliq])} + ' ₼'">0 ₼</td>
+            </tr>
+            </tfoot>
+        </table>
+        <div th:if="${debitorlar.isEmpty()}" style="text-align: center; color: #999; padding: 20px;">Bu dövrdə müştəri tapılmadı.</div>
+    </div>
+
+    <!-- KREDİTORLAR -->
+    <div class="kart">
+        <h3 class="bg-orange">Məxaric (Təchizatçılar / Kreditorlar) - Bizim borclu olduğumuz</h3>
+        <table th:if="${!kreditorlar.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Kontragent (Təchizatçı)</th>
+                <th class="text-right">Əvvələ qalıq</th>
+                <th class="text-right">Mal Alışı (Dövrdə)</th>
+                <th class="text-right">Ödənilən (Məxaric)</th>
+                <th class="text-right">Yekun Qalıq Borcumuz</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="k : ${kreditorlar}">
+                <td th:text="${k.kontragentAd}">Təchizatçı adı</td>
+                <td class="text-right text-blue" th:text="${k.evveleQaliq} + ' ₼'">0 ₼</td>
+                <td class="text-right text-red" th:text="${k.alisMebleg} + ' ₼'">0 ₼</td>
+                <td class="text-right text-green" th:text="${k.odenis} + ' ₼'">0 ₼</td>
+                <td class="text-right" th:text="${k.qaliq} + ' ₼'"
+                    th:style="${k.qaliq.signum() > 0} ? 'color:#c62828; font-weight:bold;' : 'color:#2e7d32; font-weight:bold;'">0 ₼</td>
+            </tr>
+            </tbody>
+            <!-- YENİ: Yekun Məbləğ -->
+            <tfoot>
+            <tr>
+                <td colspan="4" class="yekun-label">Ümumi Yekun Borcumuz (Təchizatçılar):</td>
+                <td class="yekun-deyer text-red" th:text="${#aggregates.sum(kreditorlar.![qaliq])} + ' ₼'">0 ₼</td>
+            </tr>
+            </tfoot>
+        </table>
+        <div th:if="${kreditorlar.isEmpty()}" style="text-align: center; color: #999; padding: 20px;">Bu dövrdə təchizatçı tapılmadı.</div>
+    </div>
+
+</div>
+</body>
+</html>

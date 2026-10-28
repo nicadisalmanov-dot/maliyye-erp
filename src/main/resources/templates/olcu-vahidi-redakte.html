@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ölçü Vahidini Redaktə Et - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .kart { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 400px; }
+        h2 { color: #0f4c81; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus { outline: none; border-color: #1976d2; }
+        .btn-qrup { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 1; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1b5e20; }
+        .geri-btn { background: #6c757d; text-align: center; text-decoration: none; display: block; padding: 12px; color: white; border-radius: 8px; font-weight: bold; font-size: 14px; }
+        .geri-btn:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+<div class="kart">
+    <h2>✏️ Ölçü Vahidini Redaktə Et</h2>
+    <form th:action="@{/anbar/olcu-vahidi-redakte/{id}(id=${olcuVahidi.id})}" method="post">
+        <div class="form-group">
+            <label>Ölçü Vahidi Adı</label>
+            <input type="text" name="ad" th:value="${olcuVahidi.ad}" required>
+        </div>
+        <div class="form-group">
+            <label>Qısaltma</label>
+            <input type="text" name="qisaAd" th:value="${olcuVahidi.qisaAd}" required>
+        </div>
+        <div class="btn-qrup">
+            <a href="/anbar/olcu-vahidi" class="geri-btn">İmtina</a>
+            <button type="submit">Yadda saxla</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

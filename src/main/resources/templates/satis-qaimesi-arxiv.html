@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Arxiv - Satış Qaimələri</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+    .esas { margin-left: 220px; flex: 1; padding: 25px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; }
+    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; }
+    .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; background: #ffebee; color: #c62828; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+    .geri-btn:hover { background: #5a6268; }
+
+    /* Düymə stilləri */
+    .berpa-btn { background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+    .berpa-btn:hover { background: #1b5e20; }
+    .bax-btn { background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 5px;}
+    .bax-btn:hover { background: #1565c0; }
+    .birdəfəlik-btn { background: #c62828; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px;}
+    .birdəfəlik-btn:hover { background: #8e0000; }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+  <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a th:href="@{/anbar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+<div class="esas">
+  <a th:href="@{/anbar/satis}" class="geri-btn">← Geri Qayıt</a>
+  <h1>🗑️ Arxiv (Silinmiş Satış Qaimələri)</h1>
+  <div class="kart">
+    <table>
+      <thead>
+      <tr>
+        <th>Sənəd №</th>
+        <th>Yaradan</th>
+        <th>Tarix</th>
+        <th>Anbar</th>
+        <th>Kontragent</th>
+        <th>Məbləğ</th>
+        <th>Silən</th>
+        <th>Silinmə Tarixi</th>
+        <th>Status</th>
+        <th style="text-align:right;">Əməliyyatlar</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="q : ${qaimeler}">
+        <td th:text="${q.senedNomresi}" style="font-weight:bold;">ST-001</td>
+        <td th:text="${q.yaradanIstifadeci != null ? q.yaradanIstifadeci.ad : 'Sistem'}" style="font-size: 12px; color:#666;">-</td>
+        <td th:text="${q.tarix}">2026-01-01</td>
+        <td th:text="${q.anbar.ad}">Anbar</td>
+        <td th:text="${q.kontragent.ad}">Kontragent</td>
+        <td th:text="${q.umumiMebleg} + ' ₼'" style="font-weight:bold; color:#c62828;">0 ₼</td>
+        <td th:text="${q.silenIstifadeci != null ? q.silenIstifadeci.ad : '-'}" style="font-size: 12px; color:#666;">-</td>
+        <td th:text="${#temporals.format(q.silinmeTarixi, 'dd.MM.yyyy HH:mm')}">-</td>
+        <td><span class="badge">Silinib</span></td>
+        <td style="text-align: right; white-space: nowrap;">
+
+          <!-- Qaiməyə bax -->
+          <a th:href="@{/anbar/satis/bax/{id}(id=${q.id})}" class="bax-btn">👁️ Qaiməyə bax</a>
+
+          <!-- Bərpa et -->
+          <form th:action="@{/anbar/satis/berpa-et/{id}(id=${q.id})}" method="post" style="display:inline;">
+            <button type="submit" class="berpa-btn">↩ Bərpa et</button>
+          </form>
+
+          <!-- Birdəfəlik sil (Yalnız ADMIN görə bilər) -->
+          <form th:action="@{/anbar/satis/birdəfəlik-sil/{id}(id=${q.id})}" method="post" style="display:inline;"
+                th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                onsubmit="return confirm('Diqqət! Bu qaimə verilənlər bazasından birdəfəlik silinəcək. Əminsinizmi?');">
+            <button type="submit" class="birdəfəlik-btn">🗑️ Birdəfəlik sil</button>
+          </form>
+
+        </td>
+      </tr>
+      <tr th:if="${qaimeler.isEmpty()}"><td colspan="10" style="text-align:center; color:#999;">Arxivdə heç bir qaimə yoxdur.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Satış - Maliyyə Tətbiqi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; }
+        .sidebar a.aktiv { border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        input, select { flex: 1; min-width: 130px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1565c0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; font-size: 13px; color: #666; text-transform: uppercase; }
+        .sil-btn { background: #c62828; padding: 6px 12px; font-size: 12px; }
+        .sil-btn:hover { background: #8e0000; }
+
+        /* Xəta qutusu */
+        .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; font-weight: bold; }
+    </style>
+</head>
+<!-- Avtomatik qiymət gətirmə skripti -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mehsulSecimi = document.getElementById('mehsulSecimi');
+        const qiymetSahəsi = document.getElementById('qiymetSahəsi');
+
+        mehsulSecimi.addEventListener('change', function() {
+            // Seçilmiş option-u tapırıq
+            const secilmisOption = this.options[this.selectedIndex];
+
+            // Əgər məhsul seçilibsə (value boş deyilsə)
+            if (secilmisOption.value !== "") {
+                // data-qiymet atributundaki dəyəri götürürük
+                const avtoQiymet = secilmisOption.getAttribute('data-qiymet');
+
+                // Əgər qiymət varsa, onu input-a yazırıq
+                if (avtoQiymet) {
+                    qiymetSahəsi.value = avtoQiymet;
+                }
+            } else {
+                // Əgər "Məhsul seçin..." seçilibsə, qiyməti təmizləyirik
+                qiymetSahəsi.value = '';
+            }
+        });
+    });
+</script>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+
+    <!-- Dashboard -->
+    <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+
+    <!-- Modul icazələri -->
+    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+
+    <!-- Anbar (aktiv) -->
+    <a href="/anbar"  sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+
+    <a href="/satis" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+
+    <!-- Yalnız Admin -->
+    <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <!-- İstifadəçi Paneli (Sağ Yuxarı) -->
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+            <span style="font-weight: bold; color: #0f4c81;">
+                👤 <span sec:authentication="name">İstifadəçi</span>
+            </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                Çıxış
+            </button>
+        </form>
+    </div>
+    <h1>💼 Mal Satışı</h1>
+
+    <!-- Xəta mesajı (əgər varsa) -->
+    <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+
+    <div class="kart">
+        <h3>➕ Yeni Satış</h3>
+        <form action="/anbar/satis/et" method="post">
+            <select name="kontragentId" required>
+                <option value="">Müştəri seçin...</option>
+                <option th:each="k : ${musteriler}" th:value="${k.id}" th:text="${k.ad}"></option>
+            </select>
+
+            <select name="mehsulId" id="mehsulSecimi" required>
+                <option value="">Məhsul seçin...</option>
+                <!-- Diqqət: data-qiymet atributunu əlavə etdik -->
+                <option th:each="m : ${mehsullar}"
+                        th:value="${m.id}"
+                        th:attr="data-qiymet=${m.satisQiymeti}"
+                        th:text="${m.ad} + ' (Qalıq: ' + ${m.miqdar} + ')'">
+                </option>
+            </select>
+
+            <input type="number" name="miqdar" step="0.01" min="0.01" placeholder="Miqdar" required>
+            <input type="number" name="qiymet" id="qiymetSahəsi" step="0.01" min="0" placeholder="Vahid qiyməti (₼)" required>
+
+            <button type="submit">Satışı Tamamla</button>
+        </form>
+        <p style="font-size: 12px; color: #888; margin-top: 10px;">💡 Satış edildikdə Anbardaki malın miqdarı avtomatik azalacaq.</p>
+    </div>
+
+    <div class="kart">
+        <h3>📋 Satış Tarixçəsi</h3>
+
+        <table th:if="${!satislar.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Tarix</th>
+                <th>Müştəri</th>
+                <th>Məhsul</th>
+                <th>Miqdar</th>
+                <th>Vahid Qiyməti</th>
+                <th>Ümumi Məbləğ</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${satislar}">
+                <td th:text="${s.tarix}">2026-01-01</td>
+                <td th:text="${s.kontragent.ad}" style="font-weight: bold;">Müştəri</td>
+                <td th:text="${s.mehsul.ad}">Məhsul</td>
+                <td th:text="${s.miqdar}">1</td>
+                <td th:text="${s.vahidQiymeti} + ' ₼'">0 ₼</td>
+                <td th:text="${s.umumiMebleg} + ' ₼'" style="color: #1976d2; font-weight: bold;">0 ₼</td>
+                <td style="text-align: right;">
+                    <form th:action="@{/satis/sil/{id}(id=${s.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="sil-btn">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${satislar.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
+            Hələ heç bir satış yoxdur.
+        </div>
+    </div>
+</div>
+</body>
+</html>

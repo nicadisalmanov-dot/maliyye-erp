@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Anbar Əməliyyatları - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .user-info { text-align: right; margin-bottom: 20px; }
+        .user-info span { background: #e3f2fd; color: #0f4c81; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+        .cixis-btn { background: #c62828; color: white; padding: 6px 12px; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; margin-left: 10px; }
+
+        h1 { color: #0f4c81; font-size: 24px; margin-bottom: 8px; }
+        p.sub-title { color: #666; font-size: 14px; margin-bottom: 25px; }
+
+        .grid-konteyner { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .kart h2 { font-size: 16px; color: #0f4c81; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+
+        .link-list { list-style: none; }
+        .link-list li { margin-bottom: 10px; }
+        .link-list a { color: #444; text-decoration: none; font-size: 14px; display: block; padding: 6px 10px; border-radius: 6px; transition: 0.2s; }
+        .link-list a:hover { background: #e3f2fd; color: #0f4c81; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 style="color: white; font-size: 18px; padding: 0 20px 20px 20px; border-bottom: 1px solid #1976d2; margin-bottom: 15px;">💰 Maliyyə ERP</h2>
+
+    <!-- Dashboard -->
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+
+    <!-- Modul icazələri -->
+    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+
+    <!-- Anbar (aktiv) -->
+    <a th:href="@{/anbar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+
+    <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+
+    <!-- Yalnız Admin -->
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <div class="user-info">
+        <span>👤 admin</span>
+        <a th:href="@{/logout}" class="cixis-btn">Çıxış</a>
+    </div>
+
+    <h1>📦 Anbar Əməliyyatları</h1>
+    <p class="sub-title">Zəhmət olmasa, yerinə yetirmək istədiyiniz əməliyyatı seçin.</p>
+
+    <div class="grid-konteyner">
+
+        <!-- 1. Daxil olan mallar -->
+        <div class="kart">
+            <h2>📥 Daxil olan mallar</h2>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/alish}">→ Mal və xidmət alışı</a></li>
+                <li><a th:href="@{/anbar/alis-qaytarma}">→ Malın geri qaytarılması</a></li>
+            </ul>
+        </div>
+
+        <!-- 2. Çıxan mallar -->
+        <div class="kart">
+            <h2>📤 Çıxan mallar</h2>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/satis}">→ Mal və xidmət satışı</a></li>
+                <li><a th:href="@{/anbar/satis-qaytarma}">→ Satışdan geri</a></li>
+            </ul>
+        </div>
+
+        <!-- 3. Daxili əməliyyatlar -->
+        <div class="kart">
+            <h2>🔄 Daxili əməliyyatlar</h2>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/transfer}">→ Anbarlararası transfer</a></li>
+                <li><a th:href="@{/anbar/silinme}">→ Malın silinməsi</a></li>
+                <li><a th:href="@{/anbar/inventarizasiya}">→ Mal sayımı (İnventarizasiya)</a></li>
+            </ul>
+        </div>
+
+        <!-- 4. Əsas Vəsaitlər və Qeyri Maddi -->
+        <div class="kart">
+            <h2>🏗️ Əsas Vəsaitlər və Qeyri Maddi</h2>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/esas-vesaitler}">→ Əsas Vəsaitlər</a></li>
+                <li><a th:href="@{/anbar/qeyri-maddi}">→ Qeyri Maddi Aktivlər</a></li>
+            </ul>
+        </div>
+
+        <!-- 5. Hesabatlar -->
+        <div class="kart">
+            <h2>📊 Hesabatlar</h2>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/anbar-qaliqlari}">→ Anbar Qalıqları</a></li>
+            </ul>
+        </div>
+
+        <!-- 6. Tənzimləmələr -->
+        <div class="kart">
+            <h2>⚙️ Tənzimləmələr</h2>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/mallar}">→ Mallar (Məhsullar)</a></li>
+                <li><a th:href="@{/anbar/mal-tipi}">→ Mal tipi</a></li>
+                <li><a th:href="@{/anbar/mal-qrupu}">→ Mal qrupu</a></li>
+                <li><a th:href="@{/anbar/xidmetler}">→ Xidmətlər</a></li>
+                <li><a th:href="@{/anbar/xidmet-tipi}">→ Xidmət tipi</a></li>
+                <li><a th:href="@{/anbar/xidmet-qrupu}">→ Xidmət qrupu</a></li>
+                <li><a th:href="@{/anbar/olcu-vahidi}">→ Ölçü vahidi</a></li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

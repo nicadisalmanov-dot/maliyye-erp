@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Əsas Vəsaitlər - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; }
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #f8f9fa; font-size: 13px; color: #666; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
+</div>
+<div class="esas">
+  <a href="/anbar" class="geri-btn">← Geri Qayıt</a>
+  <h1>🏗️ Əsas Vəsaitlər</h1>
+  <div class="kart">
+    <p style="text-align:center; color:#999;">Hələ heç bir Əsas Vəsait yoxdur. (Bu bölmə hazırlanır)</p>
+  </div>
+</div>
+</body>
+</html>

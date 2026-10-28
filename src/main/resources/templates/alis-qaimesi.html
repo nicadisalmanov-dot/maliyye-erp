@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Mal və Xidmət Alışı - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    .esas { margin-left: 220px; flex: 1; padding: 25px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; font-size: 24px; }
+    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 100%; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+    .cədvəl-input { padding: 8px; font-size: 13px; }
+
+    button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+    .btn-yesil { background: #2e7d32; }
+    .btn-sil { background: #c62828; padding: 6px 12px; font-size: 11px; border-radius: 4px; }
+    .btn-redakte { background: #f57c00; padding: 6px 12px; font-size: 11px; border-radius: 4px; text-decoration: none; color: white; display: inline-block; margin-right: 4px; }
+    .btn-bax { background: #1976d2; padding: 6px 12px; font-size: 11px; border-radius: 4px; text-decoration: none; color: white; display: inline-block; margin-right: 4px; }
+
+    .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; }
+    .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; }
+
+    tfoot td { background: #f8f9fa; font-weight: bold; border-top: 2px solid #ccc; font-size: 14px; padding: 12px 8px; }
+    .cemi-input { border: none; background: transparent; font-size: 16px; font-weight: bold; color: #2e7d32; text-align: left; padding: 0; outline: none; }
+
+    .qaimeler-cedveli th { background: #0f4c81; color: white; padding: 12px 10px; border: none; }
+    .qaimeler-cedveli tr:hover { background: #f1f8ff; }
+    .qaimeler-cedveli td { padding: 12px 10px; vertical-align: middle; }
+
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+    .badge-aktiv { background: #e8f5e9; color: #2e7d32; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+  <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+  <h1>📥 Mal və Xidmət Alışı</h1>
+
+  <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+  <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+
+  <form action="/anbar/alish/elave-et" method="post">
+    <div class="kart">
+      <h3>Qaimə Məlumatları</h3>
+      <div class="form-grid">
+        <div>
+          <label>Tarix</label>
+          <input type="date" name="tarix" id="tarixSahəsi" required>
+        </div>
+        <div>
+          <label>Anbar</label>
+          <select name="anbarId" id="anbarSelect" required onchange="anbarDeyisdi()">
+            <option value="">Anbar seçin...</option>
+            <option th:each="a : ${anbarlar}" th:value="${a.id}" th:text="${a.ad}"></option>
+          </select>
+        </div>
+        <div>
+          <label>Kontragent</label>
+          <select name="kontragentId" required>
+            <option value="">Kontragent seçin...</option>
+            <option th:each="k : ${kontragentler}" th:value="${k.id}" th:text="${k.ad}"></option>
+          </select>
+        </div>
+        <div>
+          <label>Hesab № 2 (Ümumi)</label>
+          <input type="text" name="umumiHesab2" placeholder="531-00">
+        </div>
+      </div>
+    </div>
+
+    <div class="kart">
+      <h3>Qaimənin Sətirləri</h3>
+      <table id="setirlerCədvəli">
+        <thead>
+        <tr>
+          <th style="width: 100px;">Növ</th>
+          <th style="width: 250px;">Mal / Xidmət</th>
+          <th style="width: 130px;">Layihə</th>
+          <th style="width: 70px;">Vahid</th>
+          <th style="width: 80px;">Miqdar</th>
+          <th style="width: 90px;">Qiymət</th>
+          <th style="width: 100px;">Məbləğ</th>
+          <th style="width: 90px;">Hesab №</th>
+          <th style="width: 100px;">Qeyd</th>
+          <th style="width: 50px;"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="setir">
+          <td>
+            <select name="novler" class="cədvəl-input" onchange="novuDeyis(this)">
+              <option value="MAL">Mal</option>
+              <option value="XIDMET">Xidmət</option>
+            </select>
+          </td>
+          <td>
+            <select name="mehsulIdler" class="cədvəl-input mal-secim" onchange="malSecildi(this)">
+              <option value="">Mal seçin...</option>
+              <option th:each="m : ${mehsullar}" th:value="${m.id}" th:text="${m.ad}"
+                      th:attr="data-ad=${m.ad}, data-qiymet=${m.alisQiymeti}, data-vahid=${m.vahid}"></option>
+            </select>
+            <select name="xidmetIdler" class="cədvəl-input xidmet-secim" style="display:none;" onchange="malSecildi(this)">
+              <option value="">Xidmət seçin...</option>
+              <option th:each="x : ${xidmetler}" th:value="${x.id}" th:text="${x.ad}"
+                      th:attr="data-qiymet=${x.qiymet}, data-vahid=əd"></option>
+            </select>
+          </td>
+          <td>
+            <select name="layiheIdler" class="cədvəl-input">
+              <option value="">Layihə...</option>
+              <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}"></option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="vahidler" class="cədvəl-input vahid" placeholder="əd" readonly>
+          </td>
+          <td>
+            <input type="number" name="miqdarlar" step="0.001" class="cədvəl-input miqdar" required oninput="meblegHesabla(this)">
+          </td>
+          <td>
+            <input type="number" name="qiymetler" step="0.01" class="cədvəl-input qiymet" required oninput="meblegHesabla(this)">
+          </td>
+          <td>
+            <input type="text" class="cədvəl-input mebleg" readonly style="background:#eee;">
+          </td>
+          <td>
+            <input type="text" name="hesablar" class="cədvəl-input" placeholder="701-00">
+          </td>
+          <td>
+            <input type="text" name="qeydler" class="cədvəl-input" placeholder="Qeyd...">
+          </td>
+          <td>
+            <button type="button" class="btn-sil" onclick="setiriSil(this)">X</button>
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+          <td colspan="6" style="text-align: right; color: #0f4c81;">CƏMİ MƏBLƏĞ:</td>
+          <td><input type="text" id="cemiMebleg" class="cemi-input" readonly value="0.00 ₼"></td>
+          <td colspan="3"></td>
+        </tr>
+        </tfoot>
+      </table>
+
+      <div style="display:flex; justify-content: space-between; margin-top: 15px;">
+        <button type="button" onclick="yeniSetir()" style="background: #6c757d;">+ Yeni Sətir</button>
+        <button type="submit" class="btn-yesil">Qaiməni Yadda Saxla</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="kart">
+    <h3 style="display: flex; justify-content: space-between; align-items: center;">
+      <span>📋 Mövcud Alış Qaimələri</span>
+      <a href="/anbar/alish/arxiv" style="font-size: 13px; color: #c62828; background: #ffebee; padding: 6px 12px; border-radius: 6px; text-decoration: none;">🗑️ Arxivə bax</a>
+    </h3>
+
+    <div style="overflow-x: auto;">
+      <table class="qaimeler-cedveli">
+        <thead>
+        <tr>
+          <th>Sənəd №</th>
+          <th>Yaradan</th>
+          <th>Tarix</th>
+          <th>Anbar</th>
+          <th>Kontragent</th>
+          <th>Məbləğ</th>
+          <th>Status</th>
+          <th style="text-align:center;">Əməliyyatlar</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="q : ${qaimeler}">
+          <td><strong th:text="${q.senedNomresi}">AL-001</strong></td>
+          <td th:text="${q.yaradanIstifadeci != null ? q.yaradanIstifadeci.ad : 'Sistem'}">-</td>
+          <td th:text="${q.tarix}">2026-01-01</td>
+          <td th:text="${q.anbar.ad}">Anbar</td>
+          <td th:text="${q.kontragent.ad}">Kontragent</td>
+          <td><strong style="color:#2e7d32;" th:text="${q.umumiMebleg} + ' ₼'">0 ₼</strong></td>
+          <td><span class="badge badge-aktiv">Aktiv</span></td>
+          <td style="text-align: center; white-space: nowrap;">
+            <a th:href="@{/anbar/alish/bax/{id}(id=${q.id})}" class="btn-bax">👁️ Qaiməyə bax</a>
+            <a th:href="@{/anbar/alish/redakte/{id}(id=${q.id})}" class="btn-redakte">✏️ Redaktə</a>
+            <form th:action="@{/anbar/alish/sil/{id}(id=${q.id})}" method="post" style="display:inline;">
+              <button type="submit" class="btn-sil">🗑️ Sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const tarix = document.getElementById('tarixSahəsi');
+      if (tarix) tarix.value = new Date().toISOString().split('T')[0];
+  });
+
+  // Anbar dəyişdikdə bütün mal seçimlərində qalıqları yeniləyirik
+  function anbarDeyisdi() {
+      const anbarId = document.getElementById('anbarSelect').value;
+      if (!anbarId) return;
+
+      fetch('/anbar/api/qaliqlar?anbarId=' + anbarId)
+          .then(response => response.json())
+          .then(data => {
+              // data: { mehsulId: miqdar } formatında gəlir
+              document.querySelectorAll('.mal-secim').forEach(select => {
+                  const currentVal = select.value;
+                  Array.from(select.options).forEach(opt => {
+                      if (opt.value === "") return;
+                      const originalAd = opt.getAttribute('data-ad') || opt.text.split(' (Qalıq:')[0];
+                      const mehsulId = opt.value;
+                      const qaliq = data[mehsulId] !== undefined ? data[mehsulId] : 0;
+                      opt.text = originalAd + ' (Qalıq: ' + qaliq + ')';
+                  });
+                  select.value = currentVal;
+              });
+          })
+          .catch(err => console.error('Qalıqlar yüklənmədi:', err));
+  }
+
+  function novuDeyis(select) {
+      const setir = select.closest('tr');
+      const malSecim = setir.querySelector('.mal-secim');
+      const xidmetSecim = setir.querySelector('.xidmet-secim');
+
+      if (select.value === 'MAL') {
+          malSecim.style.display = 'block';
+          xidmetSecim.style.display = 'none';
+      } else {
+          malSecim.style.display = 'none';
+          xidmetSecim.style.display = 'block';
+      }
+  }
+
+  function malSecildi(select) {
+      const setir = select.closest('tr');
+      const secilmisOption = select.options[select.selectedIndex];
+      const qiymetInput = setir.querySelector('.qiymet');
+      const vahidInput = setir.querySelector('.vahid');
+      if (secilmisOption.value !== "") {
+          const qiymet = secilmisOption.getAttribute('data-qiymet');
+          const vahid = secilmisOption.getAttribute('data-vahid');
+          if (qiymet) qiymetInput.value = qiymet;
+          if (vahid) vahidInput.value = vahid;
+          meblegHesabla(qiymetInput);
+      }
+  }
+
+  function meblegHesabla(element) {
+      const setir = element.closest('tr');
+      const miqdar = parseFloat(setir.querySelector('.miqdar').value) || 0;
+      const qiymet = parseFloat(setir.querySelector('.qiymet').value) || 0;
+      const meblegInput = setir.querySelector('.mebleg');
+      meblegInput.value = (miqdar * qiymet).toFixed(2);
+      cemiMeblegHesabla();
+  }
+
+  function cemiMeblegHesabla() {
+      let cemi = 0;
+      document.querySelectorAll('.mebleg').forEach(input => {
+          cemi += parseFloat(input.value) || 0;
+      });
+      document.getElementById('cemiMebleg').value = cemi.toFixed(2) + ' ₼';
+  }
+
+  function yeniSetir() {
+      const tbody = document.querySelector('#setirlerCədvəli tbody');
+      const kohneSetir = tbody.querySelector('.setir');
+      const yeniSetir = kohneSetir.cloneNode(true);
+      yeniSetir.querySelectorAll('input').forEach(i => i.value = '');
+      yeniSetir.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+      yeniSetir.querySelector('.mal-secim').style.display = 'block';
+      yeniSetir.querySelector('.xidmet-secim').style.display = 'none';
+      tbody.appendChild(yeniSetir);
+
+      // Əgər anbar seçilibsə, yeni sətir əlavə olunanda da qalıqları dərhal yenilə
+      anbarDeyisdi();
+      cemiMeblegHesabla();
+  }
+
+  function setiriSil(btn) {
+      const tbody = document.querySelector('#setirlerCədvəli tbody');
+      if (tbody.querySelectorAll('.setir').length > 1) {
+          btn.closest('tr').remove();
+          cemiMeblegHesabla();
+      } else {
+          alert("Ən azı bir sətir olmalıdır!");
+      }
+  }
+</script>
+</body>
+</html>

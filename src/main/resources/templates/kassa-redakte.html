@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Kassa Əməliyyatı Redaktə - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+        .geri-btn:hover { background: #5a6268; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        input, select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button { padding: 12px 24px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1b5e20; }
+        .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; }
+        .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+    <a th:href="@{/kassa}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+    <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <a th:href="@{/kassa}" class="geri-btn">← Geri Qayıt</a>
+    <h1>✏️ Kassa Əməliyyatını Redaktə Et (<span th:text="${emeliyyat.senedNomresi}"></span>)</h1>
+
+    <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+    <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+
+    <div class="kart">
+        <form th:action="@{/kassa/redakte/{id}(id=${emeliyyat.id})}" method="post">
+            <div class="form-grid">
+                <div>
+                    <label>Tarix</label>
+                    <input type="date" name="tarix" th:value="${emeliyyat.tarix}" required>
+                </div>
+                <div>
+                    <label>Layihə</label>
+                    <select name="layiheId">
+                        <option value="">Layihə...</option>
+                        <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}"
+                                th:selected="${emeliyyat.layihe != null && emeliyyat.layihe.id == l.id}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label>Kassa Hesabı</label>
+                    <select name="kassaHesabiId">
+                        <option value="">Kassa hesabı...</option>
+                        <option th:each="kh : ${kassaHesablari}" th:value="${kh.id}" th:text="${kh.ad}"
+                                th:selected="${emeliyyat.kassaHesabi != null && emeliyyat.kassaHesabi.id == kh.id}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label>Hesablaşma hesabı</label>
+                    <select name="hesablasmaHesabi">
+                        <option value="">Hesablaşma hesabı...</option>
+                        <option value="Kontragent" th:selected="${emeliyyat.hesablasmaHesabi == 'Kontragent'}">Kontragent</option>
+                        <option value="Borc müqaviləsi" th:selected="${emeliyyat.hesablasmaHesabi == 'Borc müqaviləsi'}">Borc müqaviləsi</option>
+                        <option value="Təhtəlhesab şəxs" th:selected="${emeliyyat.hesablasmaHesabi == 'Təhtəlhesab şəxs'}">Təhtəlhesab şəxs</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Kontragent</label>
+                    <select name="kontragentId">
+                        <option value="">Kontragent...</option>
+                        <option th:each="k : ${kontragentler}" th:value="${k.id}" th:text="${k.ad}"
+                                th:selected="${emeliyyat.kontragent != null && emeliyyat.kontragent.id == k.id}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label>Açıqlama</label>
+                    <input type="text" name="tesvir" th:value="${emeliyyat.tesvir}" required>
+                </div>
+                <div>
+                    <label>Mədaxil (₼)</label>
+                    <input type="number" name="medaxil" step="0.01" min="0" th:value="${emeliyyat.medaxil}">
+                </div>
+                <div>
+                    <label>Məxaric (₼)</label>
+                    <input type="number" name="mexaric" step="0.01" min="0" th:value="${emeliyyat.mexaric}">
+                </div>
+                <div style="grid-column: span 4;">
+                    <label>Xərc maddəsi</label>
+                    <input type="text" name="xercMaddesi" th:value="${emeliyyat.xercMaddesi}">
+                </div>
+            </div>
+            <button type="submit">Dəyişiklikləri Yadda Saxla</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

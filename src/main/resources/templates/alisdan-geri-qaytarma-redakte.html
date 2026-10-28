@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Alışdan Geri Qaytarma Redaktə - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+    .esas { margin-left: 220px; flex: 1; padding: 25px; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; font-size: 24px; }
+    .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+    .cədvəl-input { padding: 8px; font-size: 13px; }
+    button { padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+    .btn-yesil { background: #2e7d32; }
+    .btn-sil { background: #c62828; padding: 6px 12px; font-size: 11px; border-radius: 4px; color: white; cursor: pointer; }
+    .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; }
+    .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; }
+    tfoot td { background: #f8f9fa; font-weight: bold; border-top: 2px solid #ccc; font-size: 14px; padding: 12px 8px; }
+    .cemi-input { border: none; background: transparent; font-size: 16px; font-weight: bold; color: #2e7d32; text-align: left; padding: 0; outline: none; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
+</div>
+
+<div class="esas">
+  <a href="/anbar/alis-qaytarma" class="geri-btn">← Geri Qayıt</a>
+  <h1>✏️ Geri Qaytarma Qaiməsini Redaktə Et (<span th:text="${qaime.senedNomresi}">AGQ-001</span>)</h1>
+
+  <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+  <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+
+  <form th:action="@{/anbar/alis-qaytarma/redakte/{id}(id=${qaime.id})}" method="post">
+    <div class="kart">
+      <div class="form-grid">
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Tarix</label>
+          <input type="date" name="tarix" th:value="${qaime.tarix}" required>
+        </div>
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Anbar</label>
+          <select name="anbarId" required>
+            <option value="">Anbar seçin...</option>
+            <option th:each="a : ${anbarlar}" th:value="${a.id}" th:text="${a.ad}" th:selected="${a.id == qaime.anbar.id}"></option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:5px;">Kontragent (Təchizatçı)</label>
+          <select name="kontragentId" required>
+            <option value="">Təchizatçı seçin...</option>
+            <option th:each="k : ${kontragentler}" th:value="${k.id}" th:text="${k.ad}" th:selected="${k.id == qaime.kontragent.id}"></option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="kart">
+      <h3>Qaimənin Sətirləri</h3>
+      <table id="setirlerCədvəli">
+        <thead>
+        <tr>
+          <th>Növ</th>
+          <th>Mal / Xidmət</th>
+          <th>Layihə</th>
+          <th>Miqdar</th>
+          <th>Qiymət</th>
+          <th>Məbləğ</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="setir" th:each="setir : ${qaime.setirler}">
+          <td>
+            <select name="novler" class="cədvəl-input" onchange="novuDeyis(this)">
+              <option value="MAL" th:selected="${setir.nov == 'MAL'}">Mal</option>
+              <option value="XIDMET" th:selected="${setir.nov == 'XIDMET'}">Xidmət</option>
+            </select>
+          </td>
+          <td>
+            <select name="mehsulIdler" class="cədvəl-input mal-secim" style="display:block;">
+              <option value="">Mal seçin...</option>
+              <option th:each="m : ${mehsullar}" th:value="${m.id}" th:text="${m.ad}"
+                      th:selected="${setir.mehsul != null && m.id == setir.mehsul.id}"></option>
+            </select>
+          </td>
+          <td>
+            <select name="layiheIdler" class="cədvəl-input">
+              <option value="">Layihə...</option>
+              <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}"
+                      th:selected="${setir.layihe != null && l.id == setir.layihe.id}"></option>
+            </select>
+          </td>
+          <td>
+            <input type="number" name="miqdarlar" step="0.001" class="cədvəl-input miqdar" th:value="${setir.miqdar}" required oninput="meblegHesabla(this)">
+          </td>
+          <td>
+            <input type="number" name="qiymetler" step="0.01" class="cədvəl-input qiymet" th:value="${setir.vahidQiymeti}" required oninput="meblegHesabla(this)">
+          </td>
+          <td>
+            <input type="text" class="cədvəl-input mebleg" th:value="${setir.mebleg}" readonly style="background:#eee;">
+          </td>
+          <td>
+            <button type="button" class="btn-sil" onclick="setiriSil(this)">X</button>
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+          <td colspan="5" style="text-align: right; color: #0f4c81;">CƏMİ MƏBLƏĞ:</td>
+          <td><input type="text" id="cemiMebleg" class="cemi-input" readonly th:value="${qaime.umumiMebleg} + ' ₼'"></td>
+          <td></td>
+        </tr>
+        </tfoot>
+      </table>
+
+      <div style="display:flex; justify-content: space-between; margin-top: 15px;">
+        <button type="button" onclick="yeniSetir()" style="background: #6c757d;">+ Yeni Sətir</button>
+        <button type="submit" class="btn-yesil">Dəyişiklikləri Yadda Saxla</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  function meblegHesabla(element) {
+      const setir = element.closest('tr');
+      const miqdar = parseFloat(setir.querySelector('.miqdar').value) || 0;
+      const qiymet = parseFloat(setir.querySelector('.qiymet').value) || 0;
+      setir.querySelector('.mebleg').value = (miqdar * qiymet).toFixed(2);
+      cemiMeblegHesabla();
+  }
+
+  function cemiMeblegHesabla() {
+      let cemi = 0;
+      document.querySelectorAll('.mebleg').forEach(input => {
+          cemi += parseFloat(input.value) || 0;
+      });
+      document.getElementById('cemiMebleg').value = cemi.toFixed(2) + ' ₼';
+  }
+
+  function yeniSetir() {
+      const tbody = document.querySelector('#setirlerCədvəli tbody');
+      const yeniSetir = tbody.querySelector('.setir').cloneNode(true);
+      yeniSetir.querySelectorAll('input').forEach(i => i.value = '');
+      yeniSetir.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+      tbody.appendChild(yeniSetir);
+      cemiMeblegHesabla();
+  }
+
+  function setiriSil(btn) {
+      const tbody = document.querySelector('#setirlerCədvəli tbody');
+      if (tbody.querySelectorAll('.setir').length > 1) {
+          btn.closest('tr').remove();
+          cemiMeblegHesabla();
+      } else {
+          alert("Ən azı bir sətir olmalıdır!");
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+      cemiMeblegHesabla();
+  });
+</script>
+</body>
+</html>

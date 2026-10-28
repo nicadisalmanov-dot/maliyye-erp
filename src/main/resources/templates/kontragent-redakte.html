@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Kontragenti Redaktə Et</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; max-width: 600px; }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        label { font-size: 13px; font-weight: bold; color: #555; }
+        input, select { padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button { padding: 12px 24px; background: #f57c00; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #e65100; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+        .geri-btn:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/kontragentler" class="aktiv">👥 Kontragentlər</a>
+</div>
+
+<div class="esas">
+    <a href="/kontragentler" class="geri-btn">← Geri Qayıt</a>
+    <h1>✏️ Kontragenti Redaktə Et</h1>
+
+    <div class="kart">
+        <form th:action="@{/kontragentler/redakte/{id}(id=${kontragent.id})}" method="post">
+            <div>
+                <label>Ad / Şirkət adı</label>
+                <input type="text" name="ad" th:value="${kontragent.ad}" required>
+            </div>
+            <div>
+                <label>Telefon</label>
+                <input type="text" name="telefon" th:value="${kontragent.telefon}">
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="email" name="email" th:value="${kontragent.email}">
+            </div>
+            <div>
+                <label>Ünvan</label>
+                <input type="text" name="unvan" th:value="${kontragent.unvan}">
+            </div>
+            <div>
+                <label>Növü</label>
+                <select name="nov">
+                    <option value="MUSTERI" th:selected="${kontragent.nov == 'MUSTERI'}">Müştəri (Alıcı)</option>
+                    <option value="TECHIZATCI" th:selected="${kontragent.nov == 'TECHIZATCI'}">Təchizatçı (Satıcı)</option>
+                    <option value="HER_IKISI" th:selected="${kontragent.nov == 'HER_IKISI'}">Hər ikisi</option>
+                </select>
+            </div>
+            <button type="submit">Yadda Saxla</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

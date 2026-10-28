@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>İstifadəçini Redaktə Et - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    h1 { color: #0f4c81; margin-bottom: 20px; }
+
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    h3 { margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+    form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
+    input, select { flex: 1; min-width: 130px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #1976d2; }
+    button { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #1565c0; }
+
+    .icaze-qutusu { display: flex; flex-wrap: wrap; gap: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; width: 100%; }
+    .icaze-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+    .icaze-item input { width: 18px; height: 18px; cursor: pointer; }
+
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+    .geri-btn:hover { background: #5a6268; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a href="/" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+  <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+  <a href="/istifadeciler" class="geri-btn">← Geri Qayıt</a>
+  <h1>✏️ İstifadəçini Redaktə Et</h1>
+
+  <div class="kart">
+    <form th:action="@{/istifadeciler/redakte/{id}(id=${istifadeci.id})}" method="post" style="display: flex; flex-direction: column; align-items: stretch;">
+
+      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" th:value="${istifadeci.username}" disabled style="background:#eee;">
+        <input type="text" name="ad" th:value="${istifadeci.ad}" placeholder="Ad, Soyad" required>
+        <select name="rol">
+          <!-- DÜZƏLİŞ: th:selected düzgün yoxlanış -->
+          <option value="USER" th:selected="${istifadeci.rol == 'ROLE_USER'}">İstifadəçi (USER)</option>
+          <option value="ADMIN" th:selected="${istifadeci.rol == 'ROLE_ADMIN'}">Admin (ADMIN)</option>
+        </select>
+      </div>
+
+      <!-- Modul İcazələri -->
+      <div class="icaze-qutusu" style="margin-bottom: 10px;">
+        <!-- YENİ: Dashboard checkbox əlavə edildi -->
+        <label class="icaze-item"><input type="checkbox" name="dashboard" th:checked="${istifadeci.icazeDashboard}"> Dashboard</label>
+        <label class="icaze-item"><input type="checkbox" name="kassa" th:checked="${istifadeci.icazeKassa}"> Kassa</label>
+        <label class="icaze-item"><input type="checkbox" name="bank" th:checked="${istifadeci.icazeBank}"> Bank</label>
+        <label class="icaze-item"><input type="checkbox" name="kontragent" th:checked="${istifadeci.icazeKontragent}"> Kontragentlər</label>
+        <label class="icaze-item"><input type="checkbox" name="anbar" th:checked="${istifadeci.icazeAnbar}"> Anbar</label>
+        <label class="icaze-item"><input type="checkbox" name="satis" th:checked="${istifadeci.icazeSatis}"> Satış</label>
+        <label class="icaze-item"><input type="checkbox" name="satinalma" th:checked="${istifadeci.icazeSatinalma}"> Satınalma</label>
+        <label class="icaze-item"><input type="checkbox" name="hesabat" th:checked="${istifadeci.icazeHesabat}"> Hesabat</label>
+      </div>
+
+      <!-- Layihə, Anbar, Kassa və Bank İcazələri -->
+      <div class="icaze-qutusu" style="background: #e3f2fd; margin-bottom: 10px; flex-direction: column;">
+        <div style="width: 100%;">
+          <strong>Layihələr (Data Scope):</strong><br>
+          <label th:each="l : ${layiheler}" style="margin-right: 15px; font-weight: normal;">
+            <input type="checkbox" name="layiheler" th:value="${l.id}"
+                   th:checked="${istifadeci.allowedProjects != null and istifadeci.allowedProjects.contains(l)}">
+            <span th:text="${l.ad}"></span>
+          </label>
+        </div>
+
+        <div style="width: 100%; margin-top: 10px;">
+          <strong>Anbarlar:</strong><br>
+          <label th:each="a : ${anbarlar}" style="margin-right: 15px; font-weight: normal;">
+            <input type="checkbox" name="anbarlar" th:value="${a.id}"
+                   th:checked="${istifadeci.allowedWarehouses != null and istifadeci.allowedWarehouses.contains(a)}">
+            <span th:text="${a.ad}"></span>
+          </label>
+        </div>
+
+        <div style="width: 100%; margin-top: 10px;">
+          <strong>Kassa Hesabları:</strong><br>
+          <label th:each="k : ${kassaHesablari}" style="margin-right: 15px; font-weight: normal;">
+            <input type="checkbox" name="kassaHesablari" th:value="${k.id}"
+                   th:checked="${istifadeci.allowedKassaHesablari != null and istifadeci.allowedKassaHesablari.contains(k)}">
+            <span th:text="${k.ad}"></span>
+          </label>
+        </div>
+
+        <div style="width: 100%; margin-top: 10px;">
+          <strong>Bank Hesabları:</strong><br>
+          <label th:each="b : ${bankHesablari}" style="margin-right: 15px; font-weight: normal;">
+            <input type="checkbox" name="bankHesablari" th:value="${b.id}"
+                   th:checked="${istifadeci.allowedBankHesablari != null and istifadeci.allowedBankHesablari.contains(b)}">
+            <span th:text="${b.ad}"></span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" style="margin-top: 10px; width: 200px; background: #f57c00;">Yadda Saxla</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

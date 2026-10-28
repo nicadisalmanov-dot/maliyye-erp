@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Mal Qalıqları Hesabatı - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    h1 { color: #0f4c81; font-size: 24px; }
+    .geri-btn { padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: bold; }
+    .geri-btn:hover { background: #5a6268; }
+
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: visible !important; }
+
+    .excel-filter-panel { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: visible; position: relative; z-index: 50; }
+    .filter-group { position: relative; flex: 1; min-width: 200px; max-width: 260px; }
+    .filter-label { font-size: 12px; font-weight: bold; color: #0f4c81; text-transform: uppercase; margin-bottom: 5px; display: block; }
+
+    .custom-dropdown-btn { width: 100%; padding: 10px 12px; background: white; border: 2px solid #cbd5e1; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px; font-weight: bold; color: #334155; display: flex; justify-content: space-between; align-items: center; }
+    .custom-dropdown-btn:hover { border-color: #1976d2; }
+
+    .dropdown-content { display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #1976d2; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 9999; max-height: 250px; overflow-y: auto; padding: 10px; margin-top: 4px; }
+    .dropdown-content.show { display: block; }
+
+    .search-box-inside { width: 100%; padding: 6px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; }
+    .search-box-inside:focus { outline: none; border-color: #1976d2; }
+
+    .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 6px 4px; font-size: 13px; cursor: pointer; color: #1e293b; user-select: none; }
+    .checkbox-item:hover { background: #f1f5f9; }
+    .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #0f4c81; }
+
+    .sifirla-btn { padding: 10px 18px; background: #e2e8f0; color: #334155; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; height: 42px; align-self: flex-end; }
+    .sifirla-btn:hover { background: #cbd5e1; color: #0f172a; }
+
+    .secilmis-anbar-info {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #0f4c81;
+        background: #e3f2fd;
+        padding: 12px 18px;
+        border-radius: 6px;
+        border-left: 5px solid #1976d2;
+        display: block;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; font-size: 12px; color: #555; text-transform: uppercase; }
+    tr:hover { background: #f1f8ff; }
+
+    tfoot tr { background: #f8f9fa; border-top: 2px solid #0f4c81; }
+    tfoot td { font-weight: bold; font-size: 14px; }
+    .cemi-label { text-align: right; color: #0f4c81; font-size: 14px; text-transform: uppercase; }
+    .cemi-mebleg-val { color: #2e7d32; font-size: 16px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+  <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a th:href="@{/anbar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+  <div class="header-bar">
+    <h1>📊 Mal Qalıqları Hesabatı</h1>
+    <a th:href="@{/anbar}" class="geri-btn">← Anbar Menyusuna Qayıt</a>
+  </div>
+
+  <div class="kart">
+    <div class="excel-filter-panel">
+      <!-- ANBAR FİLTRİ -->
+      <div class="filter-group">
+        <label class="filter-label">🏬 Anbar Filtri</label>
+        <div class="custom-dropdown-btn" onclick="toggleDropdown('anbarDropdown', event)">
+          <span id="anbarBtnText">Bütün Anbarlar</span>
+          <span>▼</span>
+        </div>
+        <div id="anbarDropdown" class="dropdown-content">
+          <input type="text" class="search-box-inside" placeholder="Anbar axtar..." onkeyup="filterCheckboxes(this, 'anbarList')">
+          <label class="checkbox-item">
+            <input type="checkbox" id="selectAllAnbar" checked onchange="toggleSelectAll('anbarList', this)">
+            <strong>(Hamısını seç)</strong>
+          </label>
+          <hr style="margin: 5px 0; border: none; border-top: 1px solid #e2e8f0;">
+          <div id="anbarList">
+            <label class="checkbox-item" th:each="a : ${anbarlar}">
+              <input type="checkbox" class="anbar-cb" th:value="${a.ad}" checked onchange="cədvəliSüz()">
+              <span th:text="${a.ad}">Anbar adı</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAL FİLTRİ -->
+      <div class="filter-group">
+        <label class="filter-label">📦 Mal Filtri</label>
+        <div class="custom-dropdown-btn" onclick="toggleDropdown('malDropdown', event)">
+          <span id="malBtnText">Bütün Mallar</span>
+          <span>▼</span>
+        </div>
+        <div id="malDropdown" class="dropdown-content">
+          <input type="text" class="search-box-inside" placeholder="Mal axtar..." onkeyup="filterCheckboxes(this, 'malList')">
+          <label class="checkbox-item">
+            <input type="checkbox" id="selectAllMal" checked onchange="toggleSelectAll('malList', this)">
+            <strong>(Hamısını seç)</strong>
+          </label>
+          <hr style="margin: 5px 0; border: none; border-top: 1px solid #e2e8f0;">
+          <div id="malList">
+            <label class="checkbox-item" th:each="m : ${mehsullar}">
+              <input type="checkbox" class="mal-cb" th:value="${m.ad}" checked onchange="cədvəliSüz()">
+              <span th:text="${m.ad}">Mal adı</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAL QRUPU FİLTRİ -->
+      <div class="filter-group">
+        <label class="filter-label">📂 Mal Qrupu</label>
+        <div class="custom-dropdown-btn" onclick="toggleDropdown('qrupDropdown', event)">
+          <span id="qrupBtnText">Bütün Qruplar</span>
+          <span>▼</span>
+        </div>
+        <div id="qrupDropdown" class="dropdown-content">
+          <input type="text" class="search-box-inside" placeholder="Qrup axtar..." onkeyup="filterCheckboxes(this, 'qrupList')">
+          <label class="checkbox-item">
+            <input type="checkbox" id="selectAllQrup" checked onchange="toggleSelectAll('qrupList', this)">
+            <strong>(Hamısını seç)</strong>
+          </label>
+          <hr style="margin: 5px 0; border: none; border-top: 1px solid #e2e8f0;">
+          <div id="qrupList">
+            <label class="checkbox-item" th:each="q : ${qruplar}">
+              <input type="checkbox" class="qrup-cb" th:value="${q.ad}" checked onchange="cədvəliSüz()">
+              <span th:text="${q.ad}">Qrup adı</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAL TİPİ FİLTRİ -->
+      <div class="filter-group">
+        <label class="filter-label">🏷️ Mal Tipi</label>
+        <div class="custom-dropdown-btn" onclick="toggleDropdown('tipDropdown', event)">
+          <span id="tipBtnText">Bütün Tiplər</span>
+          <span>▼</span>
+        </div>
+        <div id="tipDropdown" class="dropdown-content">
+          <input type="text" class="search-box-inside" placeholder="Tip axtar..." onkeyup="filterCheckboxes(this, 'tipList')">
+          <label class="checkbox-item">
+            <input type="checkbox" id="selectAllTip" checked onchange="toggleSelectAll('tipList', this)">
+            <strong>(Hamısını seç)</strong>
+          </label>
+          <hr style="margin: 5px 0; border: none; border-top: 1px solid #e2e8f0;">
+          <div id="tipList">
+            <label class="checkbox-item" th:each="t : ${malTipleri}">
+              <input type="checkbox" class="tip-cb" th:value="${t.ad}" checked onchange="cədvəliSüz()">
+              <span th:text="${t.ad}">Tip adı</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="sifirla-btn" onclick="filtrləriSıfırla()">🔄 Sıfırla</button>
+    </div>
+
+    <!-- Seçilmiş Anbarlar üçün məlumat sətri -->
+    <div class="secilmis-anbar-info">
+      Seçilmiş Anbar: <span id="secilmisAnbarMetni">BÜTÜN ANBARLAR</span>
+    </div>
+
+    <table id="qaliqlarCedveli">
+      <thead>
+      <tr>
+        <th style="width: 50px;">#</th>
+        <th>Anbar</th>
+        <th>Malın Adı</th>
+        <th>Qrupu</th>
+        <th>Tipi</th>
+        <th>Vahid</th>
+        <th>Qalıq (Miqdar)</th>
+        <th>Orta Dəyər (₼)</th>
+        <th style="text-align: right;">Qalıq Dəyəri (₼)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="am, iterStat : ${anbarMehsullar}"
+          th:attr="data-anbar=${am.anbar != null ? am.anbar.ad : ''},
+                   data-qrup=${am.mehsul.qrup != null ? am.mehsul.qrup.ad : ''},
+                   data-tip=${am.mehsul.malTipi != null ? am.mehsul.malTipi.ad : ''}">
+        <td class="sira-no" th:text="${iterStat.count}">1</td>
+        <td class="anbar-adi" th:text="${am.anbar != null ? am.anbar.ad : '-'}" style="font-weight: bold; color: #555;">Anbar</td>
+        <td class="mal-adi" th:text="${am.mehsul.ad}" style="font-weight: bold; color: #0f4c81;">Mal adı</td>
+        <td th:text="${am.mehsul.qrup != null ? am.mehsul.qrup.ad : '-'}">Qrup</td>
+        <td th:text="${am.mehsul.malTipi != null ? am.mehsul.malTipi.ad : '-'}">Tip</td>
+        <td th:text="${am.mehsul.vahid}">əd</td>
+        <td class="qaliq-miqdar" th:text="${am.miqdar}" style="font-weight: bold;">0.0</td>
+        <td th:text="${am.ortaDeyer} + ' ₼'">0.00 ₼</td>
+        <td class="qaliq-deyer" th:text="${am.qaliqDeyeri} + ' ₼'" style="font-weight: bold; color: #1565c0; text-align: right;">0.00 ₼</td>
+      </tr>
+      </tbody>
+
+      <tfoot>
+      <tr>
+        <td colspan="8" class="cemi-label">Cəmi Məbləğ:</td>
+        <td style="text-align: right;">
+          <span id="yekunMebleg" class="cemi-mebleg-val">0.00 ₼</span>
+        </td>
+      </tr>
+      </tfoot>
+    </table>
+
+    <div id="bosMesaj" style="display: none; color: #999; text-align: center; margin-top: 20px;">Seçimə uyğun heç bir məlumat tapılmadı.</div>
+  </div>
+</div>
+
+<script>
+  let originalTbodyHTML = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+      originalTbodyHTML = document.querySelector('#qaliqlarCedveli tbody').innerHTML;
+      cədvəliSüz();
+  });
+
+  function toggleDropdown(id, event) {
+      event.stopPropagation();
+      const el = document.getElementById(id);
+      const isVisible = el.classList.contains('show');
+      document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+      if (!isVisible) el.classList.add('show');
+  }
+
+  window.onclick = function(event) {
+      if (!event.target.closest('.filter-group')) {
+          document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+      }
+  }
+
+  function filterCheckboxes(input, listId) {
+      const filter = input.value.toLowerCase();
+      const list = document.getElementById(listId);
+      const items = list.getElementsByClassName('checkbox-item');
+      for (let item of items) {
+          const txt = item.textContent || item.innerText;
+          item.style.display = txt.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+      }
+  }
+
+  function toggleSelectAll(listId, masterCb) {
+      const list = document.getElementById(listId);
+      const cbs = list.querySelectorAll('input[type="checkbox"]');
+      cbs.forEach(cb => cb.checked = masterCb.checked);
+      cədvəliSüz();
+  }
+
+  function cədvəliSüz() {
+      const anbarCbs = document.querySelectorAll('.anbar-cb');
+      const secilmisAnbarCbs = Array.from(document.querySelectorAll('.anbar-cb:checked'));
+      const secilmisAnbarAdlari = secilmisAnbarCbs.map(cb => cb.value.trim().toLowerCase());
+
+      const secilmisMallar = Array.from(document.querySelectorAll('.mal-cb:checked')).map(cb => cb.value.trim().toLowerCase());
+      const secilmisQruplar = Array.from(document.querySelectorAll('.qrup-cb:checked')).map(cb => cb.value.trim().toLowerCase());
+      const secilmisTipler = Array.from(document.querySelectorAll('.tip-cb:checked')).map(cb => cb.value.trim().toLowerCase());
+
+      const isAllAnbarSelected = (secilmisAnbarCbs.length === anbarCbs.length);
+
+      document.getElementById('anbarBtnText').innerText =
+          isAllAnbarSelected ? "Bütün Anbarlar" : `${secilmisAnbarCbs.length} Anbar seçildi`;
+
+      const malCbs = document.querySelectorAll('.mal-cb');
+      document.getElementById('malBtnText').innerText =
+          secilmisMallar.length === malCbs.length ? "Bütün Mallar" : `${secilmisMallar.length} Mal seçildi`;
+
+      const qrupCbs = document.querySelectorAll('.qrup-cb');
+      document.getElementById('qrupBtnText').innerText =
+          secilmisQruplar.length === qrupCbs.length ? "Bütün Qruplar" : `${secilmisQruplar.length} Qrup seçildi`;
+
+      const tipCbs = document.querySelectorAll('.tip-cb');
+      document.getElementById('tipBtnText').innerText =
+          secilmisTipler.length === tipCbs.length ? "Bütün Tiplər" : `${secilmisTipler.length} Tip seçildi`;
+
+      const secilmisAnbarMetniEl = document.getElementById('secilmisAnbarMetni');
+      if (secilmisAnbarCbs.length === 0) {
+          secilmisAnbarMetniEl.innerText = "HEÇ BİR ANBAR SEÇİLMƏYİB";
+          secilmisAnbarMetniEl.style.color = "#c62828";
+      } else if (isAllAnbarSelected) {
+          secilmisAnbarMetniEl.innerText = "BÜTÜN ANBARLAR";
+          secilmisAnbarMetniEl.style.color = "#0f4c81";
+      } else {
+          const adlar = secilmisAnbarCbs.map(cb => cb.value.trim());
+          secilmisAnbarMetniEl.innerText = adlar.join(" | ");
+          secilmisAnbarMetniEl.style.color = "#0f4c81";
+      }
+
+      const tbody = document.querySelector('#qaliqlarCedveli tbody');
+      tbody.innerHTML = originalTbodyHTML; // Əvvəlcə orijinal sətrləri bərpa edirik
+
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      let visibleCount = 0;
+      let umumiCem = 0;
+
+      if (isAllAnbarSelected) {
+          // BÜTÜN ANBARLAR SEÇİLİB: Eyni adlı malları qruplaşdırıb cəmləyirik
+          const grouped = {};
+
+          rows.forEach((row) => {
+              const mal = row.querySelector('.mal-adi').textContent.trim();
+              const malKey = mal.toLowerCase();
+              const qrup = (row.getAttribute('data-qrup') || '').trim();
+              const tip = (row.getAttribute('data-tip') || '').trim();
+              const vahid = row.cells[5].textContent.trim();
+
+              const miqdar = parseFloat(row.querySelector('.qaliq-miqdar').textContent) || 0;
+              const deyerStr = row.querySelector('.qaliq-deyer').textContent.replace('₼', '').trim();
+              const deyer = parseFloat(deyerStr) || 0;
+
+              const malUygun = secilmisMallar.includes(malKey);
+              const qrupUygun = secilmisQruplar.includes(qrup.toLowerCase()) || (qrup === '' && secilmisQruplar.length > 0);
+              const tipUygun = secilmisTipler.includes(tip.toLowerCase()) || (tip === '' && secilmisTipler.length > 0);
+
+              if (malUygun && qrupUygun && tipUygun) {
+                  if (!grouped[malKey]) {
+                      grouped[malKey] = {
+                          mal: mal,
+                          qrup: qrup,
+                          tip: tip,
+                          vahid: vahid,
+                          miqdar: 0,
+                          deyer: 0
+                      };
+                  }
+                  grouped[malKey].miqdar += miqdar;
+                  grouped[malKey].deyer += deyer;
+              }
+          });
+
+          tbody.innerHTML = '';
+          const keys = Object.keys(grouped);
+
+          if (keys.length === 0) {
+              document.getElementById('bosMesaj').style.display = "block";
+          } else {
+              document.getElementById('bosMesaj').style.display = "none";
+              keys.forEach((key) => {
+                  const item = grouped[key];
+                  visibleCount++;
+                  umumiCem += item.deyer;
+                  const ortaDeyer = item.miqdar > 0 ? (item.deyer / item.miqdar) : 0;
+
+                  const tr = document.createElement('tr');
+                  tr.innerHTML = `
+                      <td class="sira-no">${visibleCount}</td>
+                      <td style="font-weight: bold; color: #555;">Bütün Anbarlar</td>
+                      <td class="mal-adi" style="font-weight: bold; color: #0f4c81;">${item.mal}</td>
+                      <td>${item.qrup || '-'}</td>
+                      <td>${item.tip || '-'}</td>
+                      <td>${item.vahid}</td>
+                      <td style="font-weight: bold;">${item.miqdar}</td>
+                      <td>${ortaDeyer.toFixed(2)} ₼</td>
+                      <td style="font-weight: bold; color: #1565c0; text-align: right;">${item.deyer.toFixed(2)} ₼</td>
+                  `;
+                  tbody.appendChild(tr);
+              });
+          }
+
+      } else {
+          // AYRI-AYRI ANBARLAR SEÇİLİB: Hər anbarın öz sətrlərini tək-tək göstəririk
+          let shownRows = 0;
+          rows.forEach((row) => {
+              const mal = row.querySelector('.mal-adi').textContent.trim().toLowerCase();
+              const qrup = (row.getAttribute('data-qrup') || '').trim().toLowerCase();
+              const tip = (row.getAttribute('data-tip') || '').trim().toLowerCase();
+              const anbar = (row.getAttribute('data-anbar') || '').trim().toLowerCase();
+
+              const deyerStr = row.querySelector('.qaliq-deyer').textContent.replace('₼', '').trim();
+              const deyer = parseFloat(deyerStr) || 0;
+
+              const anbarUygun = secilmisAnbarAdlari.includes(anbar);
+              const malUygun = secilmisMallar.includes(mal);
+              const qrupUygun = secilmisQruplar.includes(qrup) || (qrup === '' && secilmisQruplar.length > 0);
+              const tipUygun = secilmisTipler.includes(tip) || (tip === '' && secilmisTipler.length > 0);
+
+              if (anbarUygun && malUygun && qrupUygun && tipUygun) {
+                  row.style.display = "";
+                  shownRows++;
+                  visibleCount++;
+                  umumiCem += deyer;
+                  row.querySelector('.sira-no').textContent = visibleCount;
+              } else {
+                  row.style.display = "none";
+              }
+          });
+
+          document.getElementById('bosMesaj').style.display = shownRows === 0 ? "block" : "none";
+      }
+
+      document.getElementById('yekunMebleg').innerText = umumiCem.toFixed(2) + ' ₼';
+  }
+
+  function filtrləriSıfırla() {
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+      document.querySelectorAll('.search-box-inside').forEach(sb => sb.value = '');
+      document.querySelectorAll('.checkbox-item').forEach(ci => ci.style.display = '');
+      cədvəliSüz();
+  }
+</script>
+</body>
+</html>

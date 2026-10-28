@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Mallar və Məhsullar - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    h1 { color: #0f4c81; font-size: 24px; }
+    .geri-btn { padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: bold; }
+    .geri-btn:hover { background: #5a6268; }
+    .mesaj { padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; font-weight: bold; }
+    .ugur { background: #d4edda; color: #155724; }
+    .xeta { background: #f8d7da; color: #721c24; }
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 25px; }
+    .kart-basliq { font-size: 16px; font-weight: bold; color: #0f4c81; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .form-group { display: flex; flex-direction: column; }
+    label { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 5px; }
+    input, select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #1976d2; }
+    .btn-elave { background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn-elave:hover { background: #1b5e20; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; text-transform: uppercase; font-size: 12px; }
+    tr:hover { background: #f8f9fa; }
+    .tarix-kicik { font-size: 11px; color: #888; font-weight: normal; margin-top: 2px; }
+    .action-btns { display: flex; gap: 5px; justify-content: flex-end; }
+    .redakte-btn { background: #d97706; color: white; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; }
+    .redakte-btn:hover { background: #b45309; }
+    .sil-btn { background: #d32f2f; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .sil-btn:hover { background: #b71c1c; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+  <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+  <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+  <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+  <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+  <a th:href="@{/anbar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+  <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+  <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+  <div class="header-bar">
+    <h1>📦 Mallar və Məhsullar</h1>
+    <a th:href="@{/anbar}" class="geri-btn">← Anbar Menyusuna Qayıt</a>
+  </div>
+
+  <div th:if="${ugur}" class="mesaj ugur" th:text="${ugur}"></div>
+  <div th:if="${xeta}" class="mesaj xeta" th:text="${xeta}"></div>
+
+  <div class="kart">
+    <div class="kart-basliq">➕ Yeni Məhsul Əlavə Et</div>
+    <form th:action="@{/anbar/mehsul-elave-et}" method="post">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Məhsulun adı</label>
+          <input type="text" name="mehsulAdi" placeholder="Məs: Telefon..." required>
+        </div>
+        <div class="form-group">
+          <label>Mal qrupu</label>
+          <select name="qrupId" required>
+            <option value="">Mal qrupu seçin...</option>
+            <option th:each="q : ${qruplar}" th:value="${q.id}" th:text="${q.ad}"></option>
+          </select>
+        </div>
+        <!-- YENİ: Mal Tipi Seçimi -->
+        <div class="form-group">
+          <label>Mal tipi</label>
+          <select name="malTipiId">
+            <option value="">Mal tipi seçin...</option>
+            <option th:each="t : ${malTipleri}" th:value="${t.id}" th:text="${t.ad}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ölçü vahidi</label>
+          <select name="vahid" required>
+            <option value="">Ölçü vahidi seçin...</option>
+            <option th:each="ov : ${olcuVahidleri}" th:value="${ov.qisaAd}" th:text="${ov.ad + ' (' + ov.qisaAd + ')'}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Alış qiyməti (₼)</label>
+          <input type="number" name="alisQiymeti" step="0.01" min="0" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+          <label>Satış qiyməti (₼)</label>
+          <input type="number" name="satisQiymeti" step="0.01" min="0" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+          <label>Anbar (Məcburi)</label>
+          <select name="anbarId" required>
+            <option value="">Anbar seçin...</option>
+            <option th:each="a : ${anbarlar}" th:value="${a.id}" th:text="${a.ad}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>İlkin miqdar</label>
+          <input type="number" name="miqdar" step="any" min="0" placeholder="0" required>
+        </div>
+      </div>
+      <button type="submit" class="btn-elave">Məhsul Əlavə et</button>
+    </form>
+  </div>
+
+  <div class="kart">
+    <div class="kart-basliq">📋 Mövcud Məhsullar Siyahısı</div>
+    <table>
+      <thead>
+      <tr>
+        <th style="width: 40px;">#</th>
+        <th>Ad və Tarix</th>
+        <th>Qrup</th>
+        <th>Tip</th>
+        <th>Vahid</th>
+        <th>İlkin Qalıq</th>
+        <th>Faktiki Qalıq</th>
+        <th>Alış Qiyməti</th>
+        <th>Satış Qiyməti</th>
+        <th>Anbar</th>
+        <th>Yaradan</th>
+        <th style="text-align: right;" sec:authorize="hasRole('ADMIN')">Əməliyyat</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="m, iterStat : ${mehsullar}">
+        <td th:text="${iterStat.count}">1</td>
+        <td>
+          <div style="font-weight: bold; color: #0f4c81;" th:text="${m.ad}">Məhsul adı</div>
+          <div class="tarix-kicik" th:text="${m.yaradilmaTarixi != null ? #temporals.format(m.yaradilmaTarixi, 'dd.MM.yyyy HH:mm') : '-'}">-</div>
+        </td>
+        <td th:text="${m.qrup != null ? m.qrup.ad : '-'}">-</td>
+        <td th:text="${m.malTipi != null ? m.malTipi.ad : '-'}">-</td>
+        <td th:text="${m.vahid}">əd</td>
+        <td style="font-weight: bold; color: #1976d2;" th:text="${m.miqdar}">0.0</td>
+        <td style="font-weight: bold; color: #2e7d32;" th:text="${m.miqdar}">0.0</td>
+        <td th:text="${m.alisQiymeti + ' ₼'}">0.00 ₼</td>
+        <td th:text="${m.satisQiymeti + ' ₼'}">0.00 ₼</td>
+        <td th:text="${m.anbar != null ? m.anbar.ad : '-'}">-</td>
+        <td th:text="${m.yaradanIstifadeci != null ? m.yaradanIstifadeci.username : '-'}">-</td>
+        <td style="text-align: right;" sec:authorize="hasRole('ADMIN')">
+          <div class="action-btns">
+            <a th:href="@{/anbar/mehsul-redakte/{id}(id=${m.id})}" class="redakte-btn">Redaktə</a>
+            <form th:action="@{/anbar/mehsul-sil/{id}(id=${m.id})}" method="post" style="display:inline;" onsubmit="return confirm('Bu məhsulu silmək istədiyinizə əminsiniz?');">
+              <button type="submit" class="sil-btn">Sil</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(mehsullar)}">
+        <td colspan="12" style="text-align: center; color: #777; padding: 20px;">Hələ heç bir məhsul əlavə olunmayıb.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

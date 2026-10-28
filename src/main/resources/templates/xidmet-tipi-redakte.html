@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Xidmət Tipini Redaktə Et</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .kart { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 400px; }
+    h2 { color: #0f4c81; margin-bottom: 20px; }
+    input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+    .btn-qrup { display: flex; gap: 10px; }
+    button { flex: 1; padding: 10px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .geri-btn { background: #6c757d; text-align: center; text-decoration: none; display: block; padding: 10px; color: white; border-radius: 8px; font-weight: bold; flex: 1; }
+  </style>
+</head>
+<body>
+<div class="kart">
+  <h2>✏️ Tipini Redaktə Et</h2>
+  <form th:action="@{/anbar/xidmet-tipi-redakte/{id}(id=${tip.id})}" method="post">
+    <input type="text" name="tipAdi" th:value="${tip.ad}" required>
+    <div class="btn-qrup">
+      <a href="/anbar/xidmet-tipi" class="geri-btn">İmtina</a>
+      <button type="submit">Yadda saxla</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

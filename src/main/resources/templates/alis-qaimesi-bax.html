@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Qaiməyə Baxış - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 25px; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; }
+
+        h1 { color: #0f4c81; margin-bottom: 20px; font-size: 24px; }
+        .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        .info-item span { font-size: 12px; color: #666; display: block; margin-bottom: 5px; }
+        .info-item strong { font-size: 15px; color: #0f4c81; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: #0f4c81; color: white; font-weight: bold; text-transform: uppercase; font-size: 12px; border: none; }
+
+        tfoot td { background: #f8f9fa; font-weight: bold; border-top: 2px solid #ccc; font-size: 15px; padding: 15px 10px; }
+        .cemi-text { color: #2e7d32; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/anbar" class="aktiv">📦 Anbar Əməliyyatları</a>
+</div>
+
+<div class="esas">
+    <a href="javascript:history.back()" class="geri-btn">
+        ← Geri Qayıt
+    </a>
+
+    <h1>👁️ Qaiməyə Baxış (<span th:text="${qaime.senedNomresi}"></span>)</h1>
+
+    <div class="kart">
+        <div class="info-grid">
+            <div class="info-item">
+                <span>Tarix</span>
+                <strong th:text="${qaime.tarix}"></strong>
+            </div>
+            <div class="info-item">
+                <span>Anbar</span>
+                <strong th:text="${qaime.anbar.ad}"></strong>
+            </div>
+            <div class="info-item">
+                <span>Kontragent</span>
+                <strong th:text="${qaime.kontragent.ad}"></strong>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Növ</th>
+                <th>Mal / Xidmət</th>
+                <th>Layihə</th>
+                <th>Vahid</th>
+                <th>Miqdar</th>
+                <th>Qiymət</th>
+                <th>Məbləğ</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="setir : ${qaime.setirler}">
+                <td th:text="${setir.nov == 'MAL' ? 'Mal' : 'Xidmət'}"></td>
+                <td>
+                    <span th:if="${setir.mehsul != null}" th:text="${setir.mehsul.ad}"></span>
+                    <span th:if="${setir.xidmet != null}" th:text="${setir.xidmet.ad}"></span>
+                </td>
+                <td th:text="${setir.layihe != null ? setir.layihe.ad : '-'}"></td>
+                <td th:text="${setir.mehsul != null ? setir.mehsul.vahid : 'əd'}"></td>
+                <td th:text="${setir.miqdar}"></td>
+                <td th:text="${setir.vahidQiymeti} + ' ₼'"></td>
+                <td th:text="${setir.mebleg} + ' ₼'"></td>
+            </tr>
+            </tbody>
+            <!-- YENİ: Burada da Cəmi Məbləğ tam simmetrik göstərilir -->
+            <tfoot>
+            <tr>
+                <td colspan="6" style="text-align: right;">CƏMİ MƏBLƏĞ:</td>
+                <td class="cemi-text" th:text="${qaime.umumiMebleg} + ' ₼'"></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
