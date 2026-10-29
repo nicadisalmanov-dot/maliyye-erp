@@ -32,6 +32,7 @@ public class Istifadeci {
     private boolean icazeSatis = false;
     private boolean icazeSatinalma = false;
     private boolean icazeHesabat = false;
+    private boolean icazeHr = false; // YENİ: HR İcazəsi
 
     // --- Layihə və Anbar ---
     @ManyToMany(fetch = FetchType.EAGER)
@@ -42,7 +43,6 @@ public class Istifadeci {
     @JoinTable(name = "user_warehouses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "warehouse_id"))
     private List<Anbar> allowedWarehouses;
 
-    // --- Kassa və Bank Hesabları ---
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_kassa_hesablari", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "kassa_hesabi_id"))
     private List<KassaHesabi> allowedKassaHesablari;
@@ -53,6 +53,7 @@ public class Istifadeci {
 
     public Istifadeci() {}
 
+    // Getterlər və Setterlər
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getUsername() { return username; }
@@ -80,6 +81,8 @@ public class Istifadeci {
     public void setIcazeSatinalma(boolean icazeSatinalma) { this.icazeSatinalma = icazeSatinalma; }
     public boolean isIcazeHesabat() { return icazeHesabat; }
     public void setIcazeHesabat(boolean icazeHesabat) { this.icazeHesabat = icazeHesabat; }
+    public boolean isIcazeHr() { return icazeHr; }
+    public void setIcazeHr(boolean icazeHr) { this.icazeHr = icazeHr; }
 
     public List<Layihe> getAllowedProjects() { return allowedProjects; }
     public void setAllowedProjects(List<Layihe> allowedProjects) { this.allowedProjects = allowedProjects; }

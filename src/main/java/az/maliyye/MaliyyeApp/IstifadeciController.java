@@ -19,8 +19,7 @@ public class IstifadeciController {
     @Autowired private BankHesabiRepository bankHesabiRepo;
     @Autowired private PasswordEncoder passwordEncoder;
 
-    // DÜZƏLİŞ: @GetMapping("") əlavə edildi
-    @GetMapping("")
+    @GetMapping
     public String istifadeciSehife(Model model) {
         model.addAttribute("istifadeciler", repo.findAll());
         model.addAttribute("layiheler", layiheRepo.findAll());
@@ -43,6 +42,7 @@ public class IstifadeciController {
                           @RequestParam(required = false) Boolean satis,
                           @RequestParam(required = false) Boolean satinalma,
                           @RequestParam(required = false) Boolean hesabat,
+                          @RequestParam(required = false) Boolean hr,  // YENİ
                           @RequestParam(required = false) List<Long> layiheler,
                           @RequestParam(required = false) List<Long> anbarlar,
                           @RequestParam(required = false) List<Long> kassaHesablari,
@@ -62,6 +62,7 @@ public class IstifadeciController {
         yeni.setIcazeSatis(satis != null);
         yeni.setIcazeSatinalma(satinalma != null);
         yeni.setIcazeHesabat(hesabat != null);
+        yeni.setIcazeHr(hr != null);  // YENİ
 
         if (layiheler != null) yeni.setAllowedProjects(layiheRepo.findAllById(layiheler));
         if (anbarlar != null) yeni.setAllowedWarehouses(anbarRepo.findAllById(anbarlar));
@@ -95,6 +96,7 @@ public class IstifadeciController {
                             @RequestParam(required = false) Boolean satis,
                             @RequestParam(required = false) Boolean satinalma,
                             @RequestParam(required = false) Boolean hesabat,
+                            @RequestParam(required = false) Boolean hr,  // YENİ
                             @RequestParam(required = false) List<Long> layiheler,
                             @RequestParam(required = false) List<Long> anbarlar,
                             @RequestParam(required = false) List<Long> kassaHesablari,
@@ -112,6 +114,7 @@ public class IstifadeciController {
         istifadeci.setIcazeSatis(satis != null);
         istifadeci.setIcazeSatinalma(satinalma != null);
         istifadeci.setIcazeHesabat(hesabat != null);
+        istifadeci.setIcazeHr(hr != null);  // YENİ
 
         istifadeci.setAllowedProjects(layiheler != null ? layiheRepo.findAllById(layiheler) : null);
         istifadeci.setAllowedWarehouses(anbarlar != null ? anbarRepo.findAllById(anbarlar) : null);

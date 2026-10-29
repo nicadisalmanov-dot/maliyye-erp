@@ -67,6 +67,7 @@
     <a href="/anbar" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
     <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
     <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+    <a href="/hr" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR</a>
 
     <a href="/istifadeciler" class="aktiv" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
     <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
@@ -100,6 +101,7 @@
                     <label class="icaze-item"><input type="checkbox" name="satis"> Satış</label>
                     <label class="icaze-item"><input type="checkbox" name="satinalma"> Satınalma</label>
                     <label class="icaze-item"><input type="checkbox" name="hesabat"> Hesabat</label>
+                    <label class="icaze-item"><input type="checkbox" name="hr"> HR (İnsan Resursları)</label>
                 </div>
             </div>
 
@@ -178,6 +180,7 @@
                         <span class="badge badge-yesil" th:if="${i.icazeSatis}">Satış</span>
                         <span class="badge badge-yesil" th:if="${i.icazeSatinalma}">Satınalma</span>
                         <span class="badge badge-yesil" th:if="${i.icazeHesabat}">Hesabat</span>
+                        <span class="badge badge-yesil" th:if="${i.icazeHr}">HR</span>
                     </div>
 
                     <div class="melumat-bloku" th:if="${i.allowedProjects != null and !i.allowedProjects.isEmpty()}">

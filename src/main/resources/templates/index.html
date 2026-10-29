@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #333; display: flex; min-height: 100vh; }
-        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
         .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
         .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
         .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
@@ -43,16 +43,17 @@
 
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
-    <a href="/" class="aktiv">🏠 Dashboard</a>
-    <a href="/kassa" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
-    <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
-    <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
-    <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
-    <a href="/anbar" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
-    <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
-    <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
-    <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
-    <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+    <a th:href="@{/}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
+    <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
+    <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+    <a th:href="@{/hr}" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR (İnsan Resursları)</a>
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <div class="esas">
@@ -132,7 +133,6 @@
             <h3>📋 Son Əməliyyatlar</h3>
             <table>
                 <tbody>
-                <!-- YENİ: Burada köhnə metodları sildik -->
                 <tr th:each="e, iter : ${sonKassa}" th:if="${iter.index < 5}">
                     <td th:text="${e.tesvir}">Təsvir</td>
                     <td class="text-right">-</td>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Vəzifələr - HR</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 15px; margin-bottom: 15px; }
+        input, select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; }
+        button { padding: 12px 24px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #0f4c81; color: white; text-transform: uppercase; }
+        .sil-btn { background: #c62828; padding: 6px 12px; font-size: 11px; border-radius: 4px; }
+        .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; }
+        .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}">🏠 Dashboard</a>
+    <a th:href="@{/hr}">📊 HR Paneli</a>
+    <a th:href="@{/hr/isciler}">👤 İşçilər</a>
+    <a th:href="@{/hr/sobeler}">🏢 Şöbələr</a>
+    <a th:href="@{/hr/vezifeler}" class="aktiv">💼 Vəzifələr</a>
+    <a th:href="@{/hr/tabel}">📅 Tabel</a>
+    <a th:href="@{/hr/mezuniyyetler}">🌴 Məzuniyyətlər</a>
+    <a th:href="@{/hr/emek-haqqi}">💰 Əmək Haqqı</a>
+    <a th:href="@{/hr/hesabatlar}">📊 Hesabatlar</a>
+</div>
+
+<div class="esas">
+    <h1>💼 Vəzifələr</h1>
+
+    <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+    <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+
+    <div class="kart">
+        <h3>➕ Yeni Vəzifə Əlavə Et</h3>
+        <form th:action="@{/hr/vezifeler/elave-et}" method="post">
+            <div class="form-grid">
+                <input type="text" name="ad" placeholder="Vəzifə adı" required>
+                <input type="text" name="tesvir" placeholder="Təsvir">
+                <input type="number" name="esasEmekHaqqi" step="0.01" min="0" placeholder="Əsas maaş (₼)">
+            </div>
+            <button type="submit">Vəzifə Əlavə Et</button>
+        </form>
+    </div>
+
+    <div class="kart">
+        <h3>📋 Vəzifələr Siyahısı</h3>
+        <table th:if="${!vezifeler.isEmpty()}">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Vəzifə Adı</th>
+                <th>Təsvir</th>
+                <th>Əsas Maaş</th>
+                <th style="text-align: right;">Əməliyyat</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v, iter : ${vezifeler}">
+                <td th:text="${iter.count}">1</td>
+                <td th:text="${v.ad}" style="font-weight: bold; color: #0f4c81;">-</td>
+                <td th:text="${v.tesvir}">-</td>
+                <td th:text="${v.esasEmekHaqqi} + ' ₼'">0 ₼</td>
+                <td style="text-align: right;">
+                    <form th:action="@{/hr/vezifeler/sil/{id}(id=${v.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="sil-btn">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${vezifeler.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
+            Hələ heç bir vəzifə əlavə olunmayıb.
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -14,7 +14,9 @@ public class MaliyyeAppApplication {
         SpringApplication.run(MaliyyeAppApplication.class, args);
     }
 
-    // Admin istifadəçisini yaradır/yeniləyir
+    // ============================================
+    // === ADMIN İSTİFADƏÇİSİNİ YARADIR/YENİLƏYİR ===
+    // ============================================
     @Bean
     public CommandLineRunner ilkinAdminYarat(IstifadeciRepository repo, PasswordEncoder encoder) {
         return args -> {
@@ -40,14 +42,33 @@ public class MaliyyeAppApplication {
         };
     }
 
-    // YENİ: Verilənlər bazasındakı səhv constraint-ləri təmizləyir və düzgün constraint yaradır
+    // ============================================
+    // === CONSTRAINT TƏMİZLƏMƏ (YALNIZ LOKAL) ===
+    // ============================================
     @Bean
     public CommandLineRunner constraintTemizle(JdbcTemplate jdbcTemplate) {
         return args -> {
-            try {
-                System.out.println(">>> CONSTRAINT TƏMİZLƏMƏ BAŞLAYIR...");
+            // Yalnız lokal mühitdə işlə (DB_URL yoxdursa)
+            String dbUrl = System.getenv("DB_URL");
+            if (dbUrl != null && !dbUrl.isEmpty()) {
+                System.out.println(">>> BULUD MÜHİTİ: Constraint təmizləmə atlanır.");
+                return;
+            }
 
-                // 1. Bütün constraint-ləri tap
+            try {
+                // Cədvəlin mövcud olduğunu yoxla
+                Integer cedvelSayi = jdbcTemplate.queryForObject(
+                        "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = 'alis_qaimeleri_setirleri'",
+                        Integer.class);
+
+                if (cedvelSayi == null || cedvelSayi == 0) {
+                    System.out.println(">>> CƏDVƏL YOXDUR: Constraint təmizləmə atlanır.");
+                    return;
+                }
+
+                System.out.println(">>> CONSTRAINT TƏMİZLƏMƏ BAŞLAYIR (LOKAL)...");
+
+                // Bütün constraint-ləri tap
                 String sql = "SELECT conname FROM pg_constraint " +
                         "WHERE conrelid = 'alis_qaimeleri_setirleri'::regclass " +
                         "AND confrelid = 'alis_qaimeleri'::regclass";
@@ -55,7 +76,7 @@ public class MaliyyeAppApplication {
                 java.util.List<String> constraintler = jdbcTemplate.queryForList(sql, String.class);
                 System.out.println(">>> TAPILAN CONSTRAINT SAYI: " + constraintler.size());
 
-                // 2. Hər birini sil (CASCADE ilə)
+                // Hər birini sil (CASCADE ilə)
                 for (String c : constraintler) {
                     try {
                         jdbcTemplate.execute("ALTER TABLE alis_qaimeleri_setirleri DROP CONSTRAINT " + c + " CASCADE");
@@ -65,7 +86,7 @@ public class MaliyyeAppApplication {
                     }
                 }
 
-                // 3. Yeni, tək bir constraint yarat (CASCADE ilə)
+                // Yeni, tək bir constraint yarat (CASCADE ilə)
                 jdbcTemplate.execute("ALTER TABLE alis_qaimeleri_setirleri " +
                         "ADD CONSTRAINT fk_alis_qaimesi_setri " +
                         "FOREIGN KEY (alis_qaimesi_id) REFERENCES alis_qaimeleri(id) ON DELETE CASCADE");
@@ -75,6 +96,23 @@ public class MaliyyeAppApplication {
             } catch (Exception e) {
                 System.out.println(">>> CONSTRAINT TƏMİZLƏMƏ XƏTASI: " + e.getMessage());
             }
+        };
+    }
+
+    // ============================================
+    // === HR BAYRAMLARINI YÜKLƏ ===
+    // ============================================
+    @Bean
+    public CommandLineRunner bayramlariYukle(BayramService bayramService) {
+        return args -> {
+            System.out.println("=== BAYRAMLAR YÜKLƏNİR ===");
+            try {
+                bayramService.ilkinBayramlariYukle();
+                System.out.println(">>> BAYRAMLAR UĞURLA YÜKLƏNDİ.");
+            } catch (Exception e) {
+                System.out.println(">>> BAYRAM YÜKLƏMƏ XƏTASI: " + e.getMessage());
+            }
+            System.out.println("=== BAYRAMLAR YÜKLƏMƏ BİTDİ ===");
         };
     }
 }

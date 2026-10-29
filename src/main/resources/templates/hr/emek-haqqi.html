@@ -1,0 +1,35 @@
+<!-- hr/tabel.html -->
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Tabel - HR</title>
+  <style>
+    body { font-family: Arial; background: #f0f2f5; display: flex; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; height: 100vh; position: fixed; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; }
+    .esas { margin-left: 220px; padding: 30px; }
+    .kart { background: white; padding: 40px; border-radius: 12px; text-align: center; }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a th:href="@{/}">🏠 Dashboard</a>
+  <a th:href="@{/hr}">📊 HR Paneli</a>
+  <a th:href="@{/hr/isciler}">👤 İşçilər</a>
+  <a th:href="@{/hr/sobeler}">🏢 Şöbələr</a>
+  <a th:href="@{/hr/vezifeler}">💼 Vəzifələr</a>
+  <a th:href="@{/hr/tabel}" class="aktiv">📅 Tabel</a>
+  <a th:href="@{/hr/mezuniyyetler}">🌴 Məzuniyyətlər</a>
+  <a th:href="@{/hr/emek-haqqi}">💰 Əmək Haqqı</a>
+  <a th:href="@{/hr/hesabatlar}">📊 Hesabatlar</a>
+</div>
+<div class="esas">
+  <div class="kart">
+    <h1 style="color: #0f4c81;">📅 Tabel / Davamiyyət</h1>
+    <p style="color: #666; margin-top: 20px;">Bu səhifə hazırlanır. Tezliklə işçilərin gündəlik giriş/çıxış qeydləri əlavə olunacaq.</p>
+  </div>
+</div>
+</body>
+</html>

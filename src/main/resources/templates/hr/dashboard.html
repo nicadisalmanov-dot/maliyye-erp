@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>HR - İnsan Resursları</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { padding: 25px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .stat-card h3 { font-size: 14px; font-weight: normal; margin-bottom: 10px; opacity: 0.9; }
+        .stat-card p { font-size: 36px; font-weight: bold; }
+        .bg-blue { background: linear-gradient(135deg, #1976d2, #0f4c81); }
+        .bg-green { background: linear-gradient(135deg, #2e7d32, #1b5e20); }
+        .bg-purple { background: linear-gradient(135deg, #6a1b9a, #4a148c); }
+        .bg-orange { background: linear-gradient(135deg, #f57c00, #e65100); }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .kart h3 { color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .quick-link { background: #f8f9fa; padding: 20px; border-radius: 10px; text-decoration: none; color: #333; border-left: 4px solid #1976d2; transition: all 0.2s; }
+        .quick-link:hover { background: #e3f2fd; transform: translateY(-2px); }
+        .quick-link strong { display: block; color: #0f4c81; margin-bottom: 5px; }
+        .quick-link small { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}">🏠 Dashboard</a>
+    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
+    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar</a>
+    <a th:href="@{/hr}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR</a>
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+</div>
+
+<div class="esas">
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+        <span style="font-weight: bold; color: #0f4c81;">👤 <span sec:authentication="name">İstifadəçi</span></span>
+        <form th:action="@{/logout}" method="post"><button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Çıxış</button></form>
+    </div>
+
+    <h1>👥 İnsan Resursları (HR) - İdarəetmə Paneli</h1>
+
+    <div class="stat-grid">
+        <div class="stat-card bg-blue">
+            <h3>Ümumi İşçi Sayı</h3>
+            <p th:text="${isciSayi}">0</p>
+        </div>
+        <div class="stat-card bg-green">
+            <h3>Aktiv İşçi</h3>
+            <p th:text="${aktivIsciSayi}">0</p>
+        </div>
+        <div class="stat-card bg-purple">
+            <h3>Şöbə Sayı</h3>
+            <p th:text="${sobeSayi}">0</p>
+        </div>
+        <div class="stat-card bg-orange">
+            <h3>Vəzifə Sayı</h3>
+            <p th:text="${vezifeSayi}">0</p>
+        </div>
+    </div>
+
+    <div class="kart">
+        <h3>🚀 Sürətli Keçidlər</h3>
+        <div class="quick-links">
+            <a th:href="@{/hr/isciler}" class="quick-link">
+                <strong>👤 İşçilər</strong>
+                <small>İşçi qeydiyyatı və siyahı</small>
+            </a>
+            <a th:href="@{/hr/sobeler}" class="quick-link">
+                <strong>🏢 Şöbələr</strong>
+                <small>Şöbə idarəetməsi</small>
+            </a>
+            <a th:href="@{/hr/vezifeler}" class="quick-link">
+                <strong>💼 Vəzifələr</strong>
+                <small>Vəzifə siyahısı</small>
+            </a>
+            <a th:href="@{/hr/tabel}" class="quick-link">
+                <strong>📅 Tabel</strong>
+                <small>Gündəlik davamiyyət</small>
+            </a>
+            <a th:href="@{/hr/mezuniyyetler}" class="quick-link">
+                <strong>🌴 Məzuniyyətlər</strong>
+                <small>Məzuniyyət sorğuları</small>
+            </a>
+            <a th:href="@{/hr/emek-haqqi}" class="quick-link">
+                <strong>💰 Əmək Haqqı</strong>
+                <small>Maaş hesablaması</small>
+            </a>
+            <a th:href="@{/hr/hesabatlar}" class="quick-link">
+                <strong>📊 Hesabatlar</strong>
+                <small>HR hesabatları</small>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

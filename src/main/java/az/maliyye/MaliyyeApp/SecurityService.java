@@ -52,4 +52,10 @@ public class SecurityService {
         Istifadeci u = getIstifadeci(username);
         return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeHesabat());
     }
+
+    // YENİ: HR icazəsi
+    public boolean hasHr(String username) {
+        Istifadeci u = getIstifadeci(username);
+        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeHr());
+    }
 }
