@@ -21,18 +21,18 @@ jobs:
     - name: Build with Maven
       run: mvn clean package -DskipTests
 
-    - name: Set up SSH Agent
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.VM_SSH_KEY }}
+    - name: Prepare SSH Key
+      run: |
+        echo "${{ secrets.VM_SSH_KEY }}" > id_rsa
+        chmod 600 id_rsa
 
     - name: Copy JAR to VM using SCP
       run: |
-        scp -o StrictHostKeyChecking=no target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/
+        scp -o StrictHostKeyChecking=no -i id_rsa target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/
 
     - name: Restart Application via SSH
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
           sudo pkill -9 -f MaliyyeApp || true
           sleep 3
           nohup java -jar /home/${{ secrets.VM_USER }}/*.jar > /tmp/app.log 2>&1 &
