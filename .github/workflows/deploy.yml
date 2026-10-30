@@ -32,10 +32,4 @@ jobs:
 
     - name: Restart Application via SSH
       run: |
-        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
-          sudo pkill -9 -f MaliyyeApp || true
-          sleep 3
-          nohup java -jar /home/${{ secrets.VM_USER }}/*.jar > /tmp/app.log 2>&1 &
-          sleep 5
-          tail -n 20 /tmp/app.log
-        EOF
+        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "sudo pkill -9 -f MaliyyeApp || true; sleep 3; nohup java -jar /home/${{ secrets.VM_USER }}/*.jar > /tmp/app.log 2>&1 & sleep 5; tail -n 20 /tmp/app.log"
