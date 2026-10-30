@@ -1,0 +1,44 @@
+name: Deploy to GCP VM
+
+on:
+  push:
+    branches: [ main ] # Əgər əsas qolun (branch) 'master'-dirsə, 'main' sözünü 'master' ilə əvəz et
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Java 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
+
+    - name: Copy JAR to VM
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        source: "target/*.jar"
+        target: "/home/${{ secrets.VM_USER }}/"
+
+    - name: Restart Application via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          sudo pkill -9 -f MaliyyeApp || true
+          sleep 3
+          nohup java -jar /home/${{ secrets.VM_USER }}/target/*.jar > /tmp/app.log 2>&1 &
+          sleep 5
+          tail -n 20 /tmp/app.log
