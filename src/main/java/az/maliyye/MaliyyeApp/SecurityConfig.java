@@ -2,9 +2,10 @@ package az.maliyye.MaliyyeApp;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // YENİ: @PreAuthorize üçün
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,11 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // YENİ: @PreAuthorize anotasiyasını aktivləşdirir
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -33,11 +35,28 @@ public class SecurityConfig {
                 throw new UsernameNotFoundException("İstifadəçi tapılmadı: " + username);
             }
 
-            // Bazada "ROLE_ADMIN" və ya "ROLE_USER" yazılıb. Onu birbaşa Authority kimi qəbul edirik.
+            Set<GrantedAuthority> authorities = new HashSet<>();
+
+            // İstifadəçinin əsas rolunu əlavə edirik
+            if (istifadeci.getRol() != null && !istifadeci.getRol().isEmpty()) {
+                authorities.add(new SimpleGrantedAuthority(istifadeci.getRol()));
+            }
+
+            // BÜTÜN MODUL İCAZƏLƏRİNİ DİNAMİK OLARAK SPRING SECURITY-YƏ ÖTÜRÜRÜK:
+            if (istifadeci.isIcazeDashboard()) authorities.add(new SimpleGrantedAuthority("MODULE_DASHBOARD"));
+            if (istifadeci.isIcazeKassa())     authorities.add(new SimpleGrantedAuthority("MODULE_KASSA"));
+            if (istifadeci.isIcazeBank())      authorities.add(new SimpleGrantedAuthority("MODULE_BANK"));
+            if (istifadeci.isIcazeKontragent())authorities.add(new SimpleGrantedAuthority("MODULE_KONTRAGENT"));
+            if (istifadeci.isIcazeAnbar())     authorities.add(new SimpleGrantedAuthority("MODULE_ANBAR"));
+            if (istifadeci.isIcazeSatis())     authorities.add(new SimpleGrantedAuthority("MODULE_SATIS"));
+            if (istifadeci.isIcazeSatinalma()) authorities.add(new SimpleGrantedAuthority("MODULE_SATINALMA"));
+            if (istifadeci.isIcazeHesabat())   authorities.add(new SimpleGrantedAuthority("MODULE_HESABAT"));
+            if (istifadeci.isIcazeHr())        authorities.add(new SimpleGrantedAuthority("MODULE_HR"));
+
             return new User(
                     istifadeci.getUsername(),
                     istifadeci.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority(istifadeci.getRol()))
+                    authorities
             );
         };
     }
@@ -45,30 +64,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF qorumasını söndürürük (Formların işləməsi üçün)
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/login").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/access-denied").permitAll()
 
-                        // İstifadəçi idarəetməsi yalnız ADMIN üçündür
                         .requestMatchers("/istifadeciler/**").hasAuthority("ROLE_ADMIN")
 
-                        // Ana səhifəyə (Dashboard) giriş üçün ən azı bir rol lazımdır
-                        .requestMatchers("/").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                        .requestMatchers("/dashboard", "/dashboard/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_DASHBOARD")
+                        .requestMatchers("/kassa", "/kassa/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_KASSA")
+                        .requestMatchers("/bank", "/bank/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_BANK")
+                        .requestMatchers("/kontragent", "/kontragent/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_KONTRAGENT")
+                        .requestMatchers("/anbar", "/anbar/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_ANBAR")
+                        .requestMatchers("/satis", "/satis/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_SATIS")
+                        .requestMatchers("/satinalma", "/satinalma/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_SATINALMA")
+                        .requestMatchers("/hesabat", "/hesabat/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_HESABAT")
+                        .requestMatchers("/hr", "/hr/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_HR")
 
-                        // Digər bütün səhifələr üçün giriş tələb olunur
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/", false)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/access-denied")
                 );
 
         return http.build();

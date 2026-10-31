@@ -15,47 +15,46 @@ public class SecurityService {
 
     public boolean hasDashboard(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeDashboard());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeDashboard());
     }
 
     public boolean hasKassa(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeKassa());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeKassa());
     }
 
     public boolean hasBank(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeBank());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeBank());
     }
 
     public boolean hasKontragent(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeKontragent());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeKontragent());
     }
 
     public boolean hasAnbar(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeAnbar());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeAnbar());
     }
 
     public boolean hasSatis(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeSatis());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeSatis());
     }
 
     public boolean hasSatinalma(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeSatinalma());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeSatinalma());
     }
 
     public boolean hasHesabat(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeHesabat());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeHesabat());
     }
 
-    // YENİ: HR icazəsi
     public boolean hasHr(String username) {
         Istifadeci u = getIstifadeci(username);
-        return u != null && (u.getRol().equals("ROLE_ADMIN") || u.isIcazeHr());
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeHr());
     }
 }

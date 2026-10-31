@@ -34,8 +34,11 @@ public class AnaController {
         model.addAttribute("icazeSatis", isAdmin || (istifadeci != null && istifadeci.isIcazeSatis()));
         model.addAttribute("icazeSatinalma", isAdmin || (istifadeci != null && istifadeci.isIcazeSatinalma()));
         model.addAttribute("icazeHesabat", isAdmin || (istifadeci != null && istifadeci.isIcazeHesabat()));
+        model.addAttribute("icazeHr", isAdmin || (istifadeci != null && istifadeci.isIcazeHr())); // YENİ: HR icazə atributu əlavə olundu
 
         if (istifadeci != null && !isAdmin && !istifadeci.isIcazeDashboard()) {
+            // YENİ: Əgər HR icazəsi varsa birbaşa /hr səhifəsinə yönləndiririk
+            if (istifadeci.isIcazeHr()) return "redirect:/hr";
             if (istifadeci.isIcazeAnbar()) return "redirect:/anbar";
             if (istifadeci.isIcazeKassa()) return "redirect:/kassa";
             if (istifadeci.isIcazeBank()) return "redirect:/bank";

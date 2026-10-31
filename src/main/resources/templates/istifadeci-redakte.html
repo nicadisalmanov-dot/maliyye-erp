@@ -41,9 +41,10 @@
   <a href="/bank" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
   <a href="/kontragentler" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
   <a href="/hesabat" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
-  <a href="/anbar" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+  <a href="/anbar" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
   <a href="/satis" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
   <a href="/satinalma" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+  <a href="/hr" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR</a>
   <a href="/istifadeciler" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
   <a href="/layiheler" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
@@ -59,7 +60,6 @@
         <input type="text" th:value="${istifadeci.username}" disabled style="background:#eee;">
         <input type="text" name="ad" th:value="${istifadeci.ad}" placeholder="Ad, Soyad" required>
         <select name="rol">
-          <!-- DÜZƏLİŞ: th:selected düzgün yoxlanış -->
           <option value="USER" th:selected="${istifadeci.rol == 'ROLE_USER'}">İstifadəçi (USER)</option>
           <option value="ADMIN" th:selected="${istifadeci.rol == 'ROLE_ADMIN'}">Admin (ADMIN)</option>
         </select>
@@ -67,7 +67,6 @@
 
       <!-- Modul İcazələri -->
       <div class="icaze-qutusu" style="margin-bottom: 10px;">
-        <!-- YENİ: Dashboard checkbox əlavə edildi -->
         <label class="icaze-item"><input type="checkbox" name="dashboard" th:checked="${istifadeci.icazeDashboard}"> Dashboard</label>
         <label class="icaze-item"><input type="checkbox" name="kassa" th:checked="${istifadeci.icazeKassa}"> Kassa</label>
         <label class="icaze-item"><input type="checkbox" name="bank" th:checked="${istifadeci.icazeBank}"> Bank</label>
@@ -76,6 +75,7 @@
         <label class="icaze-item"><input type="checkbox" name="satis" th:checked="${istifadeci.icazeSatis}"> Satış</label>
         <label class="icaze-item"><input type="checkbox" name="satinalma" th:checked="${istifadeci.icazeSatinalma}"> Satınalma</label>
         <label class="icaze-item"><input type="checkbox" name="hesabat" th:checked="${istifadeci.icazeHesabat}"> Hesabat</label>
+        <label class="icaze-item"><input type="checkbox" name="hr" th:checked="${istifadeci.icazeHr}"> HR (İnsan Resursları)</label>
       </div>
 
       <!-- Layihə, Anbar, Kassa və Bank İcazələri -->
