@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Kontragent Hesabatları - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover { background: #1976d2; color: white; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        .geri-btn:hover { background: #5a6268; }
+        h1 { color: #0f4c81; margin-bottom: 25px; font-size: 24px; }
+
+        .kart-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .menu-kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; border-top: 4px solid #1976d2; display: flex; flex-direction: column; gap: 10px; }
+        .menu-kart:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
+        .menu-kart h3 { color: #0f4c81; font-size: 17px; }
+        .menu-kart p { color: #666; font-size: 13px; line-height: 1.4; }
+        .icon { font-size: 30px; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+    <a th:href="@{/maliyye}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name) or @securityService.hasBank(authentication.name)">💵 Maliyyə</a>
+    <a th:href="@{/kontragentler}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a th:href="@{/smetalar}" sec:authorize="hasRole('ADMIN') or @securityService.hasSmeta(authentication.name)">🏗️ Smeta və Büdcə</a>
+    <a th:href="@{/hr}" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR (İnsan Resursları)</a>
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+        <span style="font-weight: bold; color: #4a148c; display: flex; align-items: center; gap: 5px; font-size: 15px;">
+            <span style="font-size: 18px;">👤</span> <span sec:authentication="name">İstifadəçi</span>
+        </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">Çıxış</button>
+        </form>
+    </div>
+
+    <a href="/kontragentler" class="geri-btn">← Kontragentlər Panelinə Qayıt</a>
+    <h1>📊 Kontragent Hesabatları Mərkəzi</h1>
+
+    <div class="kart-grid">
+        <!-- 1. Borc Qalıq Cədvəli -->
+        <a th:href="@{/kontragentler/hesabat/borc-qaliq}" class="menu-kart">
+            <div class="icon">⚖️</div>
+            <h3>Borc Qalıq Cədvəli</h3>
+            <p>Bütün kontragentlərin (debitor və kreditor) ümumi borc və alacaq qalıqlarının yekun cədvəli.</p>
+        </a>
+
+        <!-- 2. Debitor Dövriyyə Hesabatı -->
+        <a th:href="@{/kontragentler/hesabat/debitor-dovriyye}" class="menu-kart" style="border-top-color: #2e7d32;">
+            <div class="icon">📈</div>
+            <h3>Debitor Dövriyyə Hesabatı</h3>
+            <p>Müştərilərin borclarının nə qədər vaxt keçdiyinə görə (0-30, 31-60, 60+ gün) qruplaşdırılması.</p>
+        </a>
+
+        <!-- 3. Kreditor Öhdəlikləri -->
+        <a th:href="@{/kontragentler/hesabat/kreditor-ohdelikleri}" class="menu-kart" style="border-top-color: #c62828;">
+            <div class="icon">📉</div>
+            <h3>Kreditor Öhdəlikləri (AP)</h3>
+            <p>Təchizatçılara olan borcların ümumi mənzərəsi və ödəniş vəziyyəti.</p>
+        </a>
+
+        <!-- 4. Borc Müqavilələri İcmalı -->
+        <a th:href="@{/kontragentler/hesabat/borc-muqavileleri-icmal}" class="menu-kart" style="border-top-color: #ff8f00;">
+            <div class="icon">📜</div>
+            <h3>Borc Müqavilələri İcmalı</h3>
+            <p>Aktiv və bağlanmış borc müqavilələrinin ümumi məbləği və faiz dərəcələri.</p>
+        </a>
+
+        <!-- 5. Təhtəlhesab qalıqları -->
+        <a th:href="@{/kontragentler/hesabat/tehtelhesab-qaliq}" class="menu-kart" style="border-top-color: #6a1b9a;">
+            <div class="icon">👤</div>
+            <h3>Təhtəlhesab qalıqları</h3>
+            <p>İşçilərə verilən avansların və onların hesabatlarının (xərclərin) qalığı.</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

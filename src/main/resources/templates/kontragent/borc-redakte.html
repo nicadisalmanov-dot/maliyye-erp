@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Borc Müqaviləsini Redaktə Et - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover { background: #1976d2; color: white; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        .geri-btn:hover { background: #5a6268; }
+
+        h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 15px; }
+
+        form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+        input, select, textarea { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; width: 100%; }
+        textarea { grid-column: span 3; resize: vertical; height: 60px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #1976d2; }
+        .form-actions { grid-column: span 3; text-align: right; }
+
+        button[type="submit"] { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button[type="submit"]:hover { background: #1565c0; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler" style="background: #1976d2; font-weight: bold;">👥 Kontragentlər</a>
+    <a href="/hesabat">📊 Hesabat</a>
+    <a href="/anbar">📦 Anbar Əməliyyatları</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma">🛒 Satınalma</a>
+    <a href="/istifadeciler">👥 İstifadəçilər</a>
+    <a href="/layiheler">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <!-- Standart Sağ Yuxarı İstifadəçi və Çıxış Paneli -->
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+        <span style="font-weight: bold; color: #4a148c; display: flex; align-items: center; gap: 5px; font-size: 15px;">
+            <span style="font-size: 18px;">👤</span> <span sec:authentication="name">İstifadəçi</span>
+        </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                Çıxış
+            </button>
+        </form>
+    </div>
+
+    <a href="/kontragentler/borc-muqavileleri" class="geri-btn">← Borc Müqavilələrinə Qayıt</a>
+    <h1>✏️ Borc Müqaviləsini Redaktə Et</h1>
+
+    <div class="kart">
+        <h3>Müqavilə Məlumatlarının Dəyişdirilməsi</h3>
+        <form th:action="@{/kontragentler/borc-muqavileleri/redakte/{id}(id=${muqavile.id})}" method="post" th:object="${muqavile}" id="borcForm">
+
+            <select th:field="*{subyektNovu}" id="subyektNovu" required onchange="subyektDeyisdi()">
+                <option value="FIZIKI">👤 Fiziki Şəxs (Vətəndaş)</option>
+                <option value="HUKUQI">🏢 Hüquqi Şəxs (Şirkət)</option>
+            </select>
+
+            <select th:field="*{borcNovu}" required>
+                <option value="VERILEN_BORC">📤 Verilən Borc</option>
+                <option value="ALINAN_BORC">📥 Alınan Borc</option>
+            </select>
+
+            <input type="text" th:field="*{muqavileNomresi}" placeholder="Müqavilə Nömrəsi" required>
+
+            <!-- Fiziki Şəxs Sahələri -->
+            <div id="fizikiSaheler" style="grid-column: span 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                <input type="text" th:field="*{adSoyad}" placeholder="Adı, Soyadı, Ata adı">
+                <input type="text" th:field="*{finKodu}" placeholder="FİN Kod">
+                <input type="text" th:field="*{vesiqeNomresi}" placeholder="Şəxsiyyət Vəsiqəsi Seriya və Nömrəsi">
+            </div>
+
+            <!-- Hüquqi Şəxs Sahələri -->
+            <div id="hukuqiSaheler" style="grid-column: span 3; display: none; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <input type="text" th:field="*{sirkətAdi}" placeholder="Şirkətin/Müəssisənin Adı">
+                <input type="text" th:field="*{voen}" placeholder="VÖEN">
+            </div>
+
+            <input type="text" th:field="*{telefon}" placeholder="Əlaqə telefonu">
+            <input type="text" th:field="*{unvan}" placeholder="Ünvan">
+            <input type="number" th:field="*{mebleq}" step="0.01" min="0" placeholder="Məbləğ (₼)" required>
+
+            <input type="date" th:field="*{baglanmaTarixi}" required>
+            <input type="date" th:field="*{bitmeTarixi}" required>
+
+            <textarea th:field="*{qeydler}" placeholder="Müqavilə şərtləri və əlavə qeydlər..."></textarea>
+
+            <div class="form-actions">
+                <button type="submit">Dəyişiklikləri Yadda Saxla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function subyektDeyisdi() {
+        const nov = document.getElementById('subyektNovu').value;
+        const fizikiDiv = document.getElementById('fizikiSaheler');
+        const hukuqiDiv = document.getElementById('hukuqiSaheler');
+
+        if (nov === 'FIZIKI') {
+            fizikiDiv.style.display = 'grid';
+            hukuqiDiv.style.display = 'none';
+        } else {
+            fizikiDiv.style.display = 'none';
+            hukuqiDiv.style.display = 'grid';
+        }
+    }
+
+    window.onload = function() {
+        subyektDeyisdi();
+    };
+</script>
+</body>
+</html>

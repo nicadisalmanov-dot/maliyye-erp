@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Təhtəlhesab Şəxslər - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover { background: #1976d2; color: white; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 25px; font-size: 24px; }
+
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 25px; }
+        /* Grid-i 3 sütundan 4 sütuna keçirdik ki, yeni sahələr rahat yerləşsin */
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 13px; font-weight: bold; color: #555; }
+        .form-group input, .form-group textarea { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .form-group textarea { resize: vertical; height: 60px; grid-column: span 4; } /* Qeydlər üçün geniş xana */
+        .btn { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn:hover { background: #0f4c81; }
+
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #0f4c81; color: white; }
+
+        .btn-sil { background: #c62828; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-sil:hover { background: #b71c1c; }
+        .btn-redakte { background: #f57c00; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; display: inline-block; margin-right: 5px; }
+        .btn-redakte:hover { background: #e65100; }
+
+        .alert-success { background: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; }
+        .alert-danger { background: #ffebee; color: #c62828; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; }
+        .audit-text { font-size: 11px; color: #777; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler" style="background: #1976d2; font-weight: bold;">👥 Kontragentlər</a>
+    <a href="/hesabat">📊 Hesabat</a>
+    <a href="/anbar">📦 Anbar Əməliyyatları</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma">🛒 Satınalma</a>
+    <a href="/istifadeciler">👥 İstifadəçilər</a>
+    <a href="/layiheler">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+        <span style="font-weight: bold; color: #4a148c; display: flex; align-items: center; gap: 5px; font-size: 15px;">
+            <span style="font-size: 18px;">👤</span> <span sec:authentication="name">İstifadəçi</span>
+        </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">Çıxış</button>
+        </form>
+    </div>
+
+    <h1>👤 Təhtəlhesab Şəxslərin İdarə Edilməsi</h1>
+
+    <div th:if="${ugur}" class="alert-success" th:text="${ugur}"></div>
+    <div th:if="${xeta}" class="alert-danger" th:text="${xeta}"></div>
+
+    <!-- Yeni şəxs əlavə etmə formu -->
+    <div class="card">
+        <h3 style="margin-bottom: 15px; color: #0f4c81;">Yeni Təhtəlhesab Şəxs Əlavə Et</h3>
+        <form th:action="@{/tehtelhesab/elave-et}" th:object="${sexs}" method="post">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Ad Soyad:</label>
+                    <input type="text" th:field="*{adSoyad}" placeholder="Məs: Məmməd Məmmədov" required />
+                </div>
+                <!-- YENİ: Vəzifə sahəsi əlavə edildi -->
+                <div class="form-group">
+                    <label>Vəzifəsi / Şöbəsi:</label>
+                    <input type="text" th:field="*{vezife}" placeholder="Məs: Mühasib" />
+                </div>
+                <div class="form-group">
+                    <label>FİN Kod:</label>
+                    <input type="text" th:field="*{finKodu}" placeholder="FİN kod" />
+                </div>
+                <div class="form-group">
+                    <label>Şəxsiyyət Vəsiqəsinin Nömrəsi:</label>
+                    <input type="text" th:field="*{vesiqeNomresi}" placeholder="AA1234567" />
+                </div>
+                <div class="form-group">
+                    <label>Əlaqə Telefonu:</label>
+                    <input type="text" th:field="*{telefon}" placeholder="+994..." />
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" th:field="*{email}" placeholder="email@domain.com" />
+                </div>
+                <div class="form-group">
+                    <label>Ünvan:</label>
+                    <input type="text" th:field="*{unvan}" placeholder="Ünvan" />
+                </div>
+                <!-- Qeydlər xanası (4 sütunu əhatə edir) -->
+                <div class="form-group">
+                    <label>Əlavə qeydlər:</label>
+                    <textarea th:field="*{qeydler}" placeholder="Qeyd daxil edin..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn">Yadda Saxla</button>
+        </form>
+    </div>
+
+    <!-- Siyahı cədvəli -->
+    <div class="card">
+        <h3 style="margin-bottom: 15px; color: #0f4c81;">Təhtəlhesab Şəxslərin Siyahısı</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ad Soyad</th>
+                <th>Vəzifə</th>
+                <th>FİN / Vəsiqə</th>
+                <th>Telefon</th>
+                <th>Audit (Yaradan / Tarix)</th>
+                <th style="text-align: right;">Əməliyyatlar</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="k : ${siyahilik}">
+                <td th:text="${k.id}">1</td>
+                <td><strong th:text="${k.adSoyad}">Ad Soyad</strong></td>
+                <!-- YENİ: Cədvəldə vəzifə sütunu -->
+                <td th:text="${k.vezife} ?: '-'">Vəzifə</td>
+                <td>
+                    <span th:text="'FİN: ' + (${k.finKodu} ?: '-')"></span><br>
+                    <small th:text="'Vəsiqə: ' + (${k.vesiqeNomresi} ?: '-')" style="color: #666;"></small>
+                </td>
+                <td th:text="${k.telefon} ?: '-'">Telefon</td>
+                <td>
+                    <div class="audit-text">
+                        <span th:text="${k.yaradanIstifadeci}">Admin</span>
+                        <span th:if="${k.yaradilmaTarixi != null}" th:text="'(' + ${#temporals.format(k.yaradilmaTarixi, 'dd.MM.yyyy HH:mm')} + ')'"></span>
+                    </div>
+                    <div class="audit-text" th:if="${k.duzelisTarixi != null}">
+                        Düzəliş: <span th:text="${k.duzelenIstifadeci}"></span>
+                        <span th:text="'(' + ${#temporals.format(k.duzelisTarixi, 'dd.MM.yyyy HH:mm')} + ')'"></span>
+                    </div>
+                </td>
+                <td style="text-align: right; white-space: nowrap;">
+                    <a th:href="@{/tehtelhesab/redakte/{id}(id=${k.id})}" class="btn-redakte">Redaktə</a>
+                    <form th:action="@{/tehtelhesab/sil/{id}(id=${k.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-sil" onclick="return confirm('Silmək istədiyinizə əminsinizmi?');">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(siyahilik)}">
+                <td colspan="7" style="text-align: center; color: #777; padding: 20px;">Heç bir təhtəlhesab şəxs tapılmadı.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Təhtəlhesab Şəxsi Redaktə Et</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-width: 800px; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: span 2; }
+        label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+        input, textarea { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; }
+        textarea { resize: vertical; height: 80px; }
+        input:focus, textarea:focus { outline: none; border-color: #1976d2; }
+        button { padding: 12px 24px; background: #f57c00; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #e65100; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/kontragentler">👥 Kontragentlər</a>
+    <a href="/tehtelhesab" style="background: #1976d2; font-weight: bold;">👤 Təhtəlhesab şəxslər</a>
+</div>
+
+<div class="esas">
+    <a href="/tehtelhesab" class="geri-btn">← Geri Qayıt</a>
+    <h1>✏️ Təhtəlhesab Şəxsi Redaktə Et</h1>
+
+    <div class="kart">
+        <form th:action="@{/tehtelhesab/redakte/{id}(id=${sexs.id})}" method="post">
+            <div>
+                <label>Ad Soyad</label>
+                <input type="text" name="adSoyad" th:value="${sexs.adSoyad}" required>
+            </div>
+            <div>
+                <label>Vəzifəsi / Şöbəsi</label>
+                <input type="text" name="vezife" th:value="${sexs.vezife}">
+            </div>
+            <div>
+                <label>FİN Kod</label>
+                <input type="text" name="finKodu" th:value="${sexs.finKodu}">
+            </div>
+            <div>
+                <label>Vəsiqə Nömrəsi</label>
+                <input type="text" name="vesiqeNomresi" th:value="${sexs.vesiqeNomresi}">
+            </div>
+            <div>
+                <label>Telefon nömrəsi</label>
+                <input type="text" name="telefon" th:value="${sexs.telefon}">
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="email" name="email" th:value="${sexs.email}">
+            </div>
+            <div class="full-width">
+                <label>Ünvan</label>
+                <input type="text" name="unvan" th:value="${sexs.unvan}">
+            </div>
+            <div class="full-width">
+                <label>Əlavə qeydlər</label>
+                <textarea name="qeydler" th:text="${sexs.qeydler}"></textarea>
+            </div>
+            <div class="full-width">
+                <button type="submit">Yadda Saxla</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Smeta Detalları & Büdcə Nəzarəti - ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+    .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+    .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+    .sidebar a:hover { background: #1976d2; color: white; }
+    .esas { margin-left: 220px; flex: 1; padding: 30px; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+    h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 15px; }
+
+    .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
+    .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; color: #0f4c81; }
+    .info-box h4 { font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
+    .info-box p { font-size: 18px; font-weight: bold; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
+    th { background: #fafafa; font-size: 11px; color: #666; text-transform: uppercase; }
+    tr:hover { background: #f9f9f9; }
+
+    .progress-bar-bg { background: #e0e0e0; border-radius: 10px; height: 12px; width: 100px; overflow: hidden; display: inline-block; vertical-align: middle; }
+    .progress-bar-fill { background: #2e7d32; height: 100%; border-radius: 10px; }
+    .progress-over { background: #c62828 !important; }
+
+    /* Bənd əlavə etmə forması */
+    form.elave-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+    form.elave-form input, form.elave-form select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; width: 100%; }
+    form.elave-form .form-actions { grid-column: span 3; text-align: right; }
+    form.elave-form button { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+    form.elave-form button:hover { background: #1565c0; }
+
+    .sil-btn { background: #c62828; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>💰 Maliyyə ERP</h2>
+  <a th:href="@{/}">🏠 Dashboard</a>
+  <a th:href="@{/maliyye}">💵 Maliyyə</a>
+  <a th:href="@{/kontragentler}">👥 Kontragentlər</a>
+  <a th:href="@{/smetalar}" style="background: #1976d2; font-weight: bold;">🏗️ Smeta və Büdcə</a>
+  <a th:href="@{/hesabat}">📊 Hesabat</a>
+  <a th:href="@{/anbar}">📦 Anbar Əməliyyatları</a>
+  <a th:href="@{/satis}">💼 Satış</a>
+  <a th:href="@{/satinalma}">🛒 Satınalma</a>
+</div>
+
+<div class="esas">
+  <a th:href="@{/smetalar}" class="geri-btn">← Smetalar Siyahısına Qayıt</a>
+  <h1>🏗️ Smeta & Büdcə Nəzarəti: <span th:text="${smeta.ad}">Smeta Adı</span></h1>
+
+  <!-- Panel İndikatorları -->
+  <div class="info-grid">
+    <div class="info-box">
+      <h4>Layihə</h4>
+      <p th:text="${smeta.layihe != null ? smeta.layihe.ad : '-'}">-</p>
+    </div>
+    <div class="info-box">
+      <h4>Planlaşdırılan Smeta</h4>
+      <p th:text="${smeta.umumiMebleg} + ' ' + ${smeta.valyuta}">0 AZN</p>
+    </div>
+    <div class="info-box" style="background: #fff3e0; color: #e65100;">
+      <h4>Faktiki İcra Olunan</h4>
+      <p th:text="${#numbers.formatDecimal(umumiFaktikiXerc, 1, 2)} + ' ' + ${smeta.valyuta}">0 AZN</p>
+    </div>
+    <div class="info-box" style="background: #e8f5e9; color: #2e7d32;">
+      <h4>Yekun Büdcə Limiti</h4>
+      <p th:text="${smeta.budce != null ? smeta.budce.yekunBudceMeblegi : smeta.umumiMebleg} + ' ' + ${smeta.valyuta}">0 AZN</p>
+    </div>
+  </div>
+
+  <!-- Yeni Bənd Əlavə Etmə Forması -->
+  <div class="kart" th:if="${smeta.status == 'QARALAMA'}">
+    <h3>➕ Smeta Bəndi (BOQ İş Sətri) Əlavə Et</h3>
+    <form th:action="@{/smetalar/detal/{id}/bend-elave-et(id=${smeta.id})}" method="post" class="elave-form">
+      <input type="text" name="isAdi" placeholder="İşin adı (Məs: Beton tökülməsi C25/30)" required style="grid-column: span 3;">
+      <input type="text" name="vahid" placeholder="Ölçü vahidi (m³, m², ton, ədəd)" required>
+      <input type="number" name="miqdar" step="0.01" min="0" placeholder="Miqdar" required>
+      <input type="number" name="vahidQiymeti" step="0.01" min="0" placeholder="Vahid Qiyməti (₼)" required>
+      <select name="kateqoriya" required>
+        <option value="MATERIAL">Material</option>
+        <option value="EMAK">Əmək Haqqı</option>
+        <option value="TEXNIKA">Mexanizm / Texnika</option>
+      </select>
+      <div class="form-actions">
+        <button type="submit">İş Sətrini Əlavə Et</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- BOQ / Plan vs Actual Cədvəli -->
+  <div class="kart">
+    <h3>📊 İşlər Üzrə Büdcə İcra Cədvəli (Plan vs Actual)</h3>
+    <table th:if="${bəndlər != null && !bəndlər.isEmpty()}">
+      <thead>
+      <tr>
+        <th>İşin Adı & Kateqoriya</th>
+        <th>Ölçü Vahidi</th>
+        <th>Miqdar</th>
+        <th>Vahid Qiymət</th>
+        <th>Plan Məbləğ</th>
+        <th>Faktiki Xərc</th>
+        <th>Qalıq</th>
+        <th>İcra Faizi (%)</th>
+        <th style="text-align:center;" th:if="${smeta.status == 'QARALAMA'}">Əməliyyat</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="b : ${bəndlər}">
+        <td>
+          <strong th:text="${b.isAdi}">Beton işi</strong><br>
+          <small style="color: #666;" th:text="${b.kateqoriya}">MATERIAL</small>
+        </td>
+        <td th:text="${b.vahid}">m³</td>
+        <td th:text="${b.miqdar}">0</td>
+        <td th:text="${b.vahidQiymeti} + ' ₼'">0 ₼</td>
+        <td><strong th:text="${b.cemiMebleg} + ' ₼'" style="color: #1976d2;">0 ₼</strong></td>
+        <td><strong th:text="${b.faktikiXerc} + ' ₼'" style="color: #e65100;">0 ₼</strong></td>
+        <td>
+          <strong th:text="${b.qaliqMebleg} + ' ₼'"
+                  th:style="${b.qaliqMebleg < 0} ? 'color:#c62828;' : 'color:#2e7d32;'">0 ₼</strong>
+        </td>
+        <td>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill"
+                 th:classappend="${b.icraFaizi >= 100} ? 'progress-over'"
+                 th:style="'width: ' + ${b.icraFaizi} + '%;'"></div>
+          </div>
+          <span style="font-size: 11px; font-weight: bold; margin-left: 5px;"
+                th:text="${#numbers.formatDecimal(b.icraFaizi, 1, 1)} + '%'">0%</span>
+        </td>
+        <td style="text-align:center;" th:if="${smeta.status == 'QARALAMA'}">
+          <form th:action="@{/smetalar/detal/bend-sil/{smetaId}/{bendiId}(smetaId=${smeta.id}, bendiId=${b.id})}" method="post" style="display:inline;">
+            <button type="submit" class="sil-btn" onclick="return confirm('Bu bəndi silmək istədiyinizə əminsinizmi?')">Sil</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div th:if="${bəndlər == null || bəndlər.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
+      Bu smetaya hələ heç bir iş sətri əlavə olunmayıb.
+    </div>
+  </div>
+
+  <!-- Təsdiqləmə Paneli (Yalnız Qaralama statusunda) -->
+  <div class="kart" th:if="${smeta.status == 'QARALAMA'}" sec:authorize="hasRole('ADMIN')">
+    <h3>💰 Büdcəni Təsdiqlə</h3>
+    <form th:action="@{/smetalar/tesdiqle/{id}(id=${smeta.id})}" method="post" class="elave-form">
+      <input type="number" name="gozlenilmezFaiz" step="0.1" min="0" placeholder="Gözlənilməz Xərclər Faizi (%)" value="10">
+      <input type="number" name="dolayiFaiz" step="0.1" min="0" placeholder="Dolayı Xərclər Faizi (%)" value="5">
+      <div class="form-actions">
+        <button type="submit" style="background: #2e7d32;">Büdcəni Təsdiqlə</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Təsdiqlənmiş Büdcə Məlumatı -->
+  <div class="kart" th:if="${smeta.status == 'TESDIQLENMIS'}">
+    <h3>✅ Təsdiqlənmiş Büdcə</h3>
+    <p><strong>Smeta Məbləği:</strong> <span th:text="${smeta.budce.smetaMeblegi}">0</span> ₼</p>
+    <p><strong>Yekun Büdcə Limiti:</strong> <span th:text="${smeta.budce.yekunBudceMeblegi}" style="color: #c62828; font-weight: bold;">0</span> ₼</p>
+    <p style="font-size: 12px; color: #666;">Təsdiqləyən: <span th:text="${smeta.budce.tesdiqleyenIstifadeci}">Admin</span></p>
+  </div>
+</div>
+</body>
+</html>

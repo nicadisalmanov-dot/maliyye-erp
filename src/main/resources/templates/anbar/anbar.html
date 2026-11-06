@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Anbar Əməliyyatları - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+        /* Sol Menyu */
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+
+        /* Əsas Hissə */
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .user-info { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        .user-info span { font-weight: bold; color: #4a148c; font-size: 15px; display: flex; align-items: center; gap: 5px; }
+        .cixis-btn { background: #c62828; color: white; padding: 8px 18px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; }
+
+        h1 { color: #0f4c81; font-size: 24px; margin-bottom: 8px; }
+        p.sub-title { color: #666; font-size: 14px; margin-bottom: 25px; }
+
+        /* MALİYYƏ BÖLMƏSİNDƏKİ KART DİZAYNI */
+        .kart-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .menu-kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; border-top: 4px solid #1976d2; display: flex; flex-direction: column; gap: 15px; }
+        .menu-kart:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
+        .menu-kart h3 { color: #0f4c81; font-size: 17px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+
+        /* Linklər */
+        .link-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .link-list a { color: #444; text-decoration: none; font-size: 14px; display: block; padding: 8px 12px; border-radius: 6px; transition: 0.2s; background: #f9f9f9; }
+        .link-list a:hover { background: #e3f2fd; color: #0f4c81; font-weight: 500; padding-left: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+    <a th:href="@{/maliyye}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name) or @securityService.hasBank(authentication.name)">💵 Maliyyə</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/anbar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a th:href="@{/smetalar}" sec:authorize="hasRole('ADMIN') or @securityService.hasSmeta(authentication.name)">🏗️ Smeta və Büdcə</a>
+    <a th:href="@{/hr}" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR (İnsan Resursları)</a>
+    <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}"  sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <!-- Standart Sağ Yuxarı İstifadəçi və Çıxış Paneli -->
+    <div class="user-info">
+        <span><span style="font-size: 18px;">👤</span> <span sec:authentication="name">İstifadəçi</span></span>
+        <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
+            <button type="submit" class="cixis-btn" style="border: none; cursor: pointer;">Çıxış</button>
+        </form>
+    </div>
+
+    <h1>📦 Anbar Əməliyyatları</h1>
+    <p class="sub-title">Zəhmət olmasa, yerinə yetirmək istədiyiniz əməliyyatı seçin.</p>
+
+    <div class="kart-grid">
+
+        <!-- 1. Daxil olan mallar -->
+        <div class="menu-kart" style="border-top-color: #2e7d32;">
+            <h3>📥 Daxil olan mallar</h3>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/alish}">→ Mal və xidmət alışı</a></li>
+                <li><a th:href="@{/anbar/alis-qaytarma}">→ Malın geri qaytarılması</a></li>
+            </ul>
+        </div>
+
+        <!-- 2. Çıxan mallar -->
+        <div class="menu-kart" style="border-top-color: #c62828;">
+            <h3>📤 Çıxan mallar</h3>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/satis}">→ Mal və xidmət satışı</a></li>
+                <li><a th:href="@{/anbar/satis-qaytarma}">→ Satışdan geri</a></li>
+            </ul>
+        </div>
+
+        <!-- 3. Daxili əməliyyatlar -->
+        <div class="menu-kart" style="border-top-color: #ff8f00;">
+            <h3>🔄 Daxili əməliyyatlar</h3>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/transfer}">→ Anbarlararası transfer</a></li>
+                <li><a th:href="@{/anbar/silinme}">→ Malın silinməsi</a></li>
+                <li><a th:href="@{/anbar/inventarizasiya}">→ Mal sayımı (İnventarizasiya)</a></li>
+            </ul>
+        </div>
+
+        <!-- 4. Əsas Vəsaitlər və Qeyri Maddi -->
+        <div class="menu-kart" style="border-top-color: #6a1b9a;">
+            <h3>🏗️ Əsas Vəsaitlər və Qeyri Maddi</h3>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/esas-vesaitler}">→ Əsas Vəsaitlər</a></li>
+                <li><a th:href="@{/anbar/qeyri-maddi}">→ Qeyri Maddi Aktivlər</a></li>
+            </ul>
+        </div>
+
+        <!-- 5. Hesabatlar -->
+        <div class="menu-kart" style="border-top-color: #1976d2;">
+            <h3>📊 Hesabatlar</h3>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/anbar-qaliqlari}">→ Anbar Qalıqları</a></li>
+            </ul>
+        </div>
+
+        <!-- 6. Tənzimləmələr -->
+        <div class="menu-kart" style="border-top-color: #546e7a;">
+            <h3>⚙️ Tənzimləmələr</h3>
+            <ul class="link-list">
+                <li><a th:href="@{/anbar/mallar}">→ Mallar (Məhsullar)</a></li>
+                <li><a th:href="@{/anbar/mal-tipi}">→ Mal tipi</a></li>
+                <li><a th:href="@{/anbar/mal-qrupu}">→ Mal qrupu</a></li>
+                <li><a th:href="@{/anbar/xidmetler}">→ Xidmətlər</a></li>
+                <li><a th:href="@{/anbar/xidmet-tipi}">→ Xidmət tipi</a></li>
+                <li><a th:href="@{/anbar/xidmet-qrupu}">→ Xidmət qrupu</a></li>
+                <li><a th:href="@{/anbar/olcu-vahidi}">→ Ölçü vahidi</a></li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

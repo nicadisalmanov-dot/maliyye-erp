@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Debitorlar (Müştərilər) - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover { background: #1976d2; color: white; }
+
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        .geri-btn:hover { background: #5a6268; }
+
+        h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 15px; }
+
+        form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+        input, select, textarea { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        .form-actions { grid-column: span 3; text-align: right; }
+
+        button[type="submit"] { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button[type="submit"]:hover { background: #1565c0; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
+        th { background: #fafafa; font-size: 11px; color: #666; text-transform: uppercase; }
+        tr:hover { background: #f9f9f9; }
+
+        .redakte-btn, .sil-btn {
+            height: 28px; padding: 0 12px; font-size: 12px; border-radius: 6px; font-weight: bold;
+            font-family: inherit; display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; border: none; vertical-align: middle;
+        }
+        .redakte-btn { background: #f57c00; color: white; margin-right: 4px; }
+        .redakte-btn:hover { background: #e65100; }
+        .sil-btn { background: #c62828 !important; color: white !important; }
+        .sil-btn:hover { background: #8e0000 !important; }
+
+        .audit-info { font-size: 11px; color: #777; margin-top: 4px; }
+        .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+        .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a href="/">🏠 Dashboard</a>
+    <a href="/kassa">💵 Kassa</a>
+    <a href="/bank">🏦 Bank</a>
+    <a href="/kontragentler" style="background: #1976d2; font-weight: bold;">👥 Kontragentlər</a>
+    <a href="/hesabat">📊 Hesabat</a>
+    <a href="/anbar">📦 Anbar Əməliyyatları</a>
+    <a href="/satis">💼 Satış</a>
+    <a href="/satinalma">🛒 Satınalma</a>
+    <a href="/istifadeciler">👥 İstifadəçilər</a>
+    <a href="/layiheler">🏗️ Layihələr və Anbarlar</a>
+</div>
+
+<div class="esas">
+    <!-- Standart Sağ Yuxarı İstifadəçi və Çıxış Paneli -->
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+        <span style="font-weight: bold; color: #4a148c; display: flex; align-items: center; gap: 5px; font-size: 15px;">
+            <span style="font-size: 18px;">👤</span> <span sec:authentication="name">İstifadəçi</span>
+        </span>
+        <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
+            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                Çıxış
+            </button>
+        </form>
+    </div>
+
+    <a href="/kontragentler" class="geri-btn">← Kontragentlər Panelinə Qayıt</a>
+    <h1>👥 Debitorlar (Müştərilər) İdarəetməsi</h1>
+
+    <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+    <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+
+    <!-- Yeni Əlavə Et Formu -->
+    <div class="kart">
+        <h3>➕ Yeni Debitor Əlavə Et</h3>
+        <form action="/kontragentler/debitorlar/elave-et" method="post">
+
+            <select name="subyektNovu" id="subyektNovu" required onchange="subyektDeyisdi()">
+                <option value="FIZIKI">👤 Fiziki Şəxs (Vətəndaş)</option>
+                <option value="HUKUQI">🏢 Hüquqi Şəxs (Şirkət)</option>
+            </select>
+
+            <!-- Fiziki Şəxs Sahələri -->
+            <div id="fizikiSaheler" style="grid-column: span 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                <input type="text" name="adSoyad" placeholder="Adı, Soyadı, Ata adı">
+                <input type="text" name="finKodu" placeholder="FİN Kod">
+                <input type="text" name="vesiqeNomresi" placeholder="Şəxsiyyət Vəsiqəsi Seriya və №">
+            </div>
+
+            <!-- Hüquqi Şəxs Sahələri -->
+            <div id="hukuqiSaheler" style="grid-column: span 3; display: none; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <input type="text" name="sirketAdi" placeholder="Şirkətin/Müəssisənin Adı">
+                <input type="text" name="voen" placeholder="VÖEN">
+            </div>
+
+            <input type="text" name="telefon" placeholder="Əlaqə telefonu">
+            <input type="email" name="email" placeholder="Elektron poçt (Email)">
+            <input type="text" name="unvan" placeholder="Ünvan">
+
+            <div class="form-actions">
+                <button type="submit">Debitoru Yadda Saxla</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Siyahı Cədvəli -->
+    <div class="kart">
+        <h3>📋 Debitorların Siyahısı</h3>
+        <table th:if="${siyahilik != null && !siyahilik.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Ad / Şirkət və Növ</th>
+                <th>FİN / Vəsiqə və ya VÖEN</th>
+                <th>Əlaqə (Tel & Email)</th>
+                <th>Ünvan və Audit</th>
+                <th style="text-align: right;">Əməliyyatlar</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="k : ${siyahilik}">
+                <td>
+                    <span th:if="${k.subyektNovu == 'FIZIKI'}">
+                        <strong th:text="${k.adSoyad}" style="color: #0f4c81;">Ad</strong><br>
+                        <small style="color: #2e7d32; font-weight: bold;">FİZİKİ ŞƏXS</small>
+                    </span>
+                    <span th:if="${k.subyektNovu == 'HUKUQI'}">
+                        <strong th:text="${k.sirketAdi}" style="color: #0f4c81;">Şirkət</strong><br>
+                        <small style="color: #1976d2; font-weight: bold;">HÜQUQİ ŞƏXS</small>
+                    </span>
+                </td>
+                <td>
+                    <span th:if="${k.subyektNovu == 'FIZIKI'}" th:text="'FİN: ' + (${k.finKodu} ?: '-') + ' | Vəsiqə: ' + (${k.vesiqeNomresi} ?: '-')"></span>
+                    <span th:if="${k.subyektNovu == 'HUKUQI'}" th:text="'VÖEN: ' + (${k.voen} ?: '-')"></span>
+                </td>
+                <td>
+                    <span th:text="${k.telefon} ?: '-'"></span><br>
+                    <small th:text="${k.email} ?: '-'"></small>
+                </td>
+                <td>
+                    <span th:text="${k.unvan} ?: '-'"></span>
+                    <div class="audit-info">
+                        Yaratdı: <span th:text="${k.yaradanIstifadeci}">Admin</span>
+                        <span th:if="${k.yaradilmaTarixi != null}" th:text="'(' + ${#temporals.format(k.yaradilmaTarixi, 'dd.MM.yyyy HH:mm')} + ')'"></span>
+                    </div>
+                </td>
+                <td style="text-align: right; white-space: nowrap;">
+                    <form th:action="@{/kontragentler/debitorlar/sil/{id}(id=${k.id})}" method="post" style="display:inline; vertical-align: middle;">
+                        <button type="submit" class="sil-btn" onclick="return confirm('Bu debitoru silmək istədiyinizə əminsinizmi?')">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${siyahilik == null || siyahilik.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
+            Hələ heç bir debitor qeydə alınmayıb.
+        </div>
+    </div>
+</div>
+
+<script>
+    function subyektDeyisdi() {
+        const nov = document.getElementById('subyektNovu').value;
+        const fizikiDiv = document.getElementById('fizikiSaheler');
+        const hukuqiDiv = document.getElementById('hukuqiSaheler');
+
+        if (nov === 'FIZIKI') {
+            fizikiDiv.style.display = 'grid';
+            hukuqiDiv.style.display = 'none';
+        } else {
+            fizikiDiv.style.display = 'none';
+            hukuqiDiv.style.display = 'grid';
+        }
+    }
+</script>
+</body>
+</html>
