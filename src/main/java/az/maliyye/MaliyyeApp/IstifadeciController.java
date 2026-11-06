@@ -1,6 +1,6 @@
-package az.maliyye.MaliyyeApp.istifadeci;
+package az.maliyye.MaliyyeApp.istifadeciler;
 
-import az.maliyye.MaliyyeApp.LayiheRepository;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import az.maliyye.MaliyyeApp.anbar.AnbarRepository;
 import az.maliyye.MaliyyeApp.maliyye.BankHesabiRepository;
 import az.maliyye.MaliyyeApp.maliyye.KassaHesabiRepository;
@@ -30,7 +30,7 @@ public class IstifadeciController {
         model.addAttribute("anbarlar", anbarRepo.findAll());
         model.addAttribute("kassaHesablari", kassaHesabiRepo.findAll());
         model.addAttribute("bankHesablari", bankHesabiRepo.findAll());
-        return "istifadeciler";
+        return "istifadeciler/istifadeciler";
     }
 
     @PostMapping("/elave-et")

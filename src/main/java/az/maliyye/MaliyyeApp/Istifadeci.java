@@ -1,6 +1,6 @@
-package az.maliyye.MaliyyeApp.istifadeci;
+package az.maliyye.MaliyyeApp.istifadeciler;
 
-import az.maliyye.MaliyyeApp.Layihe;
+import az.maliyye.MaliyyeApp.layiheler.Layihe;
 import az.maliyye.MaliyyeApp.anbar.Anbar;
 import az.maliyye.MaliyyeApp.maliyye.BankHesabi;
 import az.maliyye.MaliyyeApp.maliyye.KassaHesabi;
