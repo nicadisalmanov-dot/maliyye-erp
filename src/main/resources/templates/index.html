@@ -12,9 +12,11 @@
         .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
         .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
         .esas { margin-left: 220px; flex: 1; padding: 20px; }
+
         .header-bar { background: #0f4c81; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 8px; }
         .header-bar h1 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .header-bar .user-info { text-align: right; font-size: 12px; }
+        .header-bar .user-info { display: flex; align-items: center; gap: 15px; font-size: 13px; }
+
         .sirket-panel { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .sirket-panel h2 { color: #0f4c81; font-size: 20px; margin-bottom: 5px; }
         .sirket-panel p { color: #666; font-size: 13px; }
@@ -44,13 +46,10 @@
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
     <a th:href="@{/}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
-    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
-    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
+    <a th:href="@{/maliyye}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name) or @securityService.hasBank(authentication.name)">💵 Maliyyə</a>
     <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
-    <a th:href="@{/hesabat}" sec:authorize="hasRole('ADMIN') or @securityService.hasHesabat(authentication.name)">📊 Hesabat</a>
     <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
-    <a th:href="@{/satis}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatis(authentication.name)">💼 Satış</a>
-    <a th:href="@{/satinalma}" sec:authorize="hasRole('ADMIN') or @securityService.hasSatinalma(authentication.name)">🛒 Satınalma</a>
+    <a th:href="@{/smetalar}" sec:authorize="hasRole('ADMIN') or @securityService.hasSmeta(authentication.name)">🏗️ Smeta və Büdcə</a>
     <a th:href="@{/hr}" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR (İnsan Resursları)</a>
     <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
     <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
@@ -60,8 +59,19 @@
     <div class="header-bar">
         <h1>📊 ERP | Maliyyə və Mühasibatlıq</h1>
         <div class="user-info">
-            <p>📅 <span th:text="${#dates.format(#dates.createNow(), 'dd.MM.yyyy')}">Tarix</span></p>
-            <p>👤 <span sec:authentication="name">Admin</span></p>
+            <span>📅 <span th:text="${#dates.format(#dates.createNow(), 'dd.MM.yyyy')}">Tarix</span></span>
+
+            <!-- İstifadəçi adı (Bənövşəyi İkon və Ad) -->
+            <span style="font-weight: bold; color: #4a148c; display: flex; align-items: center; gap: 5px; font-size: 15px; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 6px;">
+                <span style="font-size: 16px;">👤</span> <span sec:authentication="name">Admin</span>
+            </span>
+
+            <!-- Çıxış düyməsi (Qırmızı fonda ağ yazı) -->
+            <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
+                <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    Çıxış
+                </button>
+            </form>
         </div>
     </div>
 

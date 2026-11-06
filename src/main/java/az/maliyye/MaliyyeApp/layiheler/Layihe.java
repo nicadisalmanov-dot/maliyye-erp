@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.layiheler;
 
 import az.maliyye.MaliyyeApp.anbar.Anbar;
 import jakarta.persistence.*;

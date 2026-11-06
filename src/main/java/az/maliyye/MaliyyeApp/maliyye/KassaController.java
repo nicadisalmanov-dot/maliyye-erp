@@ -1,9 +1,9 @@
-package az.maliyye.MaliyyeApp.kassa;
+package az.maliyye.MaliyyeApp.maliyye;
 
-import az.maliyye.MaliyyeApp.istifadeci.Istifadeci;
-import az.maliyye.MaliyyeApp.istifadeci.IstifadeciRepository;
-import az.maliyye.MaliyyeApp.kontragent.KontragentService;
-import az.maliyye.MaliyyeApp.LayiheRepository;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.kontragent.KontragentRepository;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 public class KassaController {
 
     @Autowired private KassaService service;
-    @Autowired private KontragentService kontragentService;
     @Autowired private KassaHesabiRepository kassaHesabiRepo;
     @Autowired private LayiheRepository layiheRepo;
     @Autowired private IstifadeciRepository istifadeciRepo;
+    @Autowired private KontragentRepository kontragentRepository;
 
     @GetMapping
     public String kassaSehife(@RequestParam(required = false) String axtaris,
@@ -42,7 +42,6 @@ public class KassaController {
 
         List<KassaEmeliyyati> butunEmeliyyatlar = service.filterle(axtaris, ay, nov, tesdiq);
 
-        // İcazə filtri
         if (!isAdmin && user != null && user.getAllowedKassaHesablari() != null) {
             List<Long> icazeli = user.getAllowedKassaHesablari().stream()
                     .map(KassaHesabi::getId).collect(Collectors.toList());
@@ -64,7 +63,6 @@ public class KassaController {
         model.addAttribute("nov", nov);
         model.addAttribute("tesdiq", tesdiq);
 
-        // Kassa hesabları
         List<KassaHesabi> gosterilecek;
         if (isAdmin) {
             gosterilecek = kassaHesabiRepo.findAll();
@@ -74,13 +72,15 @@ public class KassaController {
             gosterilecek = new ArrayList<>();
         }
         model.addAttribute("kassaHesablari", gosterilecek);
-        model.addAttribute("kontragentler", kontragentService.hamisiniGetir());
         model.addAttribute("layiheler", layiheRepo.findAll());
 
-        // YENİ: Kassa qalıqları (hesab üzrə)
+        // Debitor və Kreditorları ayrıca modelə yükləyirik
+        model.addAttribute("debitorlar", kontragentRepository.findByKontragentNovu("MUSTERI"));
+        model.addAttribute("kreditorlar", kontragentRepository.findByKontragentNovu("TECHIZATCI"));
+
         model.addAttribute("kassaQaliqlari", service.kassaHesablariQaliqlari(username));
 
-        return "kassa";
+        return "maliyye/kassa";
     }
 
     @PostMapping("/elave-et")
@@ -99,10 +99,12 @@ public class KassaController {
             yeni.setTarix(LocalDate.parse(tarix));
             if (layiheId != null) yeni.setLayihe(layiheRepo.findById(layiheId).orElse(null));
             if (kassaHesabiId != null) yeni.setKassaHesabi(kassaHesabiRepo.findById(kassaHesabiId).orElse(null));
+
+            // hesablasmaHesabi artıq formada yoxdur, amma Entity-də sahə qalır (könə məlumatlar üçün)
             yeni.setHesablasmaHesabi(hesablasmaHesabi);
+
             if (kontragentId != null) {
-                yeni.setKontragent(kontragentService.hamisiniGetir().stream()
-                        .filter(k -> k.getId().equals(kontragentId)).findFirst().orElse(null));
+                yeni.setKontragent(kontragentRepository.findById(kontragentId).orElse(null));
             }
             yeni.setTesvir(tesvir);
             yeni.setMedaxil(medaxil != null ? medaxil : BigDecimal.ZERO);
@@ -116,7 +118,6 @@ public class KassaController {
         return "redirect:/kassa";
     }
 
-    // YENİ: Redaktə səhifəsi
     @GetMapping("/redakte/{id}")
     public String redakteSehife(@PathVariable Long id, Model model,
                                 RedirectAttributes redirectAttributes) {
@@ -127,7 +128,6 @@ public class KassaController {
 
         KassaEmeliyyati e = service.findById(id);
 
-        // YENİ: Əgər təsdiqlənibsə və istifadəçi admin deyilsə, redaktə etməyə icazə vermə
         if (e.getTesdiqlenib() != null && e.getTesdiqlenib() && !isAdmin) {
             redirectAttributes.addFlashAttribute("xeta", "XƏTA: Təsdiqlənmiş əməliyyatı yalnız ADMIN redaktə edə bilər!");
             return "redirect:/kassa";
@@ -135,12 +135,13 @@ public class KassaController {
 
         model.addAttribute("emeliyyat", e);
         model.addAttribute("kassaHesablari", kassaHesabiRepo.findAll());
-        model.addAttribute("kontragentler", kontragentService.hamisiniGetir());
         model.addAttribute("layiheler", layiheRepo.findAll());
-        return "kassa-redakte";
+        model.addAttribute("debitorlar", kontragentRepository.findByKontragentNovu("MUSTERI"));
+        model.addAttribute("kreditorlar", kontragentRepository.findByKontragentNovu("TECHIZATCI"));
+
+        return "maliyye/kassa-redakte";
     }
 
-    // YENİ: Redaktəni yadda saxla
     @PostMapping("/redakte/{id}")
     public String redakteEt(@PathVariable Long id,
                             @RequestParam String tarix,
@@ -160,8 +161,7 @@ public class KassaController {
             if (kassaHesabiId != null) yeni.setKassaHesabi(kassaHesabiRepo.findById(kassaHesabiId).orElse(null));
             yeni.setHesablasmaHesabi(hesablasmaHesabi);
             if (kontragentId != null) {
-                yeni.setKontragent(kontragentService.hamisiniGetir().stream()
-                        .filter(k -> k.getId().equals(kontragentId)).findFirst().orElse(null));
+                yeni.setKontragent(kontragentRepository.findById(kontragentId).orElse(null));
             }
             yeni.setTesvir(tesvir);
             yeni.setMedaxil(medaxil);

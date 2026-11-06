@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp.bank;
+package az.maliyye.MaliyyeApp.maliyye;
 
 import az.maliyye.MaliyyeApp.kontragent.Kontragent;
 import az.maliyye.MaliyyeApp.kontragent.KontragentService;
@@ -30,7 +30,7 @@ public class BankController {
         // YENİ ƏLAVƏ
         model.addAttribute("kontragentler", kontragentService.hamisiniGetir());
 
-        return "bank";
+        return "maliyye/bank";
     }
 
     @PostMapping("/elave-et")

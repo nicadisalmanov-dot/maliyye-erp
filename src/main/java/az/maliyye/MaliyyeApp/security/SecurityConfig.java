@@ -1,7 +1,7 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.security;
 
-import az.maliyye.MaliyyeApp.istifadeci.Istifadeci;
-import az.maliyye.MaliyyeApp.istifadeci.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -44,7 +44,7 @@ public class SecurityConfig {
                 authorities.add(new SimpleGrantedAuthority(istifadeci.getRol()));
             }
 
-            // BÜTÜN MODUL İCAZƏLƏRİNİ DİNAMİK OLARAK SPRING SECURITY-YƏ ÖTÜRÜRÜK:
+            // BÜTÜN MODUL İCAZƏLƏRİNİ DİNAMİK OLARAK SPRING SECURITY-YƏ ÖTÜRÜRÜK:[cite: 27]
             if (istifadeci.isIcazeDashboard()) authorities.add(new SimpleGrantedAuthority("MODULE_DASHBOARD"));
             if (istifadeci.isIcazeKassa())     authorities.add(new SimpleGrantedAuthority("MODULE_KASSA"));
             if (istifadeci.isIcazeBank())      authorities.add(new SimpleGrantedAuthority("MODULE_BANK"));
@@ -80,6 +80,10 @@ public class SecurityConfig {
                         .requestMatchers("/anbar", "/anbar/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_ANBAR")
                         .requestMatchers("/satis", "/satis/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_SATIS")
                         .requestMatchers("/satinalma", "/satinalma/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_SATINALMA")
+
+                        // YENİ ƏLAVƏ OLUNAN SMETA VƏ BÜDCƏ MODULUNUN İCAZƏLƏRİ:
+                        .requestMatchers("/smetalar", "/smetalar/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_SATINALMA", "MODULE_ANBAR")
+
                         .requestMatchers("/hesabat", "/hesabat/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_HESABAT")
                         .requestMatchers("/hr", "/hr/**").hasAnyAuthority("ROLE_ADMIN", "MODULE_HR")
 

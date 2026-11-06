@@ -1,7 +1,7 @@
 package az.maliyye.MaliyyeApp.smeta;
 
-import az.maliyye.MaliyyeApp.Layihe;
-import az.maliyye.MaliyyeApp.LayiheRepository;
+import az.maliyye.MaliyyeApp.layiheler.Layihe;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +24,9 @@ public class SmetaService {
     @Autowired
     private LayiheRepository layiheRepository;
 
+    @Autowired
+    private FaktikiXercRepository faktikiXercRepository;
+
     public List<Smeta> butunSmetalar() {
         return smetaRepository.findAll();
     }
@@ -32,9 +35,18 @@ public class SmetaService {
         return smetaRepository.findByLayiheId(layiheId);
     }
 
+    // Smeta tapılarkən bəndlər və hər bəndin faktiki xərcləri hesablanaraq yüklənir
     public Smeta smetaTap(Long id) {
-        return smetaRepository.findById(id)
+        Smeta smeta = smetaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Smeta tapılmadı: ID " + id));
+
+        if (smeta.getBəndlər() != null) {
+            for (SmetaBendi b : smeta.getBəndlər()) {
+                Double faktiki = faktikiXercRepository.getCemiFaktikiXercByBendiId(b.getId());
+                b.setFaktikiXerc(faktiki != null ? faktiki : 0.0);
+            }
+        }
+        return smeta;
     }
 
     @Transactional
@@ -55,7 +67,7 @@ public class SmetaService {
     }
 
     @Transactional
-    public void bəndElaveEt(Long smetaId, String isAdi, String vahid, Double miqdar, Double vahidQiymeti, String kateqoriya) {
+    public void bendElaveEt(Long smetaId, String isAdi, String vahid, Double miqdar, Double vahidQiymeti, String kateqoriya) {
         Smeta smeta = smetaTap(smetaId);
 
         SmetaBendi bendi = new SmetaBendi();
@@ -70,7 +82,7 @@ public class SmetaService {
     }
 
     @Transactional
-    public void bəndSil(Long bendiId) {
+    public void bendSil(Long bendiId) {
         smetaBendiRepository.deleteById(bendiId);
     }
 

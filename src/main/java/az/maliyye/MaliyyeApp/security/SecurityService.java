@@ -1,7 +1,7 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.security;
 
-import az.maliyye.MaliyyeApp.istifadeci.Istifadeci;
-import az.maliyye.MaliyyeApp.istifadeci.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +46,12 @@ public class SecurityService {
     }
 
     public boolean hasSatinalma(String username) {
+        Istifadeci u = getIstifadeci(username);
+        return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeSatinalma());
+    }
+
+    // YENİ ƏLAVƏ OLUNAN SMETA İCAZƏ METODU:
+    public boolean hasSmeta(String username) {
         Istifadeci u = getIstifadeci(username);
         return u != null && ("ROLE_ADMIN".equals(u.getRol()) || u.isIcazeSatinalma());
     }

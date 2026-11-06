@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.security;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +8,6 @@ public class AccessDeniedController {
 
     @GetMapping("/access-denied")
     public String accessDenied() {
-        return "access-denied"; // templates qovluğundakı access-denied.html faylına yönləndirir
+        return "security/access-denied"; // templates qovluğundakı access-denied.html faylına yönləndirir
     }
 }

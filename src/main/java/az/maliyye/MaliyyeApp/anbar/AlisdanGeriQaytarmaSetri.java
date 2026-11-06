@@ -1,6 +1,6 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.Layihe;
+import az.maliyye.MaliyyeApp.layiheler.Layihe;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 

@@ -1,6 +1,7 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.kontragent;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "kontragentler")
@@ -10,44 +11,90 @@ public class Kontragent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
-    private String ad; // Şirkətin və ya şəxsin adı
+    // "FIZIKI" (Vətəndaş) və ya "HUKUQI" (Şirkət)
+    @Column(nullable = false)
+    private String subyektNovu;
 
-    @Column(length = 50)
+    // "MUSTERI" (Debitor) və ya "TECHIZATCI" (Kreditor)
+    @Column(nullable = false)
+    private String kontragentNovu;
+
+    // --- Fiziki şəxs üçün sahələr ---
+    private String adSoyad;
+    private String finKodu;
+    private String vesiqeNomresi;
+
+    // --- Hüquqi şəxs üçün sahələr ---
+    private String sirketAdi;
+    private String voen;
+
+    // --- Ortaq sahələr ---
     private String telefon;
-
-    @Column(length = 100)
     private String email;
-
-    @Column(length = 200)
     private String unvan;
 
-    @Column(nullable = false, length = 20)
-    private String nov; // "MUSTERI", "TECHIZATCI" və ya "HER_IKISI"
+    // --- Audit sahələri ---
+    private String yaradanIstifadeci;
+    private LocalDateTime yaradilmaTarixi;
+    private String duzelenIstifadeci;
+    private LocalDateTime duzelisTarixi;
 
-    public Kontragent() {}
-
-    public Kontragent(String ad, String telefon, String email, String unvan, String nov) {
-        this.ad = ad;
-        this.telefon = telefon;
-        this.email = email;
-        this.unvan = unvan;
-        this.nov = nov;
+    public Kontragent() {
+        this.yaradilmaTarixi = LocalDateTime.now();
     }
 
-    // Getterlər
-    public Long getId() { return id; }
-    public String getAd() { return ad; }
-    public String getTelefon() { return telefon; }
-    public String getEmail() { return email; }
-    public String getUnvan() { return unvan; }
-    public String getNov() { return nov; }
+    // Hesabat və digər kontrollerlərin xəta verməməsi üçün köməkçi metod:
+    public String getAd() {
+        if ("FIZIKI".equals(subyektNovu)) {
+            return adSoyad != null ? adSoyad : "-";
+        } else {
+            return sirketAdi != null ? sirketAdi : "-";
+        }
+    }
 
-    // Setterlər
+    // Getter və Setter-lər
+    public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public void setAd(String ad) { this.ad = ad; }
+
+    public String getSubyektNovu() { return subyektNovu; }
+    public void setSubyektNovu(String subyektNovu) { this.subyektNovu = subyektNovu; }
+
+    public String getKontragentNovu() { return kontragentNovu; }
+    public void setKontragentNovu(String kontragentNovu) { this.kontragentNovu = kontragentNovu; }
+
+    public String getAdSoyad() { return adSoyad; }
+    public void setAdSoyad(String adSoyad) { this.adSoyad = adSoyad; }
+
+    public String getFinKodu() { return finKodu; }
+    public void setFinKodu(String finKodu) { this.finKodu = finKodu; }
+
+    public String getVesiqeNomresi() { return vesiqeNomresi; }
+    public void setVesiqeNomresi(String vesiqeNomresi) { this.vesiqeNomresi = vesiqeNomresi; }
+
+    public String getSirketAdi() { return sirketAdi; }
+    public void setSirketAdi(String sirketAdi) { this.sirketAdi = sirketAdi; }
+
+    public String getVoen() { return voen; }
+    public void setVoen(String voen) { this.voen = voen; }
+
+    public String getTelefon() { return telefon; }
     public void setTelefon(String telefon) { this.telefon = telefon; }
+
+    public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getUnvan() { return unvan; }
     public void setUnvan(String unvan) { this.unvan = unvan; }
-    public void setNov(String nov) { this.nov = nov; }
+
+    public String getYaradanIstifadeci() { return yaradanIstifadeci; }
+    public void setYaradanIstifadeci(String yaradanIstifadeci) { this.yaradanIstifadeci = yaradanIstifadeci; }
+
+    public LocalDateTime getYaradilmaTarixi() { return yaradilmaTarixi; }
+    public void setYaradilmaTarixi(LocalDateTime yaradilmaTarixi) { this.yaradilmaTarixi = yaradilmaTarixi; }
+
+    public String getDuzelenIstifadeci() { return duzelenIstifadeci; }
+    public void setDuzelenIstifadeci(String duzelenIstifadeci) { this.duzelenIstifadeci = duzelenIstifadeci; }
+
+    public LocalDateTime getDuzelisTarixi() { return duzelisTarixi; }
+    public void setDuzelisTarixi(LocalDateTime duzelisTarixi) { this.duzelisTarixi = duzelisTarixi; }
 }

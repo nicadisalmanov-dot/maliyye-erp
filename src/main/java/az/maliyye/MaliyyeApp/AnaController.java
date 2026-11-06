@@ -1,5 +1,10 @@
 package az.maliyye.MaliyyeApp;
 
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.maliyye.BankService;
+import az.maliyye.MaliyyeApp.maliyye.KassaService;
+import az.maliyye.MaliyyeApp.kontragent.KontragentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

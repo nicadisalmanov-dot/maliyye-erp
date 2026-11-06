@@ -1,6 +1,9 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.*;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.kontragent.KontragentService;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,7 +68,7 @@ public class SatisQaimesiController {
         List<AnbarMehsul> anbarMehsullar = anbarMehsulRepo.findAll();
         model.addAttribute("anbarMehsullar", anbarMehsullar);
 
-        return "satis-qaimesi";
+        return "anbar/satis-qaimesi";
     }
 
     @PostMapping("/elave-et")
@@ -109,7 +112,7 @@ public class SatisQaimesiController {
         List<AnbarMehsul> anbarMehsullar = anbarMehsulRepo.findAll();
         model.addAttribute("anbarMehsullar", anbarMehsullar);
 
-        return "satis-qaimesi-redakte";
+        return "anbar/satis-qaimesi-redakte";
     }
 
     @GetMapping("/arxiv")
@@ -126,14 +129,14 @@ public class SatisQaimesiController {
                     .collect(Collectors.toList());
         }
         model.addAttribute("qaimeler", butunQaimeler);
-        return "satis-qaimesi-arxiv";
+        return "anbar/satis-qaimesi-arxiv";
     }
 
     @GetMapping("/bax/{id}")
     public String qaimeBax(@PathVariable Long id, Model model) {
         SatisQaimesi qaime = satisRepo.findById(id).orElseThrow();
         model.addAttribute("qaime", qaime);
-        return "satis-qaimesi-bax";
+        return "anbar/satis-qaimesi-bax";
     }
 
     @PostMapping("/sil/{id}")

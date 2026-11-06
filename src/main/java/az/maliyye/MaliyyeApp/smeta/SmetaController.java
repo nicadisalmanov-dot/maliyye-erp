@@ -1,6 +1,6 @@
 package az.maliyye.MaliyyeApp.smeta;
 
-import az.maliyye.MaliyyeApp.LayiheRepository;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/smetalar")
@@ -20,11 +21,19 @@ public class SmetaController {
     @Autowired
     private LayiheRepository layiheRepository;
 
+    @Autowired
+    private FaktikiXercRepository faktikiXercRepository;
+
     @GetMapping
     public String smetalarSiyahisi(Model model) {
-        model.addAttribute("smetalar", smetaService.butunSmetalar());
-        model.addAttribute("layiheler", layiheRepository.findAll());
-        return "smetalar";
+        try {
+            model.addAttribute("smetalar", smetaService.butunSmetalar());
+            model.addAttribute("layiheler", layiheRepository.findAll());
+            return "smeta/smetalar";
+        } catch (Exception e) {
+            model.addAttribute("xeta", "Siyahı yüklənərkən xəta: " + e.getMessage());
+            return "smeta/smetalar";
+        }
     }
 
     @PostMapping("/elave-et")
@@ -46,10 +55,28 @@ public class SmetaController {
 
     @GetMapping("/detal/{id}")
     public String smetaDetal(@PathVariable Long id, Model model) {
-        Smeta smeta = smetaService.smetaTap(id);
-        model.addAttribute("smeta", smeta);
-        model.addAttribute("bəndlər", smeta.getBəndlər());
-        return "smeta-detal";
+        try {
+            Smeta smeta = smetaService.smetaTap(id);
+            List<SmetaBendi> bəndlər = smeta.getBəndlər();
+
+            double umumiFaktikiXerc = 0.0;
+
+            if (bəndlər != null) {
+                for (SmetaBendi bend : bəndlər) {
+                    Double faktiki = faktikiXercRepository.getCemiFaktikiXercByBendiId(bend.getId());
+                    bend.setFaktikiXerc(faktiki != null ? faktiki : 0.0);
+                    umumiFaktikiXerc += bend.getFaktikiXerc();
+                }
+            }
+
+            model.addAttribute("smeta", smeta);
+            model.addAttribute("bəndlər", bəndlər);
+            model.addAttribute("umumiFaktikiXerc", umumiFaktikiXerc);
+
+            return "smeta/smeta-detal";
+        } catch (Exception e) {
+            return "redirect:/smetalar";
+        }
     }
 
     @PostMapping("/detal/{smetaId}/bend-elave-et")
@@ -61,7 +88,7 @@ public class SmetaController {
                               @RequestParam String kateqoriya,
                               RedirectAttributes redirectAttributes) {
         try {
-            smetaService.bəndElaveEt(smetaId, isAdi, vahid, miqdar, vahidQiymeti, kateqoriya);
+            smetaService.bendElaveEt(smetaId, isAdi, vahid, miqdar, vahidQiymeti, kateqoriya);
             redirectAttributes.addFlashAttribute("ugur", "Smeta bəndi (iş) əlavə olundu.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("xeta", "XƏTA: " + e.getMessage());
@@ -74,7 +101,7 @@ public class SmetaController {
                           @PathVariable Long bendiId,
                           RedirectAttributes redirectAttributes) {
         try {
-            smetaService.bəndSil(bendiId);
+            smetaService.bendSil(bendiId);
             redirectAttributes.addFlashAttribute("ugur", "Smeta bəndi silindi.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("xeta", "XƏTA: " + e.getMessage());

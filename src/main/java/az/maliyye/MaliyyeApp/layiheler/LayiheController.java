@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.layiheler;
 
 import az.maliyye.MaliyyeApp.anbar.Anbar;
 import az.maliyye.MaliyyeApp.anbar.AnbarRepository;
@@ -31,7 +31,7 @@ public class LayiheController {
         model.addAttribute("anbarlar", anbarRepo.findAll());
         model.addAttribute("kassaHesablari", kassaHesabiRepo.findAll());
         model.addAttribute("bankHesablari", bankHesabiRepo.findAll());
-        return "layiheler";
+        return "layiheler/layiheler";
     }
 
     // ==========================================
@@ -74,7 +74,7 @@ public class LayiheController {
     @GetMapping("/layihe-redakte/{id}")
     public String layiheRedakteSehife(@PathVariable Long id, Model model) {
         model.addAttribute("layihe", layiheRepo.findById(id).orElseThrow());
-        return "layihe-redakte";
+        return "layiheler/layihe-redakte";
     }
 
     @PostMapping("/layihe-redakte/{id}")
@@ -100,7 +100,7 @@ public class LayiheController {
     public String anbarRedakteSehife(@PathVariable Long id, Model model) {
         model.addAttribute("anbar", anbarRepo.findById(id).orElseThrow());
         model.addAttribute("layiheler", layiheRepo.findAll());
-        return "anbar-redakte";
+        return "layiheler/anbar-redakte";
     }
 
     @PostMapping("/anbar-redakte/{id}")
@@ -148,7 +148,7 @@ public class LayiheController {
     @GetMapping("/kassa-hesabi-redakte/{id}")
     public String kassaRedakteSehife(@PathVariable Long id, Model model) {
         model.addAttribute("kassa", kassaHesabiRepo.findById(id).orElseThrow());
-        return "kassa-redakte";
+        return "layiheler/kassa-redakte";
     }
 
     @PostMapping("/kassa-hesabi-redakte/{id}")
@@ -193,7 +193,7 @@ public class LayiheController {
     @GetMapping("/bank-hesabi-redakte/{id}")
     public String bankRedakteSehife(@PathVariable Long id, Model model) {
         model.addAttribute("bank", bankHesabiRepo.findById(id).orElseThrow());
-        return "bank-redakte";
+        return "layiheler/bank-redakte";
     }
 
     @PostMapping("/bank-hesabi-redakte/{id}")

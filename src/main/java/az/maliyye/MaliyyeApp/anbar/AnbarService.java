@@ -1,6 +1,7 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.Anbar_emeliyyatlari.*;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

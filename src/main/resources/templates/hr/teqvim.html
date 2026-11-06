@@ -1,10 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>İstehsal Təqvimi - HR</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; }
+        .kart { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .ay-secim { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; }
+        .ay-secim select, .ay-secim button { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .ay-secim button { background: #1976d2; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .teqvim-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .gun-kart { padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .gun-kart:hover { transform: scale(1.05); border-color: #1976d2; }
+        .gun-kart .gun-nomre { font-size: 20px; font-weight: bold; }
+        .gun-kart .gun-hefte { font-size: 11px; opacity: 0.8; }
+        .gun-kart .gun-status { font-size: 10px; margin-top: 5px; font-weight: bold; text-transform: uppercase; }
+        .gun-kart.ish { background: #c8e6c9; color: #1b5e20; }
+        .gun-kart.hefte-sonu { background: #f5f5f5; color: #999; }
+        .gun-kart.bayram { background: #f3e5f5; color: #6a1b9a; }
+        .gun-kart.yerdeyishme { background: #fff3e0; color: #e65100; }
+        .legend { display: flex; gap: 20px; margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: bold; }
+        .legend-box { width: 20px; height: 20px; border-radius: 4px; }
+        .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; }
+        .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 15% auto; padding: 30px; border-radius: 12px; width: 400px; }
+        .modal-content h3 { color: #0f4c81; margin-bottom: 15px; }
+        .modal-content select, .modal-content input { width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; }
+        .modal-content button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
 </head>
 <body>
-$END$
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}">🏠 Dashboard</a>
+    <a th:href="@{/hr}">📊 HR Paneli</a>
+    <a th:href="@{/hr/isciler}">👤 İşçilər</a>
+    <a th:href="@{/hr/sobeler}">🏢 Şöbələr</a>
+    <a th:href="@{/hr/vezifeler}">💼 Vəzifələr</a>
+    <a th:href="@{/hr/teqvim}" class="aktiv">🗓️ İstehsal Təqvimi</a>
+    <a th:href="@{/hr/tabel}">📅 Tabel</a>
+    <a th:href="@{/hr/mezuniyyetler}">🌴 Məzuniyyətlər</a>
+    <a th:href="@{/hr/emek-haqqi}">💰 Əmək Haqqı</a>
+    <a th:href="@{/hr/hesabatlar}">📊 Hesabatlar</a>
+</div>
+
+<div class="esas">
+    <h1>🗓️ İstehsal Təqvimi</h1>
+
+    <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
+    <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
+
+    <div class="kart">
+        <form method="get" action="/hr/teqvim" class="ay-secim">
+            <label style="font-weight: bold; color: #0f4c81;">İl:</label>
+            <select name="il">
+                <option th:each="i : ${#numbers.sequence(cariIl-2, cariIl+1)}" th:value="${i}" th:text="${i}" th:selected="${i == secilmisIl}"></option>
+            </select>
+            <label style="font-weight: bold; color: #0f4c81;">Ay:</label>
+            <select name="ay">
+                <option value="1" th:selected="${secilmisAy == 1}">Yanvar</option>
+                <option value="2" th:selected="${secilmisAy == 2}">Fevral</option>
+                <option value="3" th:selected="${secilmisAy == 3}">Mart</option>
+                <option value="4" th:selected="${secilmisAy == 4}">Aprel</option>
+                <option value="5" th:selected="${secilmisAy == 5}">May</option>
+                <option value="6" th:selected="${secilmisAy == 6}">İyun</option>
+                <option value="7" th:selected="${secilmisAy == 7}">İyul</option>
+                <option value="8" th:selected="${secilmisAy == 8}">Avqust</option>
+                <option value="9" th:selected="${secilmisAy == 9}">Sentyabr</option>
+                <option value="10" th:selected="${secilmisAy == 10}">Oktyabr</option>
+                <option value="11" th:selected="${secilmisAy == 11}">Noyabr</option>
+                <option value="12" th:selected="${secilmisAy == 12}">Dekabr</option>
+            </select>
+            <button type="submit">Göstər</button>
+        </form>
+    </div>
+
+    <div class="kart">
+        <div class="legend">
+            <div class="legend-item"><div class="legend-box" style="background: #c8e6c9;"></div> İş Günü</div>
+            <div class="legend-item"><div class="legend-box" style="background: #f5f5f5; border: 1px solid #ddd;"></div> Həftəsonu</div>
+            <div class="legend-item"><div class="legend-box" style="background: #f3e5f5;"></div> Bayram</div>
+            <div class="legend-item"><div class="legend-box" style="background: #fff3e0;"></div> Yerdəyişmə</div>
+        </div>
+
+        <div class="teqvim-grid">
+            <div th:each="g : ${gunler}" class="gun-kart"
+                 th:classappend="${g.gunNovu == 'ISH_GUNU' ? 'ish' :
+                                  g.gunNovu == 'HEFTE_SONU' ? 'hefte-sonu' :
+                                  g.gunNovu == 'BAYRAM' ? 'bayram' :
+                                  g.gunNovu == 'YERDEYISHME' ? 'yerdeyishme' : 'ish'}"
+                 th:onclick="'openModal(' + ${g.id} + ', \'' + ${g.tarix} + '\', \'' + ${g.gunNovu} + '\')'">
+                <div class="gun-nomre" th:text="${g.tarix.dayOfMonth}"></div>
+                <div class="gun-hefte" th:text="${g.tarix.dayOfWeek.name}"></div>
+                <div class="gun-status" th:text="${g.gunNovu == 'ISH_GUNU' ? 'İŞ' :
+                                                 g.gunNovu == 'HEFTE_SONU' ? 'H' :
+                                                 g.gunNovu == 'BAYRAM' ? 'B' :
+                                                 g.gunNovu == 'YERDEYISHME' ? 'Y' : '?'}"></div>
+                <div th:if="${g.qeyd != null}" style="font-size: 9px; margin-top: 3px; opacity: 0.7;" th:text="${g.qeyd}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>Günün Statusunu Dəyiş</h3>
+        <form id="statusForm" method="post" action="/hr/teqvim/status-deyis">
+            <input type="hidden" name="tarix" id="modalTarix">
+            <label>Tarix: <span id="modalTarixLabel"></span></label>
+            <select name="status" id="modalStatus">
+                <option value="ISH_GUNU">İş Günü</option>
+                <option value="HEFTE_SONU">Həftəsonu</option>
+                <option value="BAYRAM">Bayram</option>
+                <option value="YERDEYISHME">Yerdəyişmə (İş Günü)</option>
+            </select>
+            <input type="text" name="qeyd" id="modalQeyd" placeholder="Qeyd (məsələn: Novruz Bayramı)">
+            <button type="submit" style="background: #1976d2; color: white; margin-bottom: 10px;">Yadda Saxla</button>
+            <button type="button" onclick="closeModal()" style="background: #ccc; color: #333;">Ləğv Et</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id, tarix, status) {
+        document.getElementById('modalTarix').value = tarix;
+        document.getElementById('modalTarixLabel').innerText = tarix;
+        document.getElementById('modalStatus').value = status;
+        document.getElementById('modal').style.display = 'block';
+    }
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('modal')) closeModal();
+    }
+</script>
 </body>
 </html>

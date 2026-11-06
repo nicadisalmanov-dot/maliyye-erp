@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.hr;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

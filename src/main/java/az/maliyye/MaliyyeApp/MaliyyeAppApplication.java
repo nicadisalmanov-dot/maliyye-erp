@@ -1,9 +1,13 @@
 package az.maliyye.MaliyyeApp;
 
+import az.maliyye.MaliyyeApp.hr.BayramService;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -43,9 +47,10 @@ public class MaliyyeAppApplication {
     }
 
     // ============================================
-    // === CONSTRAINT TƏMİZLƏMƏ (YALNIZ LOKAL) ===
+    // === CONSTRAINT TƏMİZLƏMƏ (YALNIZ LOKAL VƏ TEST OLMAYAN) ===
     // ============================================
     @Bean
+    @Profile("!test") // Test profili aktiv olduqda bu runner işləməyəcək
     public CommandLineRunner constraintTemizle(JdbcTemplate jdbcTemplate) {
         return args -> {
             // Yalnız lokal mühitdə işlə (DB_URL yoxdursa)

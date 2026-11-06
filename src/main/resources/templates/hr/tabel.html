@@ -162,18 +162,13 @@
                th:text="${isci.vezife != null ? isci.vezife.ad : '-'}">-</div>
         </td>
         <td th:each="g : ${#numbers.sequence(1, gunSayi)}"
-            th:with="tarix=${#temporals.create(secilmisIl, secilmisAy, g)}"
+            th:with="tarix=${#temporals.create(secilmisIl, secilmisAy, g)},
+                     gunNovu=${teqvimService.gunNovunuAl(tarix)}"
             class="gun"
-            th:classappend="${
-                            bayramService.isBayram(tarix) ? 'bayram' :
-                            (#temporals.dayOfWeekName(tarix) == 'SATURDAY' or #temporals.dayOfWeekName(tarix) == 'SUNDAY') ? 'haftasonu' :
-                            'gun-is'
-                        }"
-            th:text="${
-                            bayramService.isBayram(tarix) ? 'B' :
-                            (#temporals.dayOfWeekName(tarix) == 'SATURDAY' or #temporals.dayOfWeekName(tarix) == 'SUNDAY') ? 'H' :
-                            'İŞ'
-                        }">
+            th:classappend="${gunNovu == 'BAYRAM' ? 'bayram' :
+                             gunNovu == 'HEFTE_SONU' ? 'haftasonu' : 'gun-is'}"
+            th:text="${gunNovu == 'BAYRAM' ? 'B' :
+                      gunNovu == 'HEFTE_SONU' ? 'H' : 'İŞ'}">
           İŞ
         </td>
         <td>

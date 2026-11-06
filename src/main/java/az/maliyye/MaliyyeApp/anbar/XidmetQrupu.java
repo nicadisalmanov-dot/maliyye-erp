@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

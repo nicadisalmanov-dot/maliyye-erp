@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp.bank;
+package az.maliyye.MaliyyeApp.maliyye;
 
 import az.maliyye.MaliyyeApp.kontragent.Kontragent;
 import jakarta.persistence.*;

@@ -1,6 +1,9 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.*;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.kontragent.KontragentService;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,7 +64,7 @@ public class AlisQaimesiController {
         model.addAttribute("kontragentler", kontragentService.techizatciGetir());
         model.addAttribute("mehsullar", mehsulRepo.findAll());
         model.addAttribute("xidmetler", xidmetRepo.findAll());
-        return "alis-qaimesi";
+        return "anbar/alis-qaimesi";
     }
 
     @PostMapping("/elave-et")
@@ -101,7 +104,7 @@ public class AlisQaimesiController {
         model.addAttribute("kontragentler", kontragentService.techizatciGetir());
         model.addAttribute("mehsullar", mehsulRepo.findAll());
         model.addAttribute("xidmetler", xidmetRepo.findAll());
-        return "alis-qaimesi-redakte";
+        return "anbar/alis-qaimesi-redakte";
     }
 
     @PostMapping("/redakte/{id}")
@@ -149,14 +152,14 @@ public class AlisQaimesiController {
         }
 
         model.addAttribute("qaimeler", butunQaimeler);
-        return "alis-qaimesi-arxiv";
+        return "anbar/alis-qaimesi-arxiv";
     }
 
     @GetMapping("/bax/{id}")
     public String qaimeBax(@PathVariable Long id, Model model) {
         AlisQaimesi qaime = alisQaimesiRepo.findById(id).orElseThrow();
         model.addAttribute("qaime", qaime);
-        return "alis-qaimesi-bax";
+        return "anbar/alis-qaimesi-bax";
     }
 
     @PostMapping("/sil/{id}")

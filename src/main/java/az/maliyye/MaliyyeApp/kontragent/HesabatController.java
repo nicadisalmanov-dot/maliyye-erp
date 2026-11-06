@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.kontragent;
 
 import az.maliyye.MaliyyeApp.anbar.AlisQaimesiRepository;
 import az.maliyye.MaliyyeApp.anbar.SatisQaimesiRepository;
@@ -6,8 +6,6 @@ import az.maliyye.MaliyyeApp.maliyye.BankEmeliyyati;
 import az.maliyye.MaliyyeApp.maliyye.BankEmeliyyatiRepository;
 import az.maliyye.MaliyyeApp.maliyye.KassaEmeliyyati;
 import az.maliyye.MaliyyeApp.maliyye.KassaEmeliyyatiRepository;
-import az.maliyye.MaliyyeApp.kontragent.Kontragent;
-import az.maliyye.MaliyyeApp.kontragent.KontragentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -134,6 +132,6 @@ public class HesabatController {
         model.addAttribute("debitorlar", debitorlar);
         model.addAttribute("kreditorlar", kreditorlar);
 
-        return "hesabat";
+        return "kontragent/hesabat";
     }
 }

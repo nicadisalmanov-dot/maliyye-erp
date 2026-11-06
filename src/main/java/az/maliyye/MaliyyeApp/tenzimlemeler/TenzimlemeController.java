@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.tenzimlemeler;
 
 import az.maliyye.MaliyyeApp.anbar.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class TenzimlemeController {
         model.addAttribute("olcuVahidleri", olcuVahidiRepo.findAll());
         model.addAttribute("malTipleri", malTipiRepo.findAll());
         model.addAttribute("malQruplari", mehsulQrupuRepo.findAll());
-        return "tenzimlemeler";
+        return "tenzimlemeler/tenzimlemeler";
     }
 
     // --- Ölçü Vahidi Əməliyyatları ---

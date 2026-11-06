@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.maliyye;
 
 import az.maliyye.MaliyyeApp.kontragent.TehtelhesabSexs;
 import jakarta.persistence.*;

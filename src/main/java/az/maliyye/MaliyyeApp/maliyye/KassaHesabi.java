@@ -1,4 +1,4 @@
-package az.maliyye.MaliyyeApp.kassa;
+package az.maliyye.MaliyyeApp.maliyye;
 
 import jakarta.persistence.*;
 

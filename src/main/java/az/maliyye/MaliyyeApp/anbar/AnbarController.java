@@ -1,6 +1,8 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.Anbar_emeliyyatlari.*;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.kontragent.KontragentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +32,7 @@ public class AnbarController {
 
     @GetMapping
     public String anbarMenyu() {
-        return "anbar";
+        return "anbar/anbar";
     }
 
     @GetMapping("/api/qaliqlar")
@@ -52,7 +54,7 @@ public class AnbarController {
         model.addAttribute("kontragentler", kontragentRepo.findAll());
         model.addAttribute("anbarlar", service.icazeliAnbarlar(username));
         model.addAttribute("mehsullar", mehsulRepo.findAll());
-        return "alis-qaimesi";
+        return "anbar/alis-qaimesi";
     }
 
     @GetMapping("/mallar")
@@ -69,7 +71,7 @@ public class AnbarController {
         model.addAttribute("anbarlar", service.icazeliAnbarlar(username));
         model.addAttribute("olcuVahidleri", olcuVahidiRepo.findAll());
         model.addAttribute("isAdmin", isAdmin);
-        return "mallar";
+        return "anbar/mallar";
     }
 
     @GetMapping("/anbar-qaliqlari")
@@ -78,7 +80,6 @@ public class AnbarController {
         String username = auth.getName();
         Istifadeci user = istifadeciRepo.findByUsername(username);
 
-        // İstifadəçi icazələrinə uyğun anbar qalıqları sətrləri çəkilir
         List<AnbarMehsul> butunQaliqlar = anbarMehsulRepository.findAll();
 
         if (user != null && !user.getRol().equals("ROLE_ADMIN")) {
@@ -94,13 +95,13 @@ public class AnbarController {
         model.addAttribute("qruplar", mehsulQrupuRepo.findAll());
         model.addAttribute("malTipleri", malTipiRepo.findAll());
         model.addAttribute("secilmisAnbarId", anbarId);
-        return "anbar-qaliqlari";
+        return "anbar/anbar-qaliqlari";
     }
 
     @GetMapping("/olcu-vahidi")
     public String olcuVahidiSehife(Model model) {
         model.addAttribute("olcuVahidleri", olcuVahidiRepo.findAll());
-        return "olcu-vahidi";
+        return "anbar/olcu-vahidi";
     }
 
     @PostMapping("/olcu-vahidi-elave-et")
@@ -118,7 +119,7 @@ public class AnbarController {
     public String olcuVahidiRedakteSehife(@PathVariable Long id, Model model) {
         OlcuVahidi ov = olcuVahidiRepo.findById(id).orElseThrow();
         model.addAttribute("olcuVahidi", ov);
-        return "olcu-vahidi-redakte";
+        return "anbar/olcu-vahidi-redakte";
     }
 
     @PostMapping("/olcu-vahidi-redakte/{id}")
@@ -149,7 +150,7 @@ public class AnbarController {
     @GetMapping({"/mal-tipi", "/malin-tipi"})
     public String malTipiSehife(Model model) {
         model.addAttribute("malTipleri", malTipiRepo.findAll());
-        return "mal-tipi";
+        return "anbar/mal-tipi";
     }
 
     @PostMapping("/mal-tipi-elave-et")
@@ -167,7 +168,7 @@ public class AnbarController {
     public String malTipiRedakteSehife(@PathVariable Long id, Model model) {
         MalTipi malTipi = malTipiRepo.findById(id).orElseThrow();
         model.addAttribute("malTipi", malTipi);
-        return "mal-tipi-redakte";
+        return "anbar/mal-tipi-redakte";
     }
 
     @PostMapping("/mal-tipi-redakte/{id}")
@@ -197,7 +198,7 @@ public class AnbarController {
     @GetMapping({"/mal-qrupu", "/malin-qrupu"})
     public String malQrupuSehife(Model model) {
         model.addAttribute("qruplar", mehsulQrupuRepo.findAll());
-        return "mal-qrupu";
+        return "anbar/mal-qrupu";
     }
 
     @PostMapping("/qrup-elave-et")
@@ -213,7 +214,7 @@ public class AnbarController {
     public String malQrupuRedakteSehife(@PathVariable Long id, Model model) {
         MehsulQrupu qrup = mehsulQrupuRepo.findById(id).orElseThrow();
         model.addAttribute("qrup", qrup);
-        return "mal-qrupu-redakte";
+        return "anbar/mal-qrupu-redakte";
     }
 
     @PostMapping("/mal-qrupu-redakte/{id}")
@@ -294,7 +295,7 @@ public class AnbarController {
         model.addAttribute("malTipleri", malTipiRepo.findAll());
         model.addAttribute("anbarlar", service.icazeliAnbarlar(username));
         model.addAttribute("olcuVahidleri", olcuVahidiRepo.findAll());
-        return "mehsul-redakte";
+        return "anbar/mehsul-redakte";
     }
 
     @PostMapping("/mehsul-redakte/{id}")
@@ -332,12 +333,19 @@ public class AnbarController {
         return "redirect:/anbar/mallar";
     }
 
-    @GetMapping("/esas-vesaitler") public String esasVesaitlerSehife() { return "esas-vesaitler"; }
-    @GetMapping("/qeyri-maddi") public String qeyriMaddiSehife() { return "qeyri-maddi"; }
+    @GetMapping("/esas-vesaitler")
+    public String esasVesaitlerSehife() {
+        return "anbar/esas-vesaitler";
+    }
+
+    @GetMapping("/qeyri-maddi")
+    public String qeyriMaddiSehife() {
+        return "anbar/qeyri-maddi";
+    }
 
     @GetMapping("/{sehife}")
     public String bosSehife(@PathVariable String sehife, Model model) {
         model.addAttribute("sehifeAdi", sehife);
-        return "tezlikle";
+        return "anbar/tezlikle";
     }
 }

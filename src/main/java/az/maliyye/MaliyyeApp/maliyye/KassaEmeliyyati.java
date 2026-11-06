@@ -1,8 +1,8 @@
-package az.maliyye.MaliyyeApp.kassa;
+package az.maliyye.MaliyyeApp.maliyye;
 
-import az.maliyye.MaliyyeApp.istifadeci.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
 import az.maliyye.MaliyyeApp.kontragent.Kontragent;
-import az.maliyye.MaliyyeApp.Layihe;
+import az.maliyye.MaliyyeApp.layiheler.Layihe;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;

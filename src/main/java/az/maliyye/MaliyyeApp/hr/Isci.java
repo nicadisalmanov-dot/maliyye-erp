@@ -1,5 +1,6 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.hr;
 
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;

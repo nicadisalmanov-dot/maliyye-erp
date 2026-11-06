@@ -1,6 +1,5 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.OlcuVahidiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,14 +25,14 @@ public class XidmetController {
         model.addAttribute("tipler", service.butunTipler());
         model.addAttribute("xidmetler", service.butunXidmetler());
         model.addAttribute("olcuVahidleri", olcuVahidiRepo.findAll());
-        return "xidmetler";
+        return "anbar/xidmetler";
     }
 
     // --- XİDMƏT QRUPLARI SƏHİFƏSİ VƏ ƏMƏLİYYATLARI ---
     @GetMapping({"/xidmet-qrupu", "/xidmetin-qrupu"})
     public String xidmetQrupuSehife(Model model) {
         model.addAttribute("qruplar", service.butunQruplar());
-        return "xidmet-qrupu";
+        return "anbar/xidmet-qrupu";
     }
 
     @PostMapping("/xidmet-qrup-elave-et")
@@ -49,7 +48,7 @@ public class XidmetController {
     public String qrupRedakteSehife(@PathVariable Long id, Model model) {
         XidmetQrupu qrup = qrupRepo.findById(id).orElseThrow();
         model.addAttribute("qrup", qrup);
-        return "xidmet-qrupu-redakte";
+        return "anbar/xidmet-qrupu-redakte";
     }
 
     @PostMapping("/xidmet-qrupu-redakte/{id}")
@@ -85,7 +84,7 @@ public class XidmetController {
     @GetMapping({"/xidmet-tipi", "/xidmetin-tipi"})
     public String xidmetTipiSehife(Model model) {
         model.addAttribute("tipler", service.butunTipler());
-        return "xidmet-tipi";
+        return "anbar/xidmet-tipi";
     }
 
     @PostMapping("/xidmet-tipi-elave-et")
@@ -101,7 +100,7 @@ public class XidmetController {
     public String tipRedakteSehife(@PathVariable Long id, Model model) {
         XidmetTipi tip = tipRepo.findById(id).orElseThrow();
         model.addAttribute("tip", tip);
-        return "xidmet-tipi-redakte";
+        return "anbar/xidmet-tipi-redakte";
     }
 
     @PostMapping("/xidmet-tipi-redakte/{id}")
@@ -153,7 +152,7 @@ public class XidmetController {
         model.addAttribute("qruplar", service.butunQruplar());
         model.addAttribute("tipler", service.butunTipler());
         model.addAttribute("olcuVahidleri", olcuVahidiRepo.findAll());
-        return "xidmet-redakte";
+        return "anbar/xidmet-redakte";
     }
 
     @PostMapping("/xidmet-redakte/{id}")

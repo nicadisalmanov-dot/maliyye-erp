@@ -53,4 +53,25 @@ public class SmetaBendi {
 
     public String getKateqoriya() { return kateqoriya; }
     public void setKateqoriya(String kateqoriya) { this.kateqoriya = kateqoriya; }
+    // SmetaBendi.java faylına bu sahəni və metodları əlavə edin:
+
+    @Transient
+    private Double faktikiXerc = 0.0;
+
+    public Double getFaktikiXerc() {
+        return faktikiXerc != null ? faktikiXerc : 0.0;
+    }
+
+    public void setFaktikiXerc(Double faktikiXerc) {
+        this.faktikiXerc = faktikiXerc;
+    }
+
+    public Double getQaliqMebleg() {
+        return getCemiMebleg() - getFaktikiXerc();
+    }
+
+    public Double getIcraFaizi() {
+        if (getCemiMebleg() == null || getCemiMebleg() == 0.0) return 0.0;
+        return Math.min(100.0, (getFaktikiXerc() / getCemiMebleg()) * 100.0);
+    }
 }

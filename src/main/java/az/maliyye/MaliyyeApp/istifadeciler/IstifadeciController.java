@@ -85,7 +85,7 @@ public class IstifadeciController {
         model.addAttribute("anbarlar", anbarRepo.findAll());
         model.addAttribute("kassaHesablari", kassaHesabiRepo.findAll());
         model.addAttribute("bankHesablari", bankHesabiRepo.findAll());
-        return "istifadeci-redakte";
+        return "istifadeciler/istifadeci-redakte";
     }
 
     @PostMapping("/redakte/{id}")

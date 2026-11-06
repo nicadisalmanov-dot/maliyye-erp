@@ -1,5 +1,6 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.hr;
 
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

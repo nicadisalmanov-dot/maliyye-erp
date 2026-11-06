@@ -1,6 +1,6 @@
 package az.maliyye.MaliyyeApp.smeta;
 
-import az.maliyye.MaliyyeApp.Layihe;
+import az.maliyye.MaliyyeApp.layiheler.Layihe;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;

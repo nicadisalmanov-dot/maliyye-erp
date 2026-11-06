@@ -1,7 +1,7 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.KontragentService;
-import az.maliyye.MaliyyeApp.LayiheRepository;
+import az.maliyye.MaliyyeApp.kontragent.KontragentService;
+import az.maliyye.MaliyyeApp.layiheler.LayiheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +36,7 @@ public class AlisdanGeriQaytarmaController {
         model.addAttribute("kontragentler", kontragentService.techizatciGetir());
         model.addAttribute("mehsullar", mehsulRepo.findAll());
         model.addAttribute("xidmetler", xidmetRepo.findAll());
-        return "alisdan-geri-qaytarma";
+        return "anbar/alisdan-geri-qaytarma";
     }
 
     @PostMapping("/elave-et")
@@ -67,7 +67,7 @@ public class AlisdanGeriQaytarmaController {
     public String qaimeBax(@PathVariable Long id, Model model) {
         AlisdanGeriQaytarma qaime = geriQaytarmaRepo.findById(id).orElseThrow();
         model.addAttribute("qaime", qaime);
-        return "alisdan-geri-qaytarma-bax";
+        return "anbar/alisdan-geri-qaytarma-bax";
     }
 
     @GetMapping("/redakte/{id}")
@@ -82,7 +82,7 @@ public class AlisdanGeriQaytarmaController {
         model.addAttribute("kontragentler", kontragentService.techizatciGetir());
         model.addAttribute("mehsullar", mehsulRepo.findAll());
         model.addAttribute("xidmetler", xidmetRepo.findAll());
-        return "alisdan-geri-qaytarma-redakte";
+        return "anbar/alisdan-geri-qaytarma-redakte";
     }
 
     @PostMapping("/redakte/{id}")
@@ -116,7 +116,7 @@ public class AlisdanGeriQaytarmaController {
         String username = auth.getName();
 
         model.addAttribute("qaimeler", service.arxivQaimeleriGetir(username));
-        return "alisdan-geri-qaytarma-arxiv";
+        return "anbar/alisdan-geri-qaytarma-arxiv";
     }
 
     @PostMapping("/sil/{id}")

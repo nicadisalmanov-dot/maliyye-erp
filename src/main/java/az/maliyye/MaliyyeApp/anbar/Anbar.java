@@ -1,5 +1,6 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.anbar;
 
+import az.maliyye.MaliyyeApp.layiheler.Layihe;
 import jakarta.persistence.*;
 import java.util.List;
 

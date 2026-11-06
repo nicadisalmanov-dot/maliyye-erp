@@ -1,4 +1,8 @@
 package az.maliyye.MaliyyeApp.kontragent;
 
-public class KreditorRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface KreditorRepository extends JpaRepository<Kreditor, Long> {
 }

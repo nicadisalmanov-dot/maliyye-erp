@@ -32,12 +32,14 @@
 <body>
 <div class="sidebar">
     <h2>💰 Maliyyə ERP</h2>
-    <a th:href="@{/}">🏠 Dashboard</a>
-    <a th:href="@{/kassa}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name)">💵 Kassa</a>
-    <a th:href="@{/bank}" sec:authorize="hasRole('ADMIN') or @securityService.hasBank(authentication.name)">🏦 Bank</a>
-    <a th:href="@{/anbar}" sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar</a>
-    <a th:href="@{/hr}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR</a>
+    <a th:href="@{/}" sec:authorize="hasRole('ADMIN') or @securityService.hasDashboard(authentication.name)">🏠 Dashboard</a>
+    <a th:href="@{/maliyye}" sec:authorize="hasRole('ADMIN') or @securityService.hasKassa(authentication.name) or @securityService.hasBank(authentication.name)">💵 Maliyyə</a>
+    <a th:href="@{/kontragentler}" sec:authorize="hasRole('ADMIN') or @securityService.hasKontragent(authentication.name)">👥 Kontragentlər</a>
+    <a th:href="@{/anbar}"  sec:authorize="hasRole('ADMIN') or @securityService.hasAnbar(authentication.name)">📦 Anbar Əməliyyatları</a>
+    <a th:href="@{/smetalar}" sec:authorize="hasRole('ADMIN') or @securityService.hasSmeta(authentication.name)">🏗️ Smeta və Büdcə</a>
+    <a th:href="@{/hr}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR (İnsan Resursları)</a>
     <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
+    <a th:href="@{/layiheler}"  sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <div class="esas">

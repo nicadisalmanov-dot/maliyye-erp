@@ -1,6 +1,6 @@
-package az.maliyye.MaliyyeApp;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.Anbar_emeliyyatlari.Mehsul;
+import az.maliyye.MaliyyeApp.anbar.Mehsul;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,7 +19,7 @@ public class AnbarMehsul {
 
     @ManyToOne
     @JoinColumn(name = "mehsul_id", nullable = false)
-    private Mehsul mehsul;
+    private az.maliyye.MaliyyeApp.anbar.Mehsul mehsul;
 
     @Column(nullable = false)
     private Double miqdar = 0.0;
@@ -36,7 +36,7 @@ public class AnbarMehsul {
 
     public AnbarMehsul() {}
 
-    public AnbarMehsul(Anbar anbar, Mehsul mehsul, Double miqdar, BigDecimal ortaDeyer, BigDecimal qaliqDeyeri) {
+    public AnbarMehsul(Anbar anbar, az.maliyye.MaliyyeApp.anbar.Mehsul mehsul, Double miqdar, BigDecimal ortaDeyer, BigDecimal qaliqDeyeri) {
         this.anbar = anbar;
         this.mehsul = mehsul;
         this.miqdar = miqdar;
@@ -49,8 +49,8 @@ public class AnbarMehsul {
     public void setId(Long id) { this.id = id; }
     public Anbar getAnbar() { return anbar; }
     public void setAnbar(Anbar anbar) { this.anbar = anbar; }
-    public Mehsul getMehsul() { return mehsul; }
-    public void setMehsul(Mehsul mehsul) { this.mehsul = mehsul; }
+    public az.maliyye.MaliyyeApp.anbar.Mehsul getMehsul() { return mehsul; }
+    public void setMehsul(az.maliyye.MaliyyeApp.anbar.Mehsul mehsul) { this.mehsul = mehsul; }
     public Double getMiqdar() { return miqdar; }
     public void setMiqdar(Double miqdar) { this.miqdar = miqdar; }
     public BigDecimal getOrtaDeyer() { return ortaDeyer; }

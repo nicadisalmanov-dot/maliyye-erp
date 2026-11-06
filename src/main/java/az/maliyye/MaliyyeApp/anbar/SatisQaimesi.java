@@ -1,8 +1,7 @@
-package az.maliyye.MaliyyeApp.Anbar_emeliyyatlari;
+package az.maliyye.MaliyyeApp.anbar;
 
-import az.maliyye.MaliyyeApp.Anbar;
-import az.maliyye.MaliyyeApp.Istifadeci;
-import az.maliyye.MaliyyeApp.Kontragent;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.kontragent.Kontragent;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;

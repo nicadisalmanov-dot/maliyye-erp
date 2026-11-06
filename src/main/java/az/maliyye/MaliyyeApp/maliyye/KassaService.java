@@ -1,7 +1,7 @@
-package az.maliyye.MaliyyeApp.kassa;
+package az.maliyye.MaliyyeApp.maliyye;
 
-import az.maliyye.MaliyyeApp.istifadeci.Istifadeci;
-import az.maliyye.MaliyyeApp.istifadeci.IstifadeciRepository;
+import az.maliyye.MaliyyeApp.istifadeciler.Istifadeci;
+import az.maliyye.MaliyyeApp.istifadeciler.IstifadeciRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
