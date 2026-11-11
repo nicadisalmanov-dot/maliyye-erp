@@ -28,8 +28,11 @@ jobs:
 
     - name: Copy JAR to VM using SCP
       run: |
-        scp -o StrictHostKeyChecking=no -i id_rsa target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/
+        # Köhnə JAR-ı sil (əgər varsa)
+        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "rm -f /home/${{ secrets.VM_USER }}/MaliyyeApp.jar"
+        # Yeni JAR-ı köçür və adını dəyiş
+        scp -o StrictHostKeyChecking=no -i id_rsa target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/MaliyyeApp.jar
 
     - name: Restart Application via SSH
       run: |
-        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "sudo pkill -9 -f MaliyyeApp || true; sleep 3; nohup java -jar /home/${{ secrets.VM_USER }}/*.jar > /tmp/app.log 2>&1 & sleep 5; tail -n 20 /tmp/app.log"
+        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "sudo pkill -9 -f MaliyyeApp || true; sleep 3; nohup java -jar /home/${{ secrets.VM_USER }}/MaliyyeApp.jar > /tmp/app.log 2>&1 & sleep 5; tail -n 20 /tmp/app.log"
