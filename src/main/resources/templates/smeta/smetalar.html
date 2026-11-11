@@ -7,39 +7,52 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
 
-        /* Sol Menyu */
         .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
         .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
         .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
-        .sidebar a:hover { background: #1976d2; color: white; }
+        .sidebar a:hover, .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
 
-        /* Aktiv (işıq yanan) link üçün stil */
-        .sidebar a.aktiv { background: #1976d2; color: white; border-left: 4px solid #64b5f6; font-weight: bold; }
-
-        /* Əsas Hissə */
         .esas { margin-left: 220px; flex: 1; padding: 30px; }
         h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
-        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 15px; }
-        form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
-        input, select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; width: 100%; }
-        input:focus, select:focus { outline: none; border-color: #1976d2; }
-        .form-actions { grid-column: span 4; text-align: right; }
-        button[type="submit"] { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
-        button[type="submit"]:hover { background: #1565c0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
-        th { background: #fafafa; font-size: 11px; color: #666; text-transform: uppercase; }
-        tr:hover { background: #f9f9f9; }
-        .detal-btn, .sil-btn { height: 28px; padding: 0 12px; font-size: 12px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; border: none; }
-        .detal-btn { background: #1976d2; color: white; margin-right: 4px; }
-        .detal-btn:hover { background: #115293; }
-        .sil-btn { background: #c62828; color: white; }
-        .sil-btn:hover { background: #8e0000; }
-        .badge-qaralama { background: #fff3e0; color: #e65100; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-        .badge-tesdiq { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-        .xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
-        .ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        h3 { margin-bottom: 20px; color: #0f4c81; border-bottom: 2px solid #f0f2f5; padding-bottom: 15px; font-size: 18px; }
+
+        .form-satir { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        button[type="submit"] { padding: 12px 24px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
+        th { background: #f8f9fa; font-size: 11px; color: #666; text-transform: uppercase; }
+        tr:hover { background: #fafafa; }
+
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge-qaralama { background: #fff3e0; color: #e65100; }
+        .badge-tesdiq { background: #e8f5e9; color: #2e7d32; }
+
+        /* Düymələr üçün standart ölçü */
+        .btn-kiçik {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            width: 80px;
+            text-align: center;
+            margin-right: 5px;
+        }
+        .btn-detallar { background: #1976d2; }
+        .btn-detallar:hover { background: #1565c0; }
+        .btn-redakte { background: #f57c00; }
+        .btn-redakte:hover { background: #e65100; }
+        .btn-sil { background: #c62828; }
+        .btn-sil:hover { background: #8e0000; }
+
+        .tarix-sutun { font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
@@ -53,37 +66,29 @@
     <a th:href="@{/smetalar}" class="aktiv" sec:authorize="hasRole('ADMIN') or @securityService.hasSmeta(authentication.name)">🏗️ Smeta və Büdcə</a>
     <a th:href="@{/hr}" sec:authorize="hasRole('ADMIN') or @securityService.hasHr(authentication.name)">👥 HR (İnsan Resursları)</a>
     <a th:href="@{/istifadeciler}" sec:authorize="hasRole('ADMIN')">👥 İstifadəçilər</a>
-    <a th:href="@{/layiheler}"  sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
+    <a th:href="@{/layiheler}" sec:authorize="hasRole('ADMIN')">🏗️ Layihələr və Anbarlar</a>
 </div>
 
 <div class="esas">
-    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
-        <span style="font-weight: bold; color: #4a148c;">👤 <span sec:authentication="name">İstifadəçi</span></span>
-        <form th:action="@{/logout}" method="post" style="margin: 0; display: inline;">
-            <button type="submit" style="background: #c62828; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">Çıxış</button>
-        </form>
-    </div>
-
     <h1>📋 Smetalar və Layihə Büdcələri</h1>
-
-    <div class="xeta" th:if="${xeta}" th:text="${xeta}"></div>
-    <div class="ugur" th:if="${ugur}" th:text="${ugur}"></div>
 
     <!-- Yeni Smeta Yarat Formu -->
     <div class="kart">
         <h3>➕ Yeni Smeta Yarat</h3>
         <form th:action="@{/smetalar/elave-et}" method="post">
-            <select name="layiheId" required>
-                <option value="">Layihə seçin...</option>
-                <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}"></option>
-            </select>
-            <input type="text" name="ad" placeholder="Smeta adı (Məs: Tikinti işləri v1)" required>
-            <input type="text" name="versiya" placeholder="Versiya (Məs: v1.0)" value="v1.0" required>
-            <select name="valyuta" required>
-                <option value="AZN">AZN (₼)</option>
-                <option value="USD">USD ($)</option>
-            </select>
-            <div class="form-actions">
+            <div class="form-satir">
+                <select name="layiheId" required>
+                    <option value="">Layihə seçin...</option>
+                    <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}"></option>
+                </select>
+                <input type="text" name="ad" placeholder="Smeta adı (Məs: Tikinti işləri v1)" required>
+                <input type="text" name="versiya" placeholder="Versiya (Məs: v1.0)" value="v1.0" required>
+                <select name="valyuta" required>
+                    <option value="AZN">AZN (₼)</option>
+                    <option value="USD">USD ($)</option>
+                </select>
+            </div>
+            <div style="text-align: right;">
                 <button type="submit">Smeta Yarat</button>
             </div>
         </form>
@@ -99,8 +104,10 @@
                 <th>Layihə</th>
                 <th>Versiya</th>
                 <th>Status</th>
-                <th>Ümumi Məbləğ</th>
-                <th style="text-align: right;">Əməliyyatlar</th>
+                <th>Yekun Büdcə (₼)</th>
+                <th>Yaradılma Tarixi</th>
+                <th>Son Düzəliş</th>
+                <th style="text-align: right; width: 250px;">Əməliyyatlar</th>
             </tr>
             </thead>
             <tbody>
@@ -109,14 +116,24 @@
                 <td th:text="${s.layihe != null ? s.layihe.ad : '-'}">Layihə</td>
                 <td th:text="${s.versiya}">v1.0</td>
                 <td>
-                    <span th:if="${s.status == 'QARALAMA'}" class="badge-qaralama">QARALAMA</span>
-                    <span th:if="${s.status == 'TESDIQLENMIS'}" class="badge-tesdiq">TƏSDİQLƏNİB (BÜDCƏ)</span>
+                    <span th:if="${s.status == 'QARALAMA'}" class="badge badge-qaralama">QARALAMA</span>
+                    <span th:if="${s.status == 'TESDIQLENMIS'}" class="badge badge-tesdiq">TƏSDİQLƏNİB (BÜDCƏ)</span>
                 </td>
-                <td><strong th:text="${s.umumiMebleg} + ' ' + ${s.valyuta}">0 AZN</strong></td>
+                <td style="font-weight: bold; color: #1565c0;">
+                    <span th:text="${s.budce != null ? #numbers.formatDecimal(s.budce.yekunBudceMeblegi, 1, 2) : #numbers.formatDecimal(s.umumiMebleg, 1, 2)}">0.00</span>
+                </td>
+                <td class="tarix-sutun">
+                    <span th:if="${s.yaradilmaTarixi != null}" th:text="${#temporals.format(s.yaradilmaTarixi, 'dd.MM.yyyy HH:mm')}">-</span>
+                </td>
+                <td class="tarix-sutun">
+                    <span th:if="${s.duzelisTarixi != null}" th:text="${#temporals.format(s.duzelisTarixi, 'dd.MM.yyyy HH:mm')}">-</span>
+                    <span th:if="${s.duzelisTarixi == null}" style="color: #999;">Düzəliş yoxdur</span>
+                </td>
                 <td style="text-align: right; white-space: nowrap;">
-                    <a th:href="@{/smetalar/detal/{id}(id=${s.id})}" class="detal-btn">Detallar / BOQ</a>
+                    <a th:href="@{/smetalar/detal/{id}(id=${s.id})}" class="btn-kiçik btn-detallar">Detallar / BOQ</a>
+                    <a th:href="@{/smetalar/redakte/{id}(id=${s.id})}" class="btn-kiçik btn-redakte">Düzəliş Et</a>
                     <form th:action="@{/smetalar/sil/{id}(id=${s.id})}" method="post" style="display:inline;" sec:authorize="hasRole('ADMIN')">
-                        <button type="submit" class="sil-btn" onclick="return confirm('Bu smetanı silmək istədiyinizə əminsinizmi?')">Sil</button>
+                        <button type="submit" class="btn-kiçik btn-sil" onclick="return confirm('Bu smetanı silmək istədiyinizə əminsinizmi?')">Sil</button>
                     </form>
                 </td>
             </tr>

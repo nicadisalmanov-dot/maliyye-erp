@@ -1,10 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Smeta Redaktə - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover { background: #1976d2; color: white; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; max-width: 600px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button[type="submit"] { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button[type="submit"]:hover { background: #1565c0; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+    </style>
 </head>
 <body>
-$END$
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}">🏠 Dashboard</a>
+    <a th:href="@{/smetalar}" style="background: #1976d2;">🏗️ Smeta və Büdcə</a>
+</div>
+
+<div class="esas">
+    <a th:href="@{/smetalar}" class="geri-btn">← Smetalar Siyahısına Qayıt</a>
+    <h1>✏️ Smeta Redaktə Et</h1>
+
+    <div class="kart">
+        <form th:action="@{/smetalar/redakte/{id}(id=${smeta.id})}" method="post">
+
+            <div class="form-group">
+                <label>Layihə</label>
+                <select name="layiheId" required>
+                    <option th:each="l : ${layiheler}" th:value="${l.id}" th:text="${l.ad}" th:selected="${l.id == smeta.layihe.id}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Smeta Adı</label>
+                <input type="text" name="ad" th:value="${smeta.ad}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Versiya</label>
+                <input type="text" name="versiya" th:value="${smeta.versiya}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Valyuta</label>
+                <select name="valyuta" required>
+                    <option value="AZN" th:selected="${smeta.valyuta == 'AZN'}">AZN (₼)</option>
+                    <option value="USD" th:selected="${smeta.valyuta == 'USD'}">USD ($)</option>
+                </select>
+            </div>
+
+            <button type="submit">Dəyişiklikləri Yadda Saxla</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

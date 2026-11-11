@@ -2,42 +2,171 @@
 <html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
-  <title>Smeta Detalları & Büdcə Nəzarəti - ERP</title>
+  <title>Smeta Detalları - ERP</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
-    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; overflow-y: auto; }
+    .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; }
     .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
     .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
     .sidebar a:hover { background: #1976d2; color: white; }
-    .esas { margin-left: 220px; flex: 1; padding: 30px; }
-    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
-    h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
-    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
-    h3 { margin-bottom: 15px; color: #0f4c81; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 15px; }
+    .esas { margin-left: 220px; flex: 1; padding: 30px; min-height: 100vh; overflow-y: auto; }
 
-    .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
-    .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; color: #0f4c81; }
+    /* Yuxarı Başlıq Hissəsi */
+    .header-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .header-sol {
+        display: flex;
+        align-items: baseline;
+        gap: 20px;
+    }
+    .header-sol h1 {
+        color: #0f4c81;
+        font-size: 24px;
+        margin: 0;
+    }
+    .header-sol .tarix {
+        font-size: 16px;
+        color: #666;
+        font-weight: bold;
+        background: #e3f2fd;
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+
+    /* Tarix Seçimi Formu */
+    .tarix-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .tarix-form label {
+        font-weight: bold;
+        color: #0f4c81;
+        font-size: 13px;
+    }
+    .tarix-form input[type="date"] {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+    .tarix-form button, .tarix-form a {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 13px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-tetbiq { background: #1976d2; color: white; }
+    .btn-sifirla { background: #6c757d; color: white; } /* Sıfırla düyməsi üçün boz rəng */
+
+    /* Düymələr Paneli (Excel və Redaktə) */
+    .duymeler-panel {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* TOP PANEL 4 KART */
+    .top-panel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+    .info-box { padding: 15px; border-radius: 8px; }
     .info-box h4 { font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
     .info-box p { font-size: 18px; font-weight: bold; }
+    .bg-blue { background: #e3f2fd; color: #0f4c81; }
+    .bg-orange { background: #fff3e0; color: #e65100; }
+    .bg-green { background: #e8f5e9; color: #2e7d32; }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
-    th { background: #fafafa; font-size: 11px; color: #666; text-transform: uppercase; }
-    tr:hover { background: #f9f9f9; }
+    .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+    .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
 
-    .progress-bar-bg { background: #e0e0e0; border-radius: 10px; height: 12px; width: 100px; overflow: hidden; display: inline-block; vertical-align: middle; }
+    .bolme-kart { margin-bottom: 25px; }
+
+    /* BÖLMƏ 3 KART */
+    .bolme-3kart { display: flex; align-items: stretch; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #1976d2; }
+    .bolme-kod-kart { width: 100px; padding: 15px 10px; background: #0f4c81; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; }
+    .bolme-ad-kart { flex: 1; padding: 15px 20px; background: #e3f2fd; display: flex; justify-content: space-between; align-items: center; }
+    .bolme-ad-kart h3 { margin: 0; color: #0f4c81; font-size: 18px; }
+    .bolme-yekun { font-size: 18px; font-weight: bold; color: #1565c0; margin-right: 20px; }
+    .bolme-emeliyyat-kart { width: auto; padding: 15px; background: #f0f7ff; display: flex; flex-direction: row; gap: 8px; align-items: center; justify-content: center; border-left: 2px solid #bbdefb; height: 100%; }
+
+    /* ALT BAŞLIQ 3 KART */
+    .alt-basliq-kart { margin: 15px 0; }
+    .alt-3kart { display: flex; align-items: stretch; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid #43a047; }
+    .alt-kod-kart { width: 100px; padding: 12px 10px; background: #2e7d32; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+    .alt-ad-kart { flex: 1; padding: 12px 20px; background: #e8f5e9; display: flex; justify-content: space-between; align-items: center; }
+    .alt-ad-kart h4 { margin: 0; color: #2e7d32; font-size: 15px; }
+    .alt-yekun { font-weight: bold; color: #2e7d32; margin-right: 20px; }
+    .alt-emeliyyat-kart { width: auto; padding: 12px; background: #f1f8e9; display: flex; flex-direction: row; gap: 8px; align-items: center; justify-content: center; border-left: 2px solid #c8e6c9; height: 100%; }
+
+    /* CƏDVƏL BAŞLIĞI */
+    .cedvel-basliq { display: flex; background: #fafafa; font-weight: bold; font-size: 11px; color: #666; text-transform: uppercase; padding: 10px 0; border-radius: 4px; margin-bottom: 5px; border-bottom: 2px solid #ddd; border: 1px solid #eee; }
+    .cedvel-basliq .bend-kod-kart { width: 100px; padding: 10px; background: transparent; color: #666; display: flex; align-items: center; justify-content: center; border-right: 2px solid #ddd; }
+    .cedvel-basliq .bend-melumat-kart { flex: 1; padding: 10px 15px; display: grid; grid-template-columns: 2fr 70px 70px 90px 90px 90px 90px 100px; gap: 15px; align-items: center; background: transparent; }
+    .cedvel-basliq .bend-emeliyyat-kart { width: 180px; padding: 10px; background: transparent; display: flex; align-items: center; justify-content: center; border-left: 2px solid #ddd; height: 100%; }
+
+    /* BƏND 3 KART */
+    .bend-satir { display: flex; border-bottom: 1px solid #eee; background: white; align-items: stretch; margin-bottom: 5px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .bend-kod-kart { width: 100px; padding: 15px 10px; background: #e3f2fd; display: flex; align-items: center; justify-content: center; border-right: 2px solid #bbdefb; border-radius: 6px 0 0 6px; }
+    .bend-kod-kart span { font-weight: bold; color: #1565c0; font-size: 14px; text-align: center; }
+    .bend-melumat-kart { flex: 1; padding: 15px; display: grid; grid-template-columns: 2fr 70px 70px 90px 90px 90px 90px 100px; gap: 15px; align-items: center; font-size: 13px; }
+    .bend-emeliyyat-kart { width: 180px; padding: 15px; background: #fafafa; display: flex; flex-direction: row; gap: 8px; align-items: center; justify-content: center; border-left: 2px solid #ddd; border-radius: 0 6px 6px 0; height: 100%; }
+
+    .btn-standart { padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; width: auto; }
+    .btn-redakte { background: #f57c00; color: white; }
+    .btn-redakte:hover { background: #e65100; }
+    .btn-sil { background: #c62828; color: white; }
+    .btn-sil:hover { background: #8e0000; }
+    .btn-tesdiq { background: #2e7d32; color: white; width: auto; padding: 10px 20px; }
+    .btn-tesdiq:hover { background: #1b5e20; }
+
+    .elave-form { display: flex; gap: 8px; padding: 10px 15px; background: #fff; border-bottom: 1px solid #eee; flex-wrap: wrap; align-items: center; }
+    .elave-form input, .elave-form select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+    .elave-form input.kod { width: 80px; font-weight: bold; text-align: center; }
+    .elave-form button { padding: 8px 15px; background: #1976d2; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+
+    .progress-bar-bg { background: #e0e0e0; border-radius: 10px; height: 12px; width: 60px; overflow: hidden; display: inline-block; vertical-align: middle; }
     .progress-bar-fill { background: #2e7d32; height: 100%; border-radius: 10px; }
     .progress-over { background: #c62828 !important; }
 
-    /* Bənd əlavə etmə forması */
-    form.elave-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
-    form.elave-form input, form.elave-form select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; width: 100%; }
-    form.elave-form .form-actions { grid-column: span 3; text-align: right; }
-    form.elave-form button { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
-    form.elave-form button:hover { background: #1565c0; }
+    .gizli { display: none !important; }
 
-    .sil-btn { background: #c62828; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+    .budce-info { background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 15px; }
+    .budce-info p { margin-bottom: 5px; }
+    .budce-info strong { display: inline-block; min-width: 150px; }
+
+    .tesdiq-form { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top: 15px; }
+    .tesdiq-form .form-group { display: flex; flex-direction: column; }
+    .tesdiq-form label { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+    .tesdiq-form input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 150px; }
+
+    .alert-xeta { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828; font-weight: bold; }
+    .alert-ugur { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2e7d32; font-weight: bold; }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .top-panel { grid-template-columns: 1fr 1fr; }
+        .bolme-3kart, .alt-3kart, .bend-satir, .cedvel-basliq { flex-direction: column; }
+        .bolme-kod-kart, .alt-kod-kart, .bend-kod-kart, .cedvel-basliq .bend-kod-kart { width: 100%; border-radius: 6px 6px 0 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.3); }
+        .bolme-emeliyyat-kart, .alt-emeliyyat-kart, .bend-emeliyyat-kart, .cedvel-basliq .bend-emeliyyat-kart { width: 100%; flex-direction: row; border-left: none; border-top: 2px solid #ddd; }
+        .bend-melumat-kart, .cedvel-basliq .bend-melumat-kart { display: flex; flex-direction: column; gap: 5px; padding: 10px; }
+        .header-panel { flex-direction: column; align-items: flex-start; }
+        .tarix-form { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -45,131 +174,303 @@
 <div class="sidebar">
   <h2>💰 Maliyyə ERP</h2>
   <a th:href="@{/}">🏠 Dashboard</a>
-  <a th:href="@{/maliyye}">💵 Maliyyə</a>
-  <a th:href="@{/kontragentler}">👥 Kontragentlər</a>
-  <a th:href="@{/smetalar}" style="background: #1976d2; font-weight: bold;">🏗️ Smeta və Büdcə</a>
-  <a th:href="@{/hesabat}">📊 Hesabat</a>
-  <a th:href="@{/anbar}">📦 Anbar Əməliyyatları</a>
-  <a th:href="@{/satis}">💼 Satış</a>
-  <a th:href="@{/satinalma}">🛒 Satınalma</a>
+  <a th:href="@{/smetalar}" style="background: #1976d2;">🏗️ Smeta və Büdcə</a>
 </div>
 
 <div class="esas">
   <a th:href="@{/smetalar}" class="geri-btn">← Smetalar Siyahısına Qayıt</a>
-  <h1>🏗️ Smeta & Büdcə Nəzarəti: <span th:text="${smeta.ad}">Smeta Adı</span></h1>
 
-  <!-- Panel İndikatorları -->
-  <div class="info-grid">
-    <div class="info-box">
-      <h4>Layihə</h4>
-      <p th:text="${smeta.layihe != null ? smeta.layihe.ad : '-'}">-</p>
+  <!-- YUXARI BAŞLIQ VƏ TARİX SEÇİMİ -->
+  <div class="header-panel">
+    <div class="header-sol">
+      <h1>🏗️ Smeta: <span th:text="${smeta.ad}">Ad</span></h1>
+      <span class="tarix" th:text="${#temporals.format(#temporals.createNow(), 'dd.MM.yyyy')}">01.01.2026</span>
     </div>
-    <div class="info-box">
-      <h4>Planlaşdırılan Smeta</h4>
-      <p th:text="${smeta.umumiMebleg} + ' ' + ${smeta.valyuta}">0 AZN</p>
-    </div>
-    <div class="info-box" style="background: #fff3e0; color: #e65100;">
-      <h4>Faktiki İcra Olunan</h4>
-      <p th:text="${#numbers.formatDecimal(umumiFaktikiXerc, 1, 2)} + ' ' + ${smeta.valyuta}">0 AZN</p>
-    </div>
-    <div class="info-box" style="background: #e8f5e9; color: #2e7d32;">
-      <h4>Yekun Büdcə Limiti</h4>
-      <p th:text="${smeta.budce != null ? smeta.budce.yekunBudceMeblegi : smeta.umumiMebleg} + ' ' + ${smeta.valyuta}">0 AZN</p>
-    </div>
-  </div>
 
-  <!-- Yeni Bənd Əlavə Etmə Forması -->
-  <div class="kart" th:if="${smeta.status == 'QARALAMA'}">
-    <h3>➕ Smeta Bəndi (BOQ İş Sətri) Əlavə Et</h3>
-    <form th:action="@{/smetalar/detal/{id}/bend-elave-et(id=${smeta.id})}" method="post" class="elave-form">
-      <input type="text" name="isAdi" placeholder="İşin adı (Məs: Beton tökülməsi C25/30)" required style="grid-column: span 3;">
-      <input type="text" name="vahid" placeholder="Ölçü vahidi (m³, m², ton, ədəd)" required>
-      <input type="number" name="miqdar" step="0.01" min="0" placeholder="Miqdar" required>
-      <input type="number" name="vahidQiymeti" step="0.01" min="0" placeholder="Vahid Qiyməti (₼)" required>
-      <select name="kateqoriya" required>
-        <option value="MATERIAL">Material</option>
-        <option value="EMAK">Əmək Haqqı</option>
-        <option value="TEXNIKA">Mexanizm / Texnika</option>
-      </select>
-      <div class="form-actions">
-        <button type="submit">İş Sətrini Əlavə Et</button>
-      </div>
+    <form th:action="@{/smetalar/detal/{id}(id=${smeta.id})}" method="get" class="tarix-form">
+      <label></label>
+      <input type="date" name="tarix" th:value="${secilmisTarix}">
+      <button type="submit" class="btn-tetbiq">Tətbiq Et</button>
+      <a th:href="@{/smetalar/detal/{id}(id=${smeta.id})}" class="btn-sifirla">Sıfırla</a>
     </form>
   </div>
 
-  <!-- BOQ / Plan vs Actual Cədvəli -->
-  <div class="kart">
-    <h3>📊 İşlər Üzrə Büdcə İcra Cədvəli (Plan vs Actual)</h3>
-    <table th:if="${bəndlər != null && !bəndlər.isEmpty()}">
-      <thead>
-      <tr>
-        <th>İşin Adı & Kateqoriya</th>
-        <th>Ölçü Vahidi</th>
-        <th>Miqdar</th>
-        <th>Vahid Qiymət</th>
-        <th>Plan Məbləğ</th>
-        <th>Faktiki Xərc</th>
-        <th>Qalıq</th>
-        <th>İcra Faizi (%)</th>
-        <th style="text-align:center;" th:if="${smeta.status == 'QARALAMA'}">Əməliyyat</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="b : ${bəndlər}">
-        <td>
-          <strong th:text="${b.isAdi}">Beton işi</strong><br>
-          <small style="color: #666;" th:text="${b.kateqoriya}">MATERIAL</small>
-        </td>
-        <td th:text="${b.vahid}">m³</td>
-        <td th:text="${b.miqdar}">0</td>
-        <td th:text="${b.vahidQiymeti} + ' ₼'">0 ₼</td>
-        <td><strong th:text="${b.cemiMebleg} + ' ₼'" style="color: #1976d2;">0 ₼</strong></td>
-        <td><strong th:text="${b.faktikiXerc} + ' ₼'" style="color: #e65100;">0 ₼</strong></td>
-        <td>
-          <strong th:text="${b.qaliqMebleg} + ' ₼'"
-                  th:style="${b.qaliqMebleg < 0} ? 'color:#c62828;' : 'color:#2e7d32;'">0 ₼</strong>
-        </td>
-        <td>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill"
-                 th:classappend="${b.icraFaizi >= 100} ? 'progress-over'"
-                 th:style="'width: ' + ${b.icraFaizi} + '%;'"></div>
-          </div>
-          <span style="font-size: 11px; font-weight: bold; margin-left: 5px;"
-                th:text="${#numbers.formatDecimal(b.icraFaizi, 1, 1)} + '%'">0%</span>
-        </td>
-        <td style="text-align:center;" th:if="${smeta.status == 'QARALAMA'}">
-          <form th:action="@{/smetalar/detal/bend-sil/{smetaId}/{bendiId}(smetaId=${smeta.id}, bendiId=${b.id})}" method="post" style="display:inline;">
-            <button type="submit" class="sil-btn" onclick="return confirm('Bu bəndi silmək istədiyinizə əminsinizmi?')">Sil</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <div th:if="${bəndlər == null || bəndlər.isEmpty()}" style="color: #999; text-align: center; padding: 20px;">
-      Bu smetaya hələ heç bir iş sətri əlavə olunmayıb.
+  <!-- DÜYMƏLƏR PANELİ -->
+  <div class="duymeler-panel">
+    <a th:href="@{/smetalar/excel/{id}(id=${smeta.id})}" class="btn-standart btn-tesdiq" style="background: #1976d2; text-decoration: none; padding: 10px 20px;">📥 Excel-ə İxrac Et</a>
+    <button type="button" id="rejimDeyis" class="btn-standart btn-tesdiq" onclick="rejimDeyis()" style="padding: 10px 20px;">✏️ Redaktə Rejimi</button>
+  </div>
+
+  <!-- TOP PANEL (4 kart) -->
+  <div class="top-panel">
+    <div class="info-box bg-blue">
+      <h4>Layihə</h4>
+      <p th:text="${smeta.layihe != null ? smeta.layihe.ad : '-'}">-</p>
+    </div>
+    <div class="info-box bg-blue">
+      <h4>Planlaşdırılan Smeta</h4>
+      <p th:text="${#numbers.formatDecimal(smeta.umumiMebleg, 1, 2)} + ' ' + ${smeta.valyuta}">0.00 AZN</p>
+    </div>
+    <div class="info-box bg-orange">
+      <h4>Faktiki İcra Olunan</h4>
+      <p th:text="${#numbers.formatDecimal(umumiFaktikiXerc, 1, 2)} + ' ' + ${smeta.valyuta}">0.00 AZN</p>
+    </div>
+    <div class="info-box bg-green">
+      <h4>Yekun Büdcə Limiti</h4>
+      <p th:text="${smeta.budce != null ? #numbers.formatDecimal(smeta.budce.yekunBudceMeblegi, 1, 2) : #numbers.formatDecimal(smeta.umumiMebleg, 1, 2)} + ' ' + ${smeta.valyuta}">0.00 AZN</p>
     </div>
   </div>
 
-  <!-- Təsdiqləmə Paneli (Yalnız Qaralama statusunda) -->
-  <div class="kart" th:if="${smeta.status == 'QARALAMA'}" sec:authorize="hasRole('ADMIN')">
-    <h3>💰 Büdcəni Təsdiqlə</h3>
-    <form th:action="@{/smetalar/tesdiqle/{id}(id=${smeta.id})}" method="post" class="elave-form">
-      <input type="number" name="gozlenilmezFaiz" step="0.1" min="0" placeholder="Gözlənilməz Xərclər Faizi (%)" value="10">
-      <input type="number" name="dolayiFaiz" step="0.1" min="0" placeholder="Dolayı Xərclər Faizi (%)" value="5">
-      <div class="form-actions">
-        <button type="submit" style="background: #2e7d32;">Büdcəni Təsdiqlə</button>
+  <div th:if="${xeta}" class="alert-xeta"><span th:text="${xeta}"></span></div>
+  <div th:if="${ugur}" class="alert-ugur"><span th:text="${ugur}"></span></div>
+
+  <!-- Yeni Bölmə -->
+  <div class="kart redakte-elements gizli">
+    <h3>➕ Yeni Bölmə</h3>
+    <form th:action="@{/smetalar/detal/{id}/basliq-elave-et(id=${smeta.id})}" method="post" style="display: flex; gap: 10px;">
+      <input type="text" name="kod" class="kod" placeholder="Kod (A)" required style="width: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; text-align: center;">
+      <input type="text" name="ad" placeholder="Bölmə adı (Məs: DOLAYI XƏRCLƏR)" required style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+      <button type="submit" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">Bölmə Yarat</button>
+    </form>
+  </div>
+
+  <!-- Bölmələr -->
+  <div th:each="basliq : ${smeta.basliqlar}" class="bolme-kart">
+
+    <!-- BÖLMƏ 3 KART -->
+    <div class="bolme-3kart">
+      <div class="bolme-kod-kart"><span th:text="${basliq.kod}">A</span></div>
+      <div class="bolme-ad-kart">
+        <h3 th:text="${basliq.ad}">Bölmə Adı</h3>
+        <span class="bolme-yekun">Yekun: <span th:text="${#numbers.formatDecimal(basliq.yekunMebleg, 1, 2)}">0.00</span> ₼</span>
+      </div>
+      <div class="bolme-emeliyyat-kart redakte-elements gizli">
+        <button type="button" class="btn-standart btn-redakte redakte-btn-js" th:attr="data-id=${basliq.id}, data-nov='basliq', data-kod=${basliq.kod}, data-ad=${basliq.ad}">Düzəliş</button>
+        <form th:action="@{/smetalar/detal/{smetaId}/basliq-sil/{basliqId}(smetaId=${smeta.id}, basliqId=${basliq.id})}" method="post" style="margin:0;">
+          <button type="submit" class="btn-standart btn-sil" onclick="return confirm('Bütün bölməni silmək istəyirsiniz?')">Sil</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Yeni Alt Başlıq Formu -->
+    <div class="redakte-elements gizli" style="padding: 10px 20px; background: #f0f7ff; margin-top: 5px; border-radius: 6px;">
+      <form th:action="@{/smetalar/detal/{smetaId}/alt-basliq-elave-et(smetaId=${smeta.id})}" method="post" style="display: flex; gap: 10px;">
+        <input type="hidden" name="basliqId" th:value="${basliq.id}">
+        <input type="text" name="kod" class="kod" placeholder="A.1" required style="width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; text-align: center;">
+        <input type="text" name="ad" placeholder="Alt başlıq (Məs: İşçi qüvvəsi)" required style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+        <button type="submit" style="background: #2e7d32; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Alt Başlıq Əlavə Et</button>
+      </form>
+    </div>
+
+    <!-- Alt Başlıqlar -->
+    <div th:each="alt : ${basliq.altBasliqlar}" class="alt-basliq-kart">
+
+      <!-- ALT BAŞLIQ 3 KART -->
+      <div class="alt-3kart">
+        <div class="alt-kod-kart"><span th:text="${alt.kod}">A.1</span></div>
+        <div class="alt-ad-kart">
+          <h4 th:text="${alt.ad}">Alt Başlıq Adı</h4>
+          <span class="alt-yekun">Cəmi: <span th:text="${#numbers.formatDecimal(alt.yekunMebleg, 1, 2)}">0.00</span> ₼</span>
+        </div>
+        <div class="alt-emeliyyat-kart redakte-elements gizli">
+          <button type="button" class="btn-standart btn-redakte redakte-btn-js" th:attr="data-id=${alt.id}, data-nov='alt', data-kod=${alt.kod}, data-ad=${alt.ad}">Düzəliş</button>
+          <form th:action="@{/smetalar/detal/{smetaId}/alt-basliq-sil/{altId}(smetaId=${smeta.id}, altId=${alt.id})}" method="post" style="margin:0;">
+            <button type="submit" class="btn-standart btn-sil" onclick="return confirm('Alt başlığı silmək istəyirsiniz?')">Sil</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bənd Əlavə Etmə Formu -->
+      <div class="redakte-elements gizli" style="margin-top: 5px;">
+        <form th:action="@{/smetalar/detal/{id}/bend-elave-et(id=${smeta.id})}" method="post" class="elave-form">
+          <input type="hidden" name="altBasliqId" th:value="${alt.id}">
+          <input type="text" name="kod" class="kod" placeholder="A.1.1" required>
+          <input type="text" name="isAdi" placeholder="İşin adı" required style="flex: 2;">
+          <input type="text" name="vahid" placeholder="Vahid" required style="width: 80px;">
+          <input type="number" name="miqdar" step="0.01" placeholder="Miqdar" required style="width: 90px;">
+          <input type="number" name="vahidQiymeti" step="0.01" placeholder="Vahid qiymət" required style="width: 100px;">
+          <select name="kateqoriya">
+            <option value="MATERIAL">Material</option>
+            <option value="EMAK">Əmək</option>
+            <option value="TEXNIKA">Texnika</option>
+          </select>
+          <button type="submit">Bənd Əlavə Et</button>
+        </form>
+      </div>
+
+      <!-- CƏDVƏL BAŞLIĞI -->
+      <div class="cedvel-basliq" th:if="${alt.bəndlər != null && !alt.bəndlər.isEmpty()}">
+        <div class="bend-kod-kart">Büdcə Kodu</div>
+        <div class="bend-melumat-kart">
+          <span>İşin Adı & Kateqoriya</span>
+          <span>Vahid</span>
+          <span>Miqdar</span>
+          <span>Vahid Qiymət</span>
+          <span>Plan (Cəmi)</span>
+          <span>Faktiki Xərc</span>
+          <span>Qalıq</span>
+          <span>İcra (%)</span>
+        </div>
+        <div class="bend-emeliyyat-kart redakte-elements gizli">Əməliyyat</div>
+      </div>
+
+      <!-- BƏNDLƏR -->
+      <div th:if="${alt.bəndlər != null && !alt.bəndlər.isEmpty()}" style="margin-top: 5px;">
+        <div th:each="b : ${alt.bəndlər}" class="bend-satir">
+
+          <!-- 1. KART: BÜDCƏ KODU -->
+          <div class="bend-kod-kart">
+            <span th:text="${b.kod}">A.1.1</span>
+          </div>
+
+          <!-- 2. KART: MƏLUMATLAR -->
+          <div class="bend-melumat-kart">
+            <span th:text="${b.isAdi}">İş</span>
+            <span th:text="${b.vahid}">m3</span>
+            <span th:text="${b.miqdar}">1</span>
+            <span th:text="${#numbers.formatDecimal(b.vahidQiymeti, 1, 2)} + ' ₼'">0.00 ₼</span>
+            <span style="font-weight:bold; color:#1976d2;" th:text="${#numbers.formatDecimal(b.cemiMebleg, 1, 2)} + ' ₼'">0.00 ₼</span>
+            <span style="font-weight:bold; color:#e65100;" th:text="${#numbers.formatDecimal(b.faktikiXerc, 1, 2)} + ' ₼'">0.00 ₼</span>
+            <span>
+              <strong th:text="${#numbers.formatDecimal(b.qaliqMebleg, 1, 2)} + ' ₼'" th:style="${b.qaliqMebleg < 0} ? 'color:#c62828;' : 'color:#2e7d32;'">0.00 ₼</strong>
+            </span>
+            <span>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" th:classappend="${b.icraFaizi >= 100} ? 'progress-over'" th:style="'width: ' + ${b.icraFaizi} + '%;'"></div>
+              </div>
+              <span style="font-size: 11px; font-weight: bold; margin-left: 5px;" th:text="${#numbers.formatDecimal(b.icraFaizi, 1, 1)} + '%'">0%</span>
+            </span>
+          </div>
+
+          <!-- 3. KART: ƏMƏLİYYATLAR -->
+          <div class="bend-emeliyyat-kart redakte-elements gizli">
+            <a th:href="@{/smetalar/detal/bend-redakte/{smetaId}/{bendiId}(smetaId=${smeta.id}, bendiId=${b.id})}" class="btn-standart btn-redakte">Düzəliş</a>
+            <form th:action="@{/smetalar/detal/bend-sil/{smetaId}/{bendiId}(smetaId=${smeta.id}, bendiId=${b.id})}" method="post" style="margin:0;">
+              <button type="submit" class="btn-standart btn-sil" onclick="return confirm('Bəndi silmək istəyirsiniz?')">Sil</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+      <div th:if="${alt.bəndlər == null || alt.bəndlər.isEmpty()}" style="padding: 15px; color: #999; text-align: center;">Bu alt başlıqda bənd yoxdur.</div>
+    </div>
+  </div>
+
+  <!-- BÜDCƏ PARAMETRLƏRİ VƏ TƏSDİQ -->
+  <div class="kart redakte-elements gizli">
+    <h3>💰 Büdcə Parametrləri və Təsdiq</h3>
+    <form th:action="@{/smetalar/tesdiqle/{id}(id=${smeta.id})}" method="post">
+      <div class="tesdiq-form">
+        <div class="form-group">
+          <label>Gözlənilməz Xərclər (%)</label>
+          <input type="number" name="gozlenilmezFaiz" step="0.1" min="0" th:value="${smeta.budce != null ? smeta.budce.gozlenilmezFaiz : 10}" required>
+        </div>
+        <div class="form-group">
+          <label>Dolayı Xərclər (%)</label>
+          <input type="number" name="dolayiFaiz" step="0.1" min="0" th:value="${smeta.budce != null ? smeta.budce.dolayiXerclerFaizi : 5}" required>
+        </div>
+        <button type="submit" class="btn-standart btn-tesdiq" style="margin-bottom: 1px;">Büdcəni Təsdiqlə / Yenilə</button>
       </div>
     </form>
   </div>
 
   <!-- Təsdiqlənmiş Büdcə Məlumatı -->
   <div class="kart" th:if="${smeta.status == 'TESDIQLENMIS'}">
-    <h3>✅ Təsdiqlənmiş Büdcə</h3>
-    <p><strong>Smeta Məbləği:</strong> <span th:text="${smeta.budce.smetaMeblegi}">0</span> ₼</p>
-    <p><strong>Yekun Büdcə Limiti:</strong> <span th:text="${smeta.budce.yekunBudceMeblegi}" style="color: #c62828; font-weight: bold;">0</span> ₼</p>
-    <p style="font-size: 12px; color: #666;">Təsdiqləyən: <span th:text="${smeta.budce.tesdiqleyenIstifadeci}">Admin</span></p>
+    <div class="budce-info">
+      <p><strong>Smeta Məbləği:</strong> <span th:text="${#numbers.formatDecimal(smeta.budce.smetaMeblegi, 1, 2)}">0.00</span> ₼</p>
+      <p><strong>Gözlənilməz Xərclər:</strong> <span th:text="${#numbers.formatDecimal(smeta.budce.gozlenilmezFaiz, 1, 2)}">0.00</span> %</p>
+      <p><strong>Dolayı Xərclər:</strong> <span th:text="${#numbers.formatDecimal(smeta.budce.dolayiXerclerFaizi, 1, 2)}">0.00</span> %</p>
+
+      <hr style="margin: 10px 0; border: 0; border-top: 1px solid #c8e6c9;">
+
+      <h3 style="margin: 0 0 10px 0; color: #2e7d32;">✅ Təsdiqlənmiş Büdcə</h3>
+      <p><strong>Yekun Büdcə Limiti:</strong> <span th:text="${#numbers.formatDecimal(smeta.budce.yekunBudceMeblegi, 1, 2)}" style="color: #c62828; font-weight: bold; font-size: 16px;">0.00</span> ₼</p>
+    </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var scrollMevqeyi = sessionStorage.getItem('scrollMevqeyi');
+    if (scrollMevqeyi) {
+      window.scrollTo(0, parseInt(scrollMevqeyi));
+      sessionStorage.removeItem('scrollMevqeyi');
+    }
+
+    window.addEventListener('beforeunload', function() {
+      sessionStorage.setItem('scrollMevqeyi', window.scrollY);
+    });
+
+    var aktivRejim = localStorage.getItem('redakteRejimi');
+    var gizliElementler = document.querySelectorAll('.redakte-elements');
+    var rejimDugmesi = document.getElementById('rejimDeyis');
+
+    if (aktivRejim === 'aktiv') {
+      gizliElementler.forEach(function(el) { el.classList.remove('gizli'); });
+      rejimDugmesi.innerText = '✅ Oxu Rejimi';
+      rejimDugmesi.classList.remove('btn-tesdiq');
+      rejimDugmesi.classList.add('btn-redakte');
+    } else {
+      gizliElementler.forEach(function(el) { el.classList.add('gizli'); });
+      rejimDugmesi.innerText = '✏️ Redaktə Rejimi';
+      rejimDugmesi.classList.remove('btn-redakte');
+      rejimDugmesi.classList.add('btn-tesdiq');
+    }
+
+    window.rejimDeyis = function() {
+      var isGizli = gizliElementler[0].classList.contains('gizli');
+
+      if (isGizli) {
+        gizliElementler.forEach(function(el) { el.classList.remove('gizli'); });
+        rejimDugmesi.innerText = '✅ Oxu Rejimi';
+        rejimDugmesi.classList.remove('btn-tesdiq');
+        rejimDugmesi.classList.add('btn-redakte');
+        localStorage.setItem('redakteRejimi', 'aktiv');
+      } else {
+        gizliElementler.forEach(function(el) { el.classList.add('gizli'); });
+        rejimDugmesi.innerText = '✏️ Redaktə Rejimi';
+        rejimDugmesi.classList.remove('btn-redakte');
+        rejimDugmesi.classList.add('btn-tesdiq');
+        localStorage.setItem('redakteRejimi', 'passiv');
+      }
+    };
+
+    var redakteDugmeleri = document.querySelectorAll('.redakte-btn-js');
+    redakteDugmeleri.forEach(function(dugme) {
+      dugme.addEventListener('click', function() {
+        var id = this.getAttribute('data-id');
+        var nov = this.getAttribute('data-nov');
+        var kohneKod = this.getAttribute('data-kod');
+        var kohneAd = this.getAttribute('data-ad');
+
+        var yeniKod = prompt(nov + " üçün yeni kod:", kohneKod);
+        if (yeniKod === null) return;
+
+        var yeniAd = prompt(nov + " üçün yeni ad:", kohneAd);
+        if (yeniAd === null) return;
+
+        var url = (nov === 'basliq')
+            ? '/smetalar/detal/basliq-redakte/' + id
+            : '/smetalar/detal/alt-basliq-redakte/' + id;
+
+        var formData = new URLSearchParams();
+        formData.append('kod', yeniKod);
+        formData.append('ad', yeniAd);
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              alert('Xəta baş verdi!');
+            }
+        });
+      });
+    });
+  });
+</script>
 </body>
 </html>

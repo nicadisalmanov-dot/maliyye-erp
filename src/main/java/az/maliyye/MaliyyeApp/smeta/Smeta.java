@@ -14,19 +14,18 @@ public class Smeta {
     private Long id;
 
     @Column(nullable = false)
-    private String ad; // Məsələn: "Binanın Tikinti Smetası v1"
+    private String ad;
 
     private String versiya = "v1.0";
-
     private String valyuta = "AZN";
-
-    // QARALAMA, TESDIQLENMIS, LEGV_EDILMIS
     private String status = "QARALAMA";
 
-    // Layihə ilə əlaqə (Layihə ID)
     @ManyToOne
     @JoinColumn(name = "layihe_id", nullable = false)
     private Layihe layihe;
+
+    @OneToMany(mappedBy = "smeta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SmetaBasliq> basliqlar;
 
     @OneToMany(mappedBy = "smeta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SmetaBendi> bəndlər;
@@ -36,6 +35,9 @@ public class Smeta {
 
     private String yaradanIstifadeci;
     private LocalDateTime yaradilmaTarixi;
+
+    // YENİ: Son düzəliş tarixi
+    private LocalDateTime duzelisTarixi;
 
     public Smeta() {
         this.yaradilmaTarixi = LocalDateTime.now();
@@ -68,6 +70,9 @@ public class Smeta {
     public Layihe getLayihe() { return layihe; }
     public void setLayihe(Layihe layihe) { this.layihe = layihe; }
 
+    public List<SmetaBasliq> getBasliqlar() { return basliqlar; }
+    public void setBasliqlar(List<SmetaBasliq> basliqlar) { this.basliqlar = basliqlar; }
+
     public List<SmetaBendi> getBəndlər() { return bəndlər; }
     public void setBəndlər(List<SmetaBendi> bəndlər) { this.bəndlər = bəndlər; }
 
@@ -79,4 +84,8 @@ public class Smeta {
 
     public LocalDateTime getYaradilmaTarixi() { return yaradilmaTarixi; }
     public void setYaradilmaTarixi(LocalDateTime yaradilmaTarixi) { this.yaradilmaTarixi = yaradilmaTarixi; }
+
+    // YENİ: Düzəliş tarixi üçün Getter və Setter
+    public LocalDateTime getDuzelisTarixi() { return duzelisTarixi; }
+    public void setDuzelisTarixi(LocalDateTime duzelisTarixi) { this.duzelisTarixi = duzelisTarixi; }
 }

@@ -1,10 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Smeta Bəndini Redaktə Et - ERP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0f4c81; color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar h2 { padding: 0 20px 20px 20px; font-size: 18px; border-bottom: 1px solid #1976d2; margin-bottom: 15px; }
+        .sidebar a { display: block; padding: 12px 20px; color: #bbdefb; text-decoration: none; font-size: 14px; }
+        .sidebar a:hover { background: #1976d2; color: white; }
+        .esas { margin-left: 220px; flex: 1; padding: 30px; }
+        .geri-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        h1 { color: #0f4c81; margin-bottom: 20px; font-size: 22px; }
+        .kart { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; max-width: 600px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1976d2; }
+        button[type="submit"] { padding: 10px 25px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        button[type="submit"]:hover { background: #1565c0; }
+    </style>
 </head>
 <body>
-$END$
+
+<div class="sidebar">
+    <h2>💰 Maliyyə ERP</h2>
+    <a th:href="@{/}">🏠 Dashboard</a>
+    <a th:href="@{/maliyye}">💵 Maliyyə</a>
+    <a th:href="@{/smetalar}" style="background: #1976d2; font-weight: bold;">🏗️ Smeta və Büdcə</a>
+</div>
+
+<div class="esas">
+    <a th:href="@{/smetalar/detal/{id}(id=${smeta.id})}" class="geri-btn">← Smeta Detallarına Qayıt</a>
+    <h1>✏️ Smeta Bəndini Redaktə Et</h1>
+
+    <div class="kart">
+        <form th:action="@{/smetalar/detal/bend-redakte/{smetaId}/{bendiId}(smetaId=${smeta.id}, bendiId=${bendi.id})}" method="post">
+
+            <!-- YENİ: BÜDCƏ KODU -->
+            <div class="form-group">
+                <label>Büdcə Kodu (Məs: A.1.1)</label>
+                <input type="text" name="kod" th:value="${bendi.kod}" required>
+            </div>
+
+            <div class="form-group">
+                <label>İşin Adı</label>
+                <input type="text" name="isAdi" th:value="${bendi.isAdi}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Ölçü Vahidi</label>
+                <input type="text" name="vahid" th:value="${bendi.vahid}" placeholder="m³, m², ton, ədəd..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Miqdar</label>
+                <input type="number" name="miqdar" step="0.01" min="0" th:value="${bendi.miqdar}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Vahid Qiyməti (₼)</label>
+                <input type="number" name="vahidQiymeti" step="0.01" min="0" th:value="${bendi.vahidQiymeti}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Kateqoriya</label>
+                <select name="kateqoriya" required>
+                    <option value="MATERIAL" th:selected="${bendi.kateqoriya == 'MATERIAL'}">Material</option>
+                    <option value="EMAK" th:selected="${bendi.kateqoriya == 'EMAK'}">Əmək Haqqı</option>
+                    <option value="TEXNIKA" th:selected="${bendi.kateqoriya == 'TEXNIKA'}">Mexanizm / Texnika</option>
+                </select>
+            </div>
+
+            <button type="submit">Dəyişiklikləri Yadda Saxla</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
