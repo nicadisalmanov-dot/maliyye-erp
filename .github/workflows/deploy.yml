@@ -12,6 +12,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # YENİ: Runner-in diskini təmizləyirik
+    - name: Free Disk Space (Ubuntu)
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+        docker system prune -af --volumes || true
+        df -h
+
     - name: Set up Java 21
       uses: actions/setup-java@v4
       with:
@@ -28,8 +38,8 @@ jobs:
 
     - name: Copy JAR to VM using rsync
       run: |
-        # Köhnə JAR-ı backup qovluğuna köçür (əgər varsa)
-        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "mkdir -p /home/${{ secrets.VM_USER }}/backup && mv /home/${{ secrets.VM_USER }}/MaliyyeApp.jar /home/${{ secrets.VM_USER }}/backup/MaliyyeApp_$(date +%Y%m%d%H%M%S).jar 2>/dev/null || true"
+        # Serverdə köhnə JAR-ı sil (yer boşaltmaq üçün)
+        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "rm -f /home/${{ secrets.VM_USER }}/MaliyyeApp.jar"
         
         # Yeni JAR-ı rsync ilə köçür
         rsync -avz -e "ssh -o StrictHostKeyChecking=no -i id_rsa" target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/MaliyyeApp.jar
