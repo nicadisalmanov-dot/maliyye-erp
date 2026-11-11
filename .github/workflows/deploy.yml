@@ -12,7 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # YENİ: Runner-in diskini təmizləyirik
     - name: Free Disk Space (Ubuntu)
       run: |
         sudo rm -rf /usr/share/dotnet
@@ -35,6 +34,8 @@ jobs:
       run: |
         echo "${{ secrets.VM_SSH_KEY }}" > id_rsa
         chmod 600 id_rsa
+        # PEM format uyğunluğunu təmin etmək üçün xəbərdarlıqları ignor edirik
+        ssh-keygen -p -m PEM -f id_rsa -N "" || true
 
     - name: Copy JAR to VM using rsync
       run: |
