@@ -26,12 +26,13 @@ jobs:
         echo "${{ secrets.VM_SSH_KEY }}" > id_rsa
         chmod 600 id_rsa
 
-    - name: Copy JAR to VM using SCP
+    - name: Copy JAR to VM using rsync
       run: |
-        # Köhnə JAR-ı sil (əgər varsa)
-        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "rm -f /home/${{ secrets.VM_USER }}/MaliyyeApp.jar"
-        # Yeni JAR-ı köçür və adını dəyiş
-        scp -o StrictHostKeyChecking=no -i id_rsa target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/MaliyyeApp.jar
+        # Köhnə JAR-ı backup qovluğuna köçür (əgər varsa)
+        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "mkdir -p /home/${{ secrets.VM_USER }}/backup && mv /home/${{ secrets.VM_USER }}/MaliyyeApp.jar /home/${{ secrets.VM_USER }}/backup/MaliyyeApp_$(date +%Y%m%d%H%M%S).jar 2>/dev/null || true"
+        
+        # Yeni JAR-ı rsync ilə köçür
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i id_rsa" target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/MaliyyeApp.jar
 
     - name: Restart Application via SSH
       run: |
